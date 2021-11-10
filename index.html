@@ -4,15 +4,61 @@
         <title>ARM immediate value encoding for dummies</title>
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <meta name="description" value="A more in-depth tutorial on how to encoding numbers using ARM immediate value encoding. Intended as a companion to Alisdair McDiarmid's excellent blog post on the same topic.">
+        <meta name="description" value="A more in-depth tutorial on how to encode numbers using ARM immediate value encoding. Intended as a companion to Alisdair McDiarmid's excellent blog post on the same topic.">
         <link rel="stylesheet" href="style.css">
     </head>
     <body>
-        <main>
+        <main class="page-width">
             <article class="page-article">
                 <header>
                     <h1>ARM immediate value encoding ... for dummies</h1>
                 </header>
+
+                <h2 id="interactive-exercise">Interactive walkthrough</h2>
+                <p>Some text</p>
+                <form action="" class="input-form">
+                    <input type="text" class="val-input"><button type="button" class="input-submit-btn">Enter</button>
+                </form>
+
+                <div class="bits-container">
+                    <div class="bits" id="input-bits-0">1</div>
+                    <div class="bits" id="input-bits-1">1</div>
+                    <div class="bits" id="input-bits-2">0</div>
+                    <div class="bits" id="input-bits-3">0</div>
+                    <div class="bits" id="input-bits-4">1</div>
+                    <div class="bits" id="input-bits-5">0</div>
+                    <div class="bits" id="input-bits-6">0</div>
+                    <div class="bits" id="input-bits-7">1</div>
+                    <div class="bits" id="input-bits-8">0</div>
+                    <div class="bits" id="input-bits-9">0</div>
+                    <div class="bits" id="input-bits-10">1</div>
+                    <div class="bits" id="input-bits-11">0</div>
+                    <div class="bits" id="input-bits-12">0</div>
+                    <div class="bits" id="input-bits-13">1</div>
+                    <div class="bits" id="input-bits-14">0</div>
+                    <div class="bits" id="input-bits-15">0</div>
+                    <div class="bits" id="input-bits-16">1</div>
+                    <div class="bits" id="input-bits-17">0</div>
+                    <div class="bits" id="input-bits-18">1</div>
+                    <div class="bits" id="input-bits-19">0</div>
+                    <div class="bits" id="input-bits-20">0</div>
+                    <div class="bits" id="input-bits-21">1</div>
+                    <div class="bits" id="input-bits-22">0</div>
+                    <div class="bits" id="input-bits-23">0</div>
+                    <div class="bits" id="input-bits-24">1</div>
+                    <div class="bits" id="input-bits-25">0</div>
+                    <div class="bits" id="input-bits-26">0</div>
+                    <div class="bits" id="input-bits-27">1</div>
+                    <div class="bits" id="input-bits-28">0</div>
+                    <div class="bits" id="input-bits-29">0</div>
+                    <div class="bits" id="input-bits-30">1</div>
+                    <div class="bits" id="input-bits-31">0</div>      
+                    <button type="button" class="lr-arrows" id="input-left-arrow">&lt</button>
+                    <button type="button" class="lr-arrows" id="input-right-arrow">&gt</button>                               
+                </div>
+
+            <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+            <script type="text/javascript" src="demo.js"></script>
             </article>
         </main>
     </body>
