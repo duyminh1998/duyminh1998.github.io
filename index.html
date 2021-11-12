@@ -13,12 +13,19 @@
                 <header>
                     <h1>ARM immediate value encoding ... for dummies</h1>
                 </header>
+                <div class="meta-info">
+                    <a>11-11-2021</a>
+                </div>
 
+                <h2>Introduction</h2>
+                <p>During the first term of my M.S. in Computer Science program at Johns Hopkins, I took Computer Architecture with Dr. Kann. He had a list of final projects that we could do, one of which was to develop an interactive tool to teach students about the immediate Operand2 encoding that was available on the ARM chips. This blog is intended to be 
+                    a companion to Alisdair McDiarmid's excellent <a href="https://alisdair.mcdiarmid.org/arm-immediate-value-encoding/" target="_blank" rel="noopener noreferrer">blog post</a> on the same topic. The only difference being that the interactive tool presented here goes into much more detail on the steps taken to encode a number.</p>
+                <h2>Motivation</h2>
                 <h2 id="interactive-exercise">Interactive walkthrough</h2>
                 <p>Some text</p>
 
                 <form action="" class="input-form">
-                    <input type="text" class="val-input"><button type="button" class="input-submit-btn">Enter</button>
+                    <input type="text" class="val-input">
                 </form>
 
                 <div class="bits-container">
@@ -57,10 +64,10 @@
                 </div>
 
                 <p>Is it less than 8 bits? Only continue if no.</p>
-                <div class="continue-buttons">
+                <!-- <div class="continue-buttons">
                     <button type="button" class="cont-btn" id="cont-yes">YES</button>
                     <button type="button" class="cont-btn" id="cont-no">NO</button>                     
-                </div>
+                </div> -->
 
                 <div class="continue-container"></div>
                 <div class="continue-to-rot-container"></div>
@@ -105,7 +112,7 @@
                 <script id="continue-no-template" type="text/template">
                     <div class="dynamic-content">
                         <div class="get-correct-8-bits-containter">
-                            <p>We need to get the correct 8 bits. Can you get rid of the red?</p>
+                            <p>Your number is longer than 8-bits. We need to get the correct 8 bits. Can you get rid of the red?</p>
                             <div class="bits-container">
                                 <div class="bits" id="find-cor-bits-0">1</div>
                                 <div class="bits" id="find-cor-bits-1">1</div>
@@ -148,9 +155,13 @@
                     </div>
                 </script>
 
+                <script id="continue-yes-template" type="text/template">
+                    <p>Your number can be represented with less than or equals to 8 bits.</p>
+                </script>
+
                 <script id="continue-to-rot-template" type="text/template">
                     <div class="rot-back-to-og-container">
-                        <p>Remember what a rotate does. Now that we have our 8 bits, how much right rotation do we need to get back to the original value?</p>
+                        <p>The bits that you rotated into bits 0-7 equals <a id="8-bit-equals"></a>. You have just fit the most significant parts of your original number into 8 bits, but it is not your original number. To let ARM reconstruct the original number, notice that we can just rotate those 8 bits back to their original positions. Remember what a rotate does. Now that we have our 8 bits, how much right rotation do we need to get back to the original value?</p>
                         <button type="button" id="show-og-bits-btn" style="margin-bottom: 10px;">Show original value</button>
                         <div class="og-input-bits"></div>
                         <div class="bits-container">
@@ -192,8 +203,51 @@
                             <button type="button" class="lr-arrows" id="rot-back-reset">Reset</button>
                         </div>
                         <p id="rot-amt-blurb"> You have rotated the original value 0 times to the right.</p>
-                        <p id="correct-answer"></p>                        
+                        <p id="correct-answer"></p>
+                        <div id="animation-container"></div>                        
                     </div>                    
+                </script>
+
+                <script id="play-animation-template" type="text/template">
+                    <p id="pre-animation-blurb">Here's a visualization of how ARM reconstructs</p>
+                    <div class="btn-containers">
+                        <button type="button" id="play-animation-btn">Play animation</button>
+                    </div>
+                    <div class="bits-container">
+                        <div class="bits" id="animation-bits-0">1</div>
+                        <div class="bits" id="animation-bits-1">1</div>
+                        <div class="bits" id="animation-bits-2">0</div>
+                        <div class="bits" id="animation-bits-3">0</div>
+                        <div class="bits" id="animation-bits-4">1</div>
+                        <div class="bits" id="animation-bits-5">0</div>
+                        <div class="bits" id="animation-bits-6">0</div>
+                        <div class="bits" id="animation-bits-7">1</div>
+                        <div class="bits" id="animation-bits-8">0</div>
+                        <div class="bits" id="animation-bits-9">0</div>
+                        <div class="bits" id="animation-bits-10">1</div>
+                        <div class="bits" id="animation-bits-11">0</div>
+                        <div class="bits" id="animation-bits-12">0</div>
+                        <div class="bits" id="animation-bits-13">1</div>
+                        <div class="bits" id="animation-bits-14">0</div>
+                        <div class="bits" id="animation-bits-15">0</div>
+                        <div class="bits" id="animation-bits-16">1</div>
+                        <div class="bits" id="animation-bits-17">0</div>
+                        <div class="bits" id="animation-bits-18">1</div>
+                        <div class="bits" id="animation-bits-19">0</div>
+                        <div class="bits" id="animation-bits-20">0</div>
+                        <div class="bits" id="animation-bits-21">1</div>
+                        <div class="bits" id="animation-bits-22">0</div>
+                        <div class="bits" id="animation-bits-23">0</div>
+                        <div class="bits" id="animation-bits-24">1</div>
+                        <div class="bits" id="animation-bits-25">0</div>
+                        <div class="bits" id="animation-bits-26">0</div>
+                        <div class="bits" id="animation-bits-27">1</div>
+                        <div class="bits" id="animation-bits-28">0</div>
+                        <div class="bits" id="animation-bits-29">0</div>
+                        <div class="bits" id="animation-bits-30">1</div>
+                        <div class="bits" id="animation-bits-31">0</div>                                     
+                    </div>
+                    <p id="animation-blurb"></p>                    
                 </script>
 
             <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
