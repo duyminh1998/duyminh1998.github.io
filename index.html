@@ -14,20 +14,32 @@
                     <h1>ARM immediate value encoding ... for dummies</h1>
                 </header>
                 <div class="meta-info">
+                    <a>Minh Hua</a><br>
                     <a>11-11-2021</a>
                 </div>
 
                 <h2>Introduction</h2>
-                <p>During the first term of my M.S. in Computer Science program at Johns Hopkins, I took Computer Architecture with Dr. Kann. He had a list of final projects that we could do, one of which was to develop an interactive tool to teach students about the immediate Operand2 encoding that was available on the ARM chips. This blog is intended to be 
+                <p>During the first term of my M.S. in Computer Science program at Johns Hopkins, I took Foundations of Computer Architecture with Dr. Kann. He had a list of final projects that we could do, one of which was to develop an interactive tool to teach students about the immediate Operand2 encoding that was implemented on the ARM chips. This blog is intended to be 
                     a companion to Alisdair McDiarmid's excellent <a href="https://alisdair.mcdiarmid.org/arm-immediate-value-encoding/" target="_blank" rel="noopener noreferrer">blog post</a> on the same topic. The only difference being that the interactive tool presented here goes into much more detail on the steps taken to encode a number.</p>
                 <h2>Motivation</h2>
+                <p>The motivation for this tool is to present to students a step-by-step approach to learning and visualizing how ARM encodes immediate values longer than 8 bits using the flexible Operand2 immediate encoding.</p>
+                <h2>Background</h2>
+                <p>Before you begin the exercise, you should refer to Alisdair McDiarmid's <a href="https://alisdair.mcdiarmid.org/arm-immediate-value-encoding/" target="_blank" rel="noopener noreferrer">blog post</a> for a refresher on machine code and ARM instructions. For convenience, I reproduce a summary here.</p>
+                <p>Computers run on machine code, which are binary representations of simple instructions that the CPU performs, e.g. add two numbers. Knowing how ARM translates an instruction such as "add the number stored in register r2 to the register in r3 and store the result in r0" like</p>
+                <pre><code class="hljs lang-arm"><span class="hljs-keyword">ADD </span><span class="hljs-literal">r0</span>, <span class="hljs-literal">r2</span>, <span class="hljs-literal">r3</span>          <span class="hljs-comment">; r0 = r2 + r3</span></code></pre>
+                <p>into a binary string is a major goal for students of classes like Computer Architecture. For this demonstration, we want to look at a class of instructions where an operation is peformed on a register and a constant value. What is special about this instruction type is that you can specify the constant value in the instruction itself, rather than point to a register that the value is in. Conventionally, ARM requires that you move numbers into registers before operating on them. This is an alternate to that, and the constant value is referred to as an immediate.</p>
+                <pre><code class="hljs lang-arm"><span class="hljs-keyword">ADD </span><span class="hljs-literal">r0</span>, <span class="hljs-literal">r2</span>, <span class="hljs-number">#1</span>          <span class="hljs-comment">; r0 = r2 + 1</span></code></pre>
+                <p>ARM, like other RISC architectures, can represent (encode) its instruction in 32 bits. However, what this means is that we cannot use a full 32-bit number as an immediate because we have less than 32 bits to represent the value, i.e. we need bits to represent other parts of the instruction such as the type of operation, and other registers that are used.</p>
+                <p>Here are the functions of each group of bits in the 32-bit ARM instruction:</p>
                 <h2 id="interactive-exercise">Interactive walkthrough</h2>
-                <p>Some text</p>
+                <p>The goal of this interactive walkthrough is to go through the steps of encoding a number (that is potentially longer than 8 bits) into the 12 bits that is used to represent an immediate in an ARM instruction. To get started, please enter a number you want to encode into the input box below. The raw binary representation of your number should then populate in the 32 bits below the input box.</p>
 
+                <p>Example numbers to try: <a id="ex-261120">261120</a></p>
                 <form action="" class="input-form">
+                    <label for="val-input">Enter your number here: </label>
                     <input type="text" class="val-input">
                 </form>
-
+                <p id="your-num-is"></p>
                 <div class="bits-container">
                     <div class="bits" id="input-bits-0">1</div>
                     <div class="bits" id="input-bits-1">1</div>
@@ -63,7 +75,7 @@
                     <div class="bits" id="input-bits-31" style="fill-opacity: 0.5; background-color: #7ED321;">0</div>                                  
                 </div>
 
-                <p>Is it less than 8 bits? Only continue if no.</p>
+                <p>Recall that the immediate part of an ARM instruction is 12 bits, with 8 bits reserved for the number and 4 bits reserved for a rotation amount. If your number can be represented with 8 bits, then we do not need to perform any sort of extra rotation because we can just use the 8 bits available to us. Otherwise, we have to perform some fancy bit manipulation.</p>
                 <!-- <div class="continue-buttons">
                     <button type="button" class="cont-btn" id="cont-yes">YES</button>
                     <button type="button" class="cont-btn" id="cont-no">NO</button>                     
@@ -112,7 +124,7 @@
                 <script id="continue-no-template" type="text/template">
                     <div class="dynamic-content">
                         <div class="get-correct-8-bits-containter">
-                            <p>Your number is longer than 8-bits. We need to get the correct 8 bits. Can you get rid of the red?</p>
+                            <p>Your number is longer than 8-bits. Therefore, we need to capture the most significant parts of our number and move them into the bottom 8 bits. Can you move the bits around to get rid of the red?</p>
                             <div class="bits-container">
                                 <div class="bits" id="find-cor-bits-0">1</div>
                                 <div class="bits" id="find-cor-bits-1">1</div>
@@ -156,12 +168,12 @@
                 </script>
 
                 <script id="continue-yes-template" type="text/template">
-                    <p>Your number can be represented with less than or equals to 8 bits.</p>
+                    <p>Your number can be represented with less than or equals to 8 bits. You may end the exercise here.</p>
                 </script>
 
                 <script id="continue-to-rot-template" type="text/template">
                     <div class="rot-back-to-og-container">
-                        <p>The bits that you rotated into bits 0-7 equals <a id="8-bit-equals"></a>. You have just fit the most significant parts of your original number into 8 bits, but it is not your original number. To let ARM reconstruct the original number, notice that we can just rotate those 8 bits back to their original positions. Remember what a rotate does. Now that we have our 8 bits, how much right rotation do we need to get back to the original value?</p>
+                        <p>The bits that you rotated into bits 0-7 equals <a id="8-bit-equals"></a>. You have just fit the most significant parts of your original number into 8 bits, but it is not your original number. To let ARM reconstruct the original number, notice that we can just rotate those 8 bits back to their original positions. Therefore, how much right rotation do we need to get back to the original value?</p>
                         <button type="button" id="show-og-bits-btn" style="margin-bottom: 10px;">Show original value</button>
                         <div class="og-input-bits"></div>
                         <div class="bits-container">
@@ -202,13 +214,14 @@
                             <button type="button" class="lr-arrows" id="rot-back-right-arrow">&gt</button>
                             <button type="button" class="lr-arrows" id="rot-back-reset">Reset</button>
                         </div>
-                        <p id="rot-amt-blurb"> You have rotated the original value 0 times to the right.</p>
+                        <p id="rot-amt-blurb"> You have rotated the bottom 8 bits 0 times to the right.</p>
                         <p id="correct-answer"></p>
                         <div id="animation-container"></div>                        
                     </div>                    
                 </script>
 
                 <script id="play-animation-template" type="text/template">
+                    <h2>Animation</h2>
                     <p id="pre-animation-blurb">Here's a visualization of how ARM reconstructs</p>
                     <div class="btn-containers">
                         <button type="button" id="play-animation-btn">Play animation</button>

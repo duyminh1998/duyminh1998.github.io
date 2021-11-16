@@ -23,6 +23,7 @@ jQuery(function($){
 
                 App.resetBits("#input-bits-");
                 let inputNum = $(".val-input").val();
+                $("#your-num-is").text("The binary representation of ".concat(inputNum, " is:"));
                 if (inputNum) {
                     App.setBits(inputNum, "#input-bits-");
                     let leadingBit = App.determineLeadBit(inputNum);
@@ -44,10 +45,12 @@ jQuery(function($){
                     } else {
                         $(".continue-container").html($("#continue-yes-template").html());
                     };
+                    //window.scrollTo(0,document.body.scrollHeight);
                 };
             });
-            // Continue
-            App.$doc.on('click', '#cont-no', function() {               
+            // Populate examples
+            App.$doc.on('click', "#ex-261120", function() {
+                $('.val-input').val(261120);
             });
             // First right arrow  
             App.$doc.on('click', '#find-cor-bits-right-arrow', function() {
@@ -74,6 +77,7 @@ jQuery(function($){
                     App.timesClickedShowOGBits = 0;
                     App.setBits(bitRotated, "#rot-back-bits-");                      
                     $("#8-bit-equals").text(bitRotated);
+                    //window.scrollTo(0,document.body.scrollHeight);
                 };               
             });
             // First left arrow  
@@ -100,7 +104,8 @@ jQuery(function($){
                     App.rotAmt = 0;
                     App.timesClickedShowOGBits = 0;
                     App.setBits(bitRotated, "#rot-back-bits-");
-                    $("#8-bit-equals").text(bitRotated);               
+                    $("#8-bit-equals").text(bitRotated);
+                    //window.scrollTo(0,document.body.scrollHeight);               
                 };                 
             });
             // Show original input bits
@@ -109,6 +114,11 @@ jQuery(function($){
                     $('.og-input-bits').html($('#og-input-bits-template').html());
                     App.setBits($(".val-input").val(), "#show-input-bits-");
                     App.timesClickedShowOGBits++;
+                    let bits = App.getBits("#show-input-bits-");
+                    let leadingBit = App.determineLeadBit(bits);
+                    for (let i = 0; i <= leadingBit; i++) {
+                        $("#show-input-bits-".concat(31 - i)).css("background-color", "#ffa");
+                    }
                 } else {
                     $('.og-input-bits').html('');
                     App.timesClickedShowOGBits++;
@@ -119,10 +129,14 @@ jQuery(function($){
                 let bits = App.getBits("#rot-back-bits-");
                 let ogBits = App.getBits("#find-cor-bits-");
                 let bitRotated = App.ror(bits, 2);
+                let leadingBit = App.determineLeadBit(bitRotated);
                 App.setBits(bitRotated, "#rot-back-bits-");
                 App.rotAmt = (App.rotAmt + 2) % 32;
-                $("#rot-amt-blurb").text("You have rotated the original value ".concat(App.rotAmt, " times to the right."));
+                $("#rot-amt-blurb").text("You have rotated the bottom 8 bits ".concat(App.rotAmt, " times to the right."));
                 if (bitRotated == $(".val-input").val()) {
+                    for (let i = 0; i <= leadingBit; i++) {
+                        $("#rot-back-bits-".concat(31 - i)).css("background-color", "#ffa");
+                    }
                     $("#correct-answer").text("You have lined up the 8 bits into the original bits. The correct ARM immediate encoding for ".concat(
                         $(".val-input").val(),
                         " is ",
@@ -143,16 +157,24 @@ jQuery(function($){
                     App.setBits(ogBits, "#animation-bits-");
                     $("#animation-blurb").text(String(ogBits).concat(" ROR 0 = ", ogBits));                    
                 } else {
+                    for (let i = 0; i <= 31; i++) {
+                        $("#rot-back-bits-".concat(31 - i)).css("background-color", "");
+                    }                    
                     $("#correct-answer").text('');
                     $('#animation-container').html('');
                 };
+                //window.scrollTo(0,document.body.scrollHeight);
             });
             // Reset button click
             App.$doc.on('click', '#rot-back-reset', function() {
                 App.setBits(App.getBits("#find-cor-bits-"), "#rot-back-bits-");
                 App.rotAmt = 0;
                 $("#rot-amt-blurb").text("You have rotated the original value ".concat(App.rotAmt, " times to the right."));   
-                $("#correct-answer").text('');             
+                $("#correct-answer").text('');   
+                $('#animation-container').html('');          
+                for (let i = 0; i <= 31; i++) {
+                    $("#rot-back-bits-".concat(31 - i)).css("background-color", "");
+                };                
             });
             // Play animation
             App.$doc.on('click', '#play-animation-btn', async function() {
