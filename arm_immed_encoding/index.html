@@ -56,9 +56,10 @@
                 </p> 
 
                 <h2 id="interactive-exercise">Interactive walkthrough</h2>
-                <p>The goal of this interactive walkthrough is to go through the steps of encoding a number into the 12 bits that is used to represent an immediate in an ARM instruction. To get started, please enter a number you want to encode into the input box below. The raw binary representation of your number should then populate in the 32 bits below the input box. You can try a base-10 number or a hex number prepended with 0x.</p>
+                <p>The goal of this interactive walkthrough is to go through the steps of encoding a number into the 12 bits that is used to represent an immediate in an ARM instruction. Recall that the immediate part of an ARM instruction is 12 bits, with 8 bits reserved for the number and 4 bits reserved for a right rotation amount. If your number can be represented with 8 bits, then we do not need to perform any extra rotation because we can just use the 8 bits available to us. Otherwise, we have to perform some more manipulation to our bits. </p> 
+                <p>To get started, please enter a number you want to encode into the input box below. The raw binary representation of your number should then populate in the 32 bits below the input box. You can try a base-10 number or a hex number prepended with 0x.</p>
 
-                <p>Example numbers to try: 261120, 0x102, 0xFF0000FF, 0xC0000034</p>
+                <p>Example numbers to try: <a href="" id="ex-261120" onclick="App.update();">261120</a>, <a href="" id="ex-0x102" onclick="App.update();">0x102</a>, <a href="" id="ex-0xFF0000FF" onclick="App.update();">0xFF0000FF</a>, <a href="" id="ex-0xC0000034" onclick="App.update();">0xC0000034</a></p>
                 <form action="" class="input-form">
                     <label for="val-input">Enter your number here: </label>
                     <input type="text" class="val-input">
@@ -89,17 +90,16 @@
                     <div class="bits" id="input-bits-21">1</div>
                     <div class="bits" id="input-bits-22">0</div>
                     <div class="bits" id="input-bits-23">0</div>
-                    <div class="bits" id="input-bits-24" style="fill-opacity: 0.5; background-color: #7ED321;">1</div>
-                    <div class="bits" id="input-bits-25" style="fill-opacity: 0.5; background-color: #7ED321;">0</div>
-                    <div class="bits" id="input-bits-26" style="fill-opacity: 0.5; background-color: #7ED321;">0</div>
-                    <div class="bits" id="input-bits-27" style="fill-opacity: 0.5; background-color: #7ED321;">1</div>
-                    <div class="bits" id="input-bits-28" style="fill-opacity: 0.5; background-color: #7ED321;">0</div>
-                    <div class="bits" id="input-bits-29" style="fill-opacity: 0.5; background-color: #7ED321;">0</div>
-                    <div class="bits" id="input-bits-30" style="fill-opacity: 0.5; background-color: #7ED321;">1</div>
-                    <div class="bits" id="input-bits-31" style="fill-opacity: 0.5; background-color: #7ED321;">0</div>                                  
+                    <div class="bits" id="input-bits-24" style="fill-opacity: 0.5; color: #7ED321;">1</div>
+                    <div class="bits" id="input-bits-25" style="fill-opacity: 0.5; color: #7ED321;">0</div>
+                    <div class="bits" id="input-bits-26" style="fill-opacity: 0.5; color: #7ED321;">0</div>
+                    <div class="bits" id="input-bits-27" style="fill-opacity: 0.5; color: #7ED321;">1</div>
+                    <div class="bits" id="input-bits-28" style="fill-opacity: 0.5; color: #7ED321;">0</div>
+                    <div class="bits" id="input-bits-29" style="fill-opacity: 0.5; color: #7ED321;">0</div>
+                    <div class="bits" id="input-bits-30" style="fill-opacity: 0.5; color: #7ED321;">1</div>
+                    <div class="bits" id="input-bits-31" style="fill-opacity: 0.5; color: #7ED321;">0</div>                                  
                 </div>
 
-                <p>Recall that the immediate part of an ARM instruction is 12 bits, with 8 bits reserved for the number and 4 bits reserved for a right rotation amount. If your number can be represented with 8 bits, then we do not need to perform any extra rotation because we can just use the 8 bits available to us. Otherwise, we have to perform some more manipulation to our bits.</p>
                 <!-- <div class="continue-buttons">
                     <button type="button" class="cont-btn" id="cont-yes">YES</button>
                     <button type="button" class="cont-btn" id="cont-no">NO</button>                     
@@ -150,7 +150,7 @@
                     <div class="dynamic-content">
                         <div class="get-correct-8-bits-containter">
                             <hr style="background: white; height: 1px; border: #333;">
-                            <p>Your number is longer than 8-bits. Therefore, we need to capture the most significant parts of our number and move them into the bottom 8 bits that are available to us. Use the arrow buttons to move the significant portions of the number into bits 0-7.</p> 
+                            <p>Your number is longer than 8-bits. The red highlights the number of significant bits that are out of the valid 8-bit bucket. Therefore, we need to capture the most significant parts of our number and move them into the bottom 8 bits that are available to us. Use the arrow buttons to move the significant portions of the number into bits 0-7.</p> 
                             <div class="bits-container">
                                 <div class="bits" id="find-cor-bits-0">1</div>
                                 <div class="bits" id="find-cor-bits-1">1</div>
@@ -176,14 +176,14 @@
                                 <div class="bits" id="find-cor-bits-21">1</div>
                                 <div class="bits" id="find-cor-bits-22">0</div>
                                 <div class="bits" id="find-cor-bits-23">0</div>
-                                <div class="bits" id="find-cor-bits-24" style="fill-opacity: 0.5; background-color: #7ED321;">1</div>
-                                <div class="bits" id="find-cor-bits-25" style="fill-opacity: 0.5; background-color: #7ED321;">0</div>
-                                <div class="bits" id="find-cor-bits-26" style="fill-opacity: 0.5; background-color: #7ED321;">0</div>
-                                <div class="bits" id="find-cor-bits-27" style="fill-opacity: 0.5; background-color: #7ED321;">1</div>
-                                <div class="bits" id="find-cor-bits-28" style="fill-opacity: 0.5; background-color: #7ED321;">0</div>
-                                <div class="bits" id="find-cor-bits-29" style="fill-opacity: 0.5; background-color: #7ED321;">0</div>
-                                <div class="bits" id="find-cor-bits-30" style="fill-opacity: 0.5; background-color: #7ED321;">1</div>
-                                <div class="bits" id="find-cor-bits-31" style="fill-opacity: 0.5; background-color: #7ED321;">0</div>                                   
+                                <div class="bits" id="find-cor-bits-24" style="color: #7ED321;">1</div>
+                                <div class="bits" id="find-cor-bits-25" style="color: #7ED321;">0</div>
+                                <div class="bits" id="find-cor-bits-26" style="color: #7ED321;">0</div>
+                                <div class="bits" id="find-cor-bits-27" style="color: #7ED321;">1</div>
+                                <div class="bits" id="find-cor-bits-28" style="color: #7ED321;">0</div>
+                                <div class="bits" id="find-cor-bits-29" style="color: #7ED321;">0</div>
+                                <div class="bits" id="find-cor-bits-30" style="color: #7ED321;">1</div>
+                                <div class="bits" id="find-cor-bits-31" style="color: #7ED321;">0</div>                                   
                             </div>
                             <div class="btn-containers" style="margin-bottom: 10px;">
                                 <button type="button" class="lr-arrows" id="find-cor-bits-left-arrow">&lt</button>
@@ -202,7 +202,7 @@
                 <script id="continue-to-rot-template" type="text/template">
                     <div class="rot-back-to-og-container">
                         <hr style="background: white; height: 1px; border: #333;">
-                        <p>The bits that you rotated into bits 0-7 equals <a id="8-bit-equals"></a>, and you have just fit the most significant parts of your original number into 8 bits, but it is not your original number. To be able to reconstruct the original number, notice that we can just rotate those 8 bits back to their original position. Therefore, we need to determine the amount of right rotation needed to get back to the original position of the bits in the original value. Use the "Show original value" button to reveal the original value
+                        <p>The bits that you rotated into bits 0-7 equals <a id="8-bit-equals"></a>, and you have just fit the most significant parts of your original number into 8 bits, but it is not your original number. To reconstruct the original number, notice that we can just rotate those 8 bits back to their original position. Therefore, we need to determine the amount of right rotation needed to get back to the original position of the bits in the original value. Use the "Show original value" button to reveal the original value
                         to see if you have been able to match it. Use the provided right arrow key for rotation and the reset button if you went too far.</p>
                         <div class="btn-containers"><button type="button" id="show-og-bits-btn" style="margin-bottom: 10px; background-color: #333; border: 1px solid white; color: white;">Show original value</button></div>
                         <div class="og-input-bits"></div>
