@@ -23,13 +23,14 @@ jQuery(function($){
 
                 App.resetBits("#input-bits-");
                 let inputNum = $(".val-input").val();
+                
                 $("#your-num-is").text("The binary representation of ".concat(inputNum, " is:"));
                 if (inputNum) {
                     App.setBits(inputNum, "#input-bits-");
                     let leadingBit = App.determineLeadBit(inputNum);
                     if (leadingBit > 7) {
                         for (let i = 8; i <= leadingBit; i++) {
-                            $("#input-bits-".concat(31 - i)).css("background-color", "#fc9b9b");
+                            $("#input-bits-".concat(31 - i)).css("background-color", "rgb(255,98,102)");
                         };
                         $(".continue-container").html($("#continue-no-template").html());
                         let inputNum = $(".val-input").val();
@@ -38,7 +39,7 @@ jQuery(function($){
                             let leadingBit = App.determineLeadBit(inputNum);
                             if (leadingBit > 7) {
                                 for (let i = 8; i <= leadingBit; i++) {
-                                    $("#find-cor-bits-".concat(31 - i)).css("background-color", "#fc9b9b");
+                                    $("#find-cor-bits-".concat(31 - i)).css("background-color", "rgb(255,98,102)");
                                 };                        
                             };
                         };                                                
@@ -61,7 +62,7 @@ jQuery(function($){
                 if (leadingBit > 7) {
                     for (let i = 8; i < 32; i++) {
                         if (i <= leadingBit) {
-                            $("#find-cor-bits-".concat(31 - i)).css("background-color", "#fc9b9b");
+                            $("#find-cor-bits-".concat(31 - i)).css("background-color", "rgb(255,98,102)");
                         }
                         else {
                             $("#find-cor-bits-".concat(31 - i)).css("background-color", '');
@@ -89,7 +90,7 @@ jQuery(function($){
                 if (leadingBit > 7) {
                     for (let i = 8; i < 32; i++) {
                         if (i <= leadingBit) {
-                            $("#find-cor-bits-".concat(31 - i)).css("background-color", "#fc9b9b");
+                            $("#find-cor-bits-".concat(31 - i)).css("background-color", "rgb(255,98,102)");
                         }
                         else {
                             $("#find-cor-bits-".concat(31 - i)).css("background-color", '');
@@ -117,7 +118,7 @@ jQuery(function($){
                     let bits = App.getBits("#show-input-bits-");
                     let leadingBit = App.determineLeadBit(bits);
                     for (let i = 0; i <= leadingBit; i++) {
-                        $("#show-input-bits-".concat(31 - i)).css("background-color", "#ffa");
+                        $("#show-input-bits-".concat(31 - i)).css("background-color", "blueviolet");
                     }
                 } else {
                     $('.og-input-bits').html('');
@@ -135,9 +136,9 @@ jQuery(function($){
                 $("#rot-amt-blurb").text("You have rotated the bottom 8 bits ".concat(App.rotAmt, " times to the right."));
                 if (bitRotated == $(".val-input").val()) {
                     for (let i = 0; i <= leadingBit; i++) {
-                        $("#rot-back-bits-".concat(31 - i)).css("background-color", "#ffa");
+                        $("#rot-back-bits-".concat(31 - i)).css("background-color", "blueviolet");
                     }
-                    $("#correct-answer").text("You have lined up the 8 bits into the original bits. The correct ARM immediate encoding for ".concat(
+                    $("#correct-answer").text("Congratulations! You have transformed the 8-bit number in the instruction back to the original bits. Therefore, the correct ARM immediate encoding for ".concat(
                         $(".val-input").val(),
                         " is ",
                         ogBits,
@@ -146,13 +147,13 @@ jQuery(function($){
                         "."
                     ));
                     $('#animation-container').html($('#play-animation-template').html());
-                    $("#pre-animation-blurb").text("Here is a visualization of how ARM reconstructs the original number of ".concat(
+                    $("#pre-animation-blurb").text("Here is a visualization of how ARM reconstructs the original number ".concat(
                         $(".val-input").val(),
                         " by rotating ",
                         ogBits,
-                        " ",
+                        " to the right ",
                         App.rotAmt,
-                        " times to the right. Press play animation to check it out."
+                        " times. Press play animation to see it in action."
                     )); 
                     App.setBits(ogBits, "#animation-bits-");
                     $("#animation-blurb").text(String(ogBits).concat(" ROR 0 = ", ogBits));                    

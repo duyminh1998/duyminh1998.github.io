@@ -1,9 +1,9 @@
 html {
 	font-family: "Georgia", serif;
-	font-size: 16px;
+	font-size: 1rem;
 	line-height: 1.5;
-	color: #222;
-	background: #fff
+	color: #fff;
+	background: #1D212C
 }
 code {
 	font-family: "Menlo", "DejaVu Sans Mono", "Consolas", monospace;
@@ -13,14 +13,38 @@ code {
 body {
     margin: 0;
     font-family: Georgia, 'Times New Roman', Times, serif;
+	font-family: Hack, DejaVu Sans Mono, Monaco, Consolas, Ubuntu Mono, monospace;
 }
 a {
 	background-color: transparent
 }
 h1 {
     line-height: 1.2;
-	font-size: 2em;
-	margin: 0.67em 0
+	font-size: 1.4em;
+	margin: 0.67em 0;
+	background-image: linear-gradient(135deg, #A7BCFD, #FC83FC);
+	background-size: 100%;
+	background-repeat: repeat;
+	background-clip: text;
+	-webkit-background-clip: text;
+	-webkit-text-fill-color: transparent; 
+	-moz-background-clip: text;
+	-moz-text-fill-color: transparent;
+}
+hr {
+	background: linear-gradient(135deg, #A7BCFD, #FC83FC);
+  	height: 2px;
+	border: #333;
+}
+#date {
+	background-image: linear-gradient(135deg, #A7BCFD, #FC83FC);
+	background-size: 100%;
+	background-repeat: repeat;
+	background-clip: text;
+	-webkit-background-clip: text;
+	-webkit-text-fill-color: transparent; 
+	-moz-background-clip: text;
+	-moz-text-fill-color: transparent;	
 }
 h1,
 h2,
@@ -45,7 +69,7 @@ article {
 }
 .page-width {
     margin: 0 auto;
-    max-width: 36.5em;
+    max-width: 45em;
 }
 .page-article {
     padding-left: 0.75em;
@@ -53,6 +77,43 @@ article {
 }
 .page-article > * {
     margin: 30px 0;
+}
+.menu {
+	margin: 20px 0;
+}
+nav {
+	display: block;
+}
+.menu-inner {
+	display: flex;
+	flex-wrap: wrap;
+	list-style: none;
+	margin: 0;
+	padding: 0;
+}
+ul {
+    display: block;
+    list-style-type: disc;
+    margin-block-start: 1em;
+    margin-block-end: 1em;
+    margin-inline-start: 0px;
+    margin-inline-end: 0px;
+    padding-inline-start: 40px;
+}
+ul li {
+	position: relative;
+}
+li {
+    margin-right: 20px;
+    margin-bottom: 10px;
+    flex: 0 0 auto;
+}
+input {
+    font-family: 'Consolas';
+    border: 1px solid white;
+	color: white;
+    background-color: #333;
+	font-size: 1rem;
 }
 .input-submit-btn {
     margin-left: 5px;
@@ -65,18 +126,41 @@ article {
 }
 .bits {
     font-family: 'Consolas';
-    border: 1px solid black;
-    background-color: #F8F8F8;
+    border: 1px solid white;
+    background-color: #333;
     width: 20px;
     text-align: center;
 }
 .lr-arrows {
     margin-left: 5px;
     width: 50px;
+	background-color: #333;
+	border: 1px solid white;
+	color: white;
+}
+.btn-containers {
+	display: flex;
+	justify-content: center;
+}
+a:link
+{
+   color: #fff;
+}
+a:visited
+{
+   color: #fff;
+}
+a:hover
+{
+   color: #fff;
+}
+a:active
+{
+   color: #fff;
 }
 @media screen and (min-width: 560px) {
 	html {
-		font-size: 20px
+		font-size: 1rem
 	}
 	code {
 		font-size: 16px
