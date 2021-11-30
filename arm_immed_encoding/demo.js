@@ -65,8 +65,9 @@ jQuery(function($){
                     $("#8-bit-equals").text(bitRotated);
                     $("#8-bit-equals-2").text(bitRotated);
                     $("#8-bit-equals-3").text(bitRotated);
-                    $("#8-bit-equals-bit").text(bitRotated.toString(2));
-                    $("#8-bit-equals-bit-2").text(bitRotated.toString(2));
+                    let bitRotatedBit = bitRotated.toString(2);
+                    $("#8-bit-equals-bit").text(bitRotatedBit);
+                    $("#8-bit-equals-bit-2").text(bitRotatedBit);
                     //window.scrollTo(0,document.body.scrollHeight);
                 };               
             });
@@ -95,6 +96,11 @@ jQuery(function($){
                     App.timesClickedShowOGBits = 0;
                     App.setBits(bitRotated, "#rot-back-bits-");
                     $("#8-bit-equals").text(bitRotated);
+                    $("#8-bit-equals-2").text(bitRotated);
+                    $("#8-bit-equals-3").text(bitRotated);
+                    let bitRotatedBit = bitRotated.toString(2);
+                    $("#8-bit-equals-bit").text(bitRotatedBit);
+                    $("#8-bit-equals-bit-2").text(bitRotatedBit);
                     //window.scrollTo(0,document.body.scrollHeight);               
                 };                 
             });
