@@ -58,6 +58,9 @@ h6,
 h2 {
 	font-size: 1.4em
 }
+h3 {
+	font-size: 1em
+}
 p,
 pre,
 ol,
@@ -141,6 +144,20 @@ input {
 .btn-containers {
 	display: flex;
 	justify-content: center;
+}
+.img-container, .vid-container {
+	display: flex;
+	justify-content: center;
+}
+.man-nn-img {
+	position: relative;
+	width: 75%;
+	height: auto;
+}
+figcaption {
+	font-style: italic;
+	padding: 2px;
+	text-align: center;
 }
 a:link
 {
@@ -312,3 +329,11 @@ ul {
 	color: inherit;
 	text-decoration: underline
 }
+
+/* https://www.tablesgenerator.com/html_tables */
+.tg  {border-collapse:collapse;border-spacing:0;}
+.tg td{border-color:black;border-style:solid;border-width:1px;font-family:Arial, sans-serif;font-size:14px;
+  overflow:hidden;padding:10px 5px;word-break:normal;}
+.tg th{border-color:black;border-style:solid;border-width:1px;font-family:Arial, sans-serif;font-size:14px;
+  font-weight:normal;overflow:hidden;padding:10px 5px;word-break:normal;}
+.tg .tg-c3ow{border-color:inherit;text-align:center;vertical-align:top}
