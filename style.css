@@ -197,7 +197,7 @@ a:active
 		font-size: 16px
 	}
 	.num {
-		font-size: 1rem;
+		font-size: 0.5rem;
 	}
 }
 #toc_container li, #toc_container ul, #toc_container ul li{
