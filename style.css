@@ -183,7 +183,10 @@ a:active
 		font-size: 16px
 	}
 }
-
+#toc_container li, #toc_container ul, #toc_container ul li{
+    list-style: outside none none !important;
+	margin-bottom: 0;
+}
 code {
 	font-family: "Menlo", "DejaVu Sans Mono", "Consolas", monospace;
 	font-size: 12px;

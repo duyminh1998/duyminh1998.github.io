@@ -26,14 +26,26 @@
                     <hr>
                     <a id="date">11-11-2021</a>
                 </div>
-
-                <h2>Introduction</h2>
-                <p>During the first term of my M.S. in Computer Science program at Johns Hopkins, I took Foundations of Computer Architecture with Dr. Kann. He had a list of final projects that we could do, one of which was to develop an interactive tool to teach students about the immediate Operand2 encoding that are on the ARM chips. This blog is intended to be 
-                    a companion to Alisdair McDiarmid's excellent <a href="https://alisdair.mcdiarmid.org/arm-immediate-value-encoding/" target="_blank" rel="noopener noreferrer">blog post</a> on the same topic. The only difference being that the interactive tool presented here goes into much more detail on the steps taken to encode a number.</p>
-                <h2>Motivation</h2>
-                <p>The motivation for this tool is to present to students a step-by-step approach to learning and visualizing how ARM encodes immediate values longer than 8 bits using the flexible Operand2 immediate encoding.</p>
-                <p>Before you begin the exercise, you should refer to Alisdair McDiarmid's <a href="https://alisdair.mcdiarmid.org/arm-immediate-value-encoding/" target="_blank" rel="noopener noreferrer">blog post</a> for a refresher on machine code and ARM instructions. For convenience, I reproduce the most important piece of information below.</p>
-                <p>ARM uses bits 0-11 of an instruction to represent an immediate, but it does not represent the full number in 12 bits. In fact, the <a style="color: #FC83FC;"> bottom 8 bits </a> are used to represent the number while the <a style="color: #A7BCFD;"> top 4 bits </a> are used to capture a <a href="https://en.wikipedia.org/wiki/Circular_shift" target="_blank" rel="noopener noreferrer">rotation</a> amount. </p> 
+                <div id="toc_container">
+                    <h2>Contents</h2>
+                    <ul class="toc_list">
+                    <li><a href="#intro-head">1 Introduction</a></li>
+                    <li><a href="#background-head">2 Background</a>
+                        <ul>
+                            <li><a href="#pos-head">2.1 Encoding positive numbers</a></li>
+                            <li><a href="#neg-header">2.2 Encoding negative numbers</a></li>
+                        </ul>
+                    </li>
+                    <li><a href="#interactive-exercise">3 Interactive walkthrough</a></li>
+                    </ul>
+                </div>
+                <h2 id="intro-head">Introduction</h2>
+                <p>During the first term of my M.S. in Computer Science program at Johns Hopkins, I took Foundations of Computer Architecture with Dr. Kann. He had a list of final projects that we could do, one of which was to develop an interactive tool to teach students about the immediate Operand2 encoding that are on the ARM chips (I also did a Raspberry Pi-based project <a href="https://minhhua.com/neural_net_hand_crank/index.html" target="_blank" rel="noopener noreferrer">here</a>). This blog is intended to be 
+                    a companion to Alisdair McDiarmid's excellent <a href="https://alisdair.mcdiarmid.org/arm-immediate-value-encoding/" target="_blank" rel="noopener noreferrer">blog post</a> on the same topic. The only difference being that the interactive tool presented here goes into much more detail on the steps taken to encode a number and it can also handle negative numbers.</p>
+                <h2 id="background-head">Background</h2>
+                <h3 id="pos-head">Encoding positive numbers</h3>
+                <p>Before you begin the exercise, you should read Alisdair McDiarmid's <a href="https://alisdair.mcdiarmid.org/arm-immediate-value-encoding/" target="_blank" rel="noopener noreferrer">blog post</a> for a refresher on machine code and ARM instructions. For convenience, I reproduce the most important information below.</p>
+                <p>ARM uses bits 0-11 of an instruction to represent an immediate, but it does not represent the full number in 12 bits. In fact, the <a style="color: #FC83FC;"> bottom 8 bits </a> are used to represent the number while the <a style="color: #A7BCFD;"> top 4 bits </a> are used to capture a <a href="https://en.wikipedia.org/wiki/Circular_shift" target="_blank" rel="noopener noreferrer">rotation</a> amount. Since we can only represent 16 numbers with 4 bits, the rotation amounts are always multiplied by 2. This way, the 4 rotation bits can capture all the even numbers from zero to 30, which is much more useful than all numbers from zero to 15. Hence, <a style="color: #A7BCFD;">1011</a> = 11 below actually equals a rotation amount of 11 x 2 = 22.</p> 
                 <div class="temp-bits-container" style="display: flex; justify-content: center;">
                     <div class="bits-container">
                         <div class="bits" id="example-bits-0" style="color: #A7BCFD;">1</div>
@@ -50,17 +62,23 @@
                         <div class="bits" id="example-bits-11" style="color: #FC83FC;">1</div>                               
                     </div>
                 </div>
-                <p>The main idea behind the encoding is to shift the most significant parts of the original number into the bottom 8 bits and then use the 4-bit rotation amount to reconstruct the number by rotating the 8-bit number that amount to the right until we get the original number. Thus, a requirement for encoding a number in this fashion is that you must be able to cram the most significant parts of the number into 8 bits. Informally, significance denotes the longest span of bits that starts and ends with a 1. 
-                    Think about significance as preserving the number using 8 bits. If you moved the most significant portions of the number into the 8-bit "bucket", chopped off the rest of the bits, then you should still be able to reconstruct the number by moving it back to its original position. </p>
-                <p>For example, consider the number 261120. Its 32-bit binary representation is 00000000000000<a style="color: #FC83FC;">11111111</a>0000000000. If I only preserved the string of 1s starting at bit 10 and ending at bit 17 (which are 8 bits), I can still reconstruct the number if I knew the original position of this 8-bit string. Thus, an alternate way to encode this is to say that 261120 is 11111111, where the first 1 is at bit 10 and the last 1 is at bit 17. ARM immediate encoding is very similar in that it also captures the significant bits 
-                    but instead of encoding the raw position of the 8 bits in the original number, it encodes that information in a rotation amount. Observe that the 8-bit number 11111111 extended to be 32 bits 000000000000000000000000<a style="color: #FC83FC;">11111111</a> and then <a style="color: #A7BCFD;"> rotated 22 times </a> to the right gets you back to 00000000000000<a style="color: #FC83FC;">11111111</a>0000000000, the original number.
+                <p>Therefore, the binary string <a style="color: #A7BCFD;">1011</a><a style="color: #FC83FC;">11111111</a> actually represents the instruction <a style="color: #FC83FC;">11111111</a> ROR <a style="color: #A7BCFD;">1011</a>, or <a style="color: #FC83FC;">255</a> ROR <a style="color: #A7BCFD;">22</a>. If you rotated 255 to the right 22 times, you will get 261120, which is the number that the binary string <a style="color: #A7BCFD;">1011</a><a style="color: #FC83FC;">11111111</a> actually encodes. But how does ARM even know to encode 261120 as 255 ROR 22 in the first place? The main idea behind the encoding is to shift the most significant parts of the original number into the bottom 8 bits (turning 261120 into 255) and then use the 4-bit rotation amount to reconstruct the number by rotating the 8-bit number that amount to the right until we get the original number. Informally, significance denotes the longest span of bits that starts and ends with a 1.</p>
+                <p>For example, consider the number 261120. Its 32-bit binary representation is 00000000000000<a style="color: #FC83FC;">11111111</a>0000000000. If I only preserved the string of 1s starting at bit 10 and ending at bit 17 (8 bits in total), I can still reconstruct the number if I knew the original position of this 8-bit string. Thus, an alternate way to encode this is to say that 261120 is 11111111, where the first 1 is at bit 10 and the last 1 is at bit 17. ARM immediate encoding is very similar in that it also captures the significant bits 
+                    but instead of encoding the raw position of the 8 bits in the original number, it encodes that information in a rotation amount. Observe that the 8-bit number 11111111 extended to be 32 bits 000000000000000000000000<a style="color: #FC83FC;">11111111</a> and then <a style="color: #A7BCFD;"> rotated 22 times </a> to the right gets you back to 00000000000000<a style="color: #FC83FC;">11111111</a>0000000000, the original number. Does this process apply to negative numbers?
                 </p> 
 
-                <h2 id="interactive-exercise">Interactive walkthrough</h2>
-                <p>The goal of this interactive walkthrough is to go through the steps of encoding a number into the 12 bits that is used to represent an immediate in an ARM instruction. Recall that the immediate part of an ARM instruction is 12 bits, with 8 bits reserved for the number and 4 bits reserved for a right rotation amount. If your number can be represented with 8 bits, then we do not need to perform any extra rotation because we can just use the 8 bits available to us. Otherwise, we have to perform some more manipulation to our bits. </p> 
-                <p>To get started, please enter a number you want to encode into the input box below. The raw binary representation of your number should then populate in the 32 bits below the input box. You can try a base-10 number or a hex number prepended with 0x.</p>
+                <h3 id="neg-header">Encoding negative numbers</h3>
+                <p>Since a negative number has the majority of its 32 bits filled with ones, we will be utilizing the help of a command known as <span class="hljs-keyword" style="background: #333;">MVN</span>. The <span class="hljs-keyword" style="background: #333;">MVN</span> instruction moves the inverse of a bit string into a register. For example, the instruction <span class="hljs-keyword" style="background: #333;">MVN r0, 0b00000000000000111111110000000000</span> will cause the register r0 to hold the value 11111111111111000000001111111111.</p>
+                <p>It is best to illustrate the encoding of a negative number with an example. Let us consider -265, which is 11111111 11111111 11111110 11110111 in two's complement form. Clearly, this number is longer than the 12-bit encoding that is alloted for immediates. However, we can apply the same tricks that we used to encode positive numbers, namely, we can capture the most significant bits of this number, try to fit it into 8 bits, and then specify a rotation amount <i>with</i> some bit inversion. It should be obvious that the ones in the number is redundant and therefore is not significant (recall that every negative number has a bunch of ones floating around). Thus, the most significant part of this number has to be the longest substring that starts and ends with zero, namely 11111111 11111111 1111111<a style="color: #FC83FC;">0 11110</a>111. An alternate way to encode this is to say that -265 is <a style="color: #FC83FC;">011110</a>, where the first zero is at bit 3 and the last zero is at bit 8, and the rest of the bits are all ones.</p>
+                <p>Then, can we just fit <a style="color: #FC83FC;">011110</a> into the bottom eight bits and then do some sort of rotation to get the bits back to the original position? If we extend <a style="color: #FC83FC;">011110</a> into a 32-bit number, getting 00000000 00000000 00000000 00<a style="color: #FC83FC;">011110</a>, rotated it 29 times to the right (allowing odd rotations for the sake of demonstration), we will get 00000000 00000000 0000000<a style="color: #FC83FC;">0 11110</a>000. This is quite close to our original number, except all the bits at positions 0-2 and 9-31 have to be ones. We could try inverting this bit string, which would flip all the zeros at bits 0-2 and 9-31 into ones, but it would also mess up all the bits at positions 3-8, turning the number into 11111111 11111111 1111111<a style="color: #FC83FC;">1 00001</a>111.</p> 
+                <p>Therefore, a clever way to solve this dilemma is to first invert all the bits in the significant string (the longest string starting and ending with zero) so that when we rotate it back to its original position and invert the entire 32-bit string, the significant bits will be inverted back to their correct values. Recall that our significant bits are <a style="color: #FC83FC;">011110</a>. Let's first invert it, getting <a style="color: #FC83FC;">100001</a>. Then, extend it into a 32-bit number to get 00000000 00000000 00000000 00<a style="color: #FC83FC;">100001</a>. Now, rotate it 29 times to the right (once again, allow odd rotations for the sake of demonstration) to get 00000000 00000000 0000000<a style="color: #FC83FC;">1 00001</a>000. Invert the entire string, and voila, we get 11111111 11111111 1111111<a style="color: #FC83FC;">0 11110</a>111, which is -265. In reality, since the number of significant bits is less than 8, we would also get the ones to the left and to the right of our significant bits, namely 11111111 11111111 111111<a style="color: #FC83FC;">10 111101</a>11. You should convince yourself that if we rotated <a style="color: #FC83FC;">10111101</a> to the right 30 times and then inverted the entire 32-bit string we will get -265.</p>
+                <p>Note that the same considerations that plagued us when we tried to encode positive numbers should also apply here, namely if the longest substring the starts and ends with zero is longer than 8 bits then you will not be able to encode the number.</p>
 
-                <p>Example numbers to try: <a href="" id="ex-261120" onclick="App.update();">261120</a>, <a href="" id="ex-0x102" onclick="App.update();">0x102</a>, <a href="" id="ex-0xFF0000FF" onclick="App.update();">0xFF0000FF</a>, <a href="" id="ex-0xC0000034" onclick="App.update();">0xC0000034</a></p>
+                <h2 id="interactive-exercise">Interactive walkthrough</h2>
+                <p>The goal of this interactive walkthrough is to go through the steps of encoding a number into the 12 bits that is used to represent an immediate in an ARM instruction. This demo works differently for positive and negative values.</p> 
+                <p>To get started, please enter a number you want to encode into the input box below. The binary representation of your number should then populate in the 32 bits below the input box. You can try a base-10 number or a hex number prepended with 0x.</p>
+
+                <p>Example numbers to try: <a href="" id="ex-261120" onclick="App.update();">261120</a>, <a href="" id="ex-0x103" onclick="App.update();">-265</a>, <a href="" id="ex-261121" onclick="App.update();">-36865</a>, <a href="" id="ex-0x102" onclick="App.update();">0x102</a>, <a href="" id="ex-0xFF0000FF" onclick="App.update();">0xFF0000FF</a>, <a href="" id="ex-0xC0000034" onclick="App.update();">0xC0000034</a></p>
                 <form action="" class="input-form">
                     <label for="val-input">Enter your number here: </label>
                     <input type="text" class="val-input">
@@ -147,11 +165,49 @@
                     </div>
                 </script>
 
+                <script id="og-neg-num-input-bits-template" type="text/template">
+                    <div class="bits-container" id="show-og-bits-container">
+                        <div class="bits" id="show-neg-num-input-bits-0">1</div>
+                        <div class="bits" id="show-neg-num-input-bits-1">1</div>
+                        <div class="bits" id="show-neg-num-input-bits-2">0</div>
+                        <div class="bits" id="show-neg-num-input-bits-3">0</div>
+                        <div class="bits" id="show-neg-num-input-bits-4">1</div>
+                        <div class="bits" id="show-neg-num-input-bits-5">0</div>
+                        <div class="bits" id="show-neg-num-input-bits-6">0</div>
+                        <div class="bits" id="show-neg-num-input-bits-7">1</div>
+                        <div class="bits" id="show-neg-num-input-bits-8">0</div>
+                        <div class="bits" id="show-neg-num-input-bits-9">0</div>
+                        <div class="bits" id="show-neg-num-input-bits-10">1</div>
+                        <div class="bits" id="show-neg-num-input-bits-11">0</div>
+                        <div class="bits" id="show-neg-num-input-bits-12">0</div>
+                        <div class="bits" id="show-neg-num-input-bits-13">1</div>
+                        <div class="bits" id="show-neg-num-input-bits-14">0</div>
+                        <div class="bits" id="show-neg-num-input-bits-15">0</div>
+                        <div class="bits" id="show-neg-num-input-bits-16">1</div>
+                        <div class="bits" id="show-neg-num-input-bits-17">0</div>
+                        <div class="bits" id="show-neg-num-input-bits-18">1</div>
+                        <div class="bits" id="show-neg-num-input-bits-19">0</div>
+                        <div class="bits" id="show-neg-num-input-bits-20">0</div>
+                        <div class="bits" id="show-neg-num-input-bits-21">1</div>
+                        <div class="bits" id="show-neg-num-input-bits-22">0</div>
+                        <div class="bits" id="show-neg-num-input-bits-23">0</div>
+                        <div class="bits" id="show-neg-num-input-bits-24">1</div>
+                        <div class="bits" id="show-neg-num-input-bits-25">0</div>
+                        <div class="bits" id="show-neg-num-input-bits-26">0</div>
+                        <div class="bits" id="show-neg-num-input-bits-27">1</div>
+                        <div class="bits" id="show-neg-num-input-bits-28">0</div>
+                        <div class="bits" id="show-neg-num-input-bits-29">0</div>
+                        <div class="bits" id="show-neg-num-input-bits-30">1</div>
+                        <div class="bits" id="show-neg-num-input-bits-31">0</div>                                  
+                    </div>
+                </script>                
+
                 <script id="continue-no-template" type="text/template">
                     <div class="dynamic-content">
                         <div class="get-correct-8-bits-containter">
                             <hr style="background: white; height: 1px; border: #333;">
-                            <p>Your number is longer than 8-bits. The red highlights the number of significant bits that are out of the valid 8-bit bucket. Therefore, we need to capture the most significant parts of our number and move them into the bottom 8 bits that are available to us. Use the arrow buttons to move the significant portions of the number into bits 0-7.</p> 
+                            <p>Your number is longer than 8-bits. The red highlights the number of significant bits that are beyond the bottom 8-bit bucket. Use the arrow buttons to see if you can move the significant parts of the number (longest trail of ones) into the bottom 8 bits.</p>
+                            <p> If you cannot fit the significant portions of the number into the bottom 8 bits, then you will not be able to encode the number. Usually, this is either because the significant portion is longer than 8 bits, or it requires an odd rotation to get back to the original number. Remember that the rotation amount has to be an even number from zero to 30.</p>
                             <div class="bits-container">
                                 <div class="bits" id="find-cor-bits-0">1</div>
                                 <div class="bits" id="find-cor-bits-1">1</div>
@@ -189,16 +245,68 @@
                             <div class="btn-containers" style="margin-bottom: 10px;">
                                 <button type="button" class="lr-arrows" id="find-cor-bits-left-arrow">&lt</button>
                                 <button type="button" class="lr-arrows" id="find-cor-bits-right-arrow">&gt</button>
-                            </div>
-                            <p> If you cannot fit the significant portions of the number into the bottom 8 bits, then you will not be able to encode the number. Usually, this is either because the significant portion is longer than 8 bits, or it requires an odd rotation. Remember that the rotation amount has to be an even number from zero to 30.</p>                       
+                            </div>                       
                         </div>
                     </div>
                 </script>
+
+                <script id="continue-no-negative-num-template" type="text/template">
+                    <div class="dynamic-content">
+                        <div class="get-correct-8-bits-containter">
+                            <hr style="background: white; height: 1px; border: #333;">
+                            <p>Your number is longer than 8-bits. The red highlights the number of significant bits that are beyond the bottom 8-bit bucket. Use the arrow buttons to see if you can move the significant parts of the number (longest trail of zeros) into the bottom 8 bits.</p>
+                            <p> If you cannot fit the significant portions of the number into the bottom 8 bits, then you will not be able to encode the number. Usually, this is either because the significant portion is longer than 8 bits, or it requires an odd rotation to get back to the original number. Remember that the rotation amount has to be an even number from zero to 30.</p>
+                            <div class="bits-container">
+                                <div class="bits" id="find-cor-bits-0">1</div>
+                                <div class="bits" id="find-cor-bits-1">1</div>
+                                <div class="bits" id="find-cor-bits-2">0</div>
+                                <div class="bits" id="find-cor-bits-3">0</div>
+                                <div class="bits" id="find-cor-bits-4">1</div>
+                                <div class="bits" id="find-cor-bits-5">0</div>
+                                <div class="bits" id="find-cor-bits-6">0</div>
+                                <div class="bits" id="find-cor-bits-7">1</div>
+                                <div class="bits" id="find-cor-bits-8">0</div>
+                                <div class="bits" id="find-cor-bits-9">0</div>
+                                <div class="bits" id="find-cor-bits-10">1</div>
+                                <div class="bits" id="find-cor-bits-11">0</div>
+                                <div class="bits" id="find-cor-bits-12">0</div>
+                                <div class="bits" id="find-cor-bits-13">1</div>
+                                <div class="bits" id="find-cor-bits-14">0</div>
+                                <div class="bits" id="find-cor-bits-15">0</div>
+                                <div class="bits" id="find-cor-bits-16">1</div>
+                                <div class="bits" id="find-cor-bits-17">0</div>
+                                <div class="bits" id="find-cor-bits-18">1</div>
+                                <div class="bits" id="find-cor-bits-19">0</div>
+                                <div class="bits" id="find-cor-bits-20">0</div>
+                                <div class="bits" id="find-cor-bits-21">1</div>
+                                <div class="bits" id="find-cor-bits-22">0</div>
+                                <div class="bits" id="find-cor-bits-23">0</div>
+                                <div class="bits" id="find-cor-bits-24" style="color: #7ED321;">1</div>
+                                <div class="bits" id="find-cor-bits-25" style="color: #7ED321;">0</div>
+                                <div class="bits" id="find-cor-bits-26" style="color: #7ED321;">0</div>
+                                <div class="bits" id="find-cor-bits-27" style="color: #7ED321;">1</div>
+                                <div class="bits" id="find-cor-bits-28" style="color: #7ED321;">0</div>
+                                <div class="bits" id="find-cor-bits-29" style="color: #7ED321;">0</div>
+                                <div class="bits" id="find-cor-bits-30" style="color: #7ED321;">1</div>
+                                <div class="bits" id="find-cor-bits-31" style="color: #7ED321;">0</div>                                   
+                            </div>
+                            <div class="btn-containers" style="margin-bottom: 10px;">
+                                <button type="button" class="lr-arrows" id="find-cor-bits-neg-num-left-arrow">&lt</button>
+                                <button type="button" class="lr-arrows" id="find-cor-bits-neg-num-right-arrow">&gt</button>
+                            </div>                       
+                        </div>
+                    </div>
+                </script>                
 
                 <script id="continue-yes-template" type="text/template">
                     <hr style="background: white; height: 1px; border: #333;">
                     <p>Your number can be represented with less than or equals to 8 bits. You may end the exercise here.</p>
                 </script>
+
+                <script id="continue-yes-negative-num-template" type="text/template">
+                    <hr style="background: white; height: 1px; border: #333;">
+                    <p>Your number can be represented with less than or equals to 8 bits. You just need to invert the bottom 8 bits <a id="pre-invert-8-bits"></a> into <a id="post-invert-8-bits"></a>, then call MVN <a id="post-invert-8-bits-2"></a> without any rotations to get your original number. You may end the exercise here.</p>
+                </script>                
 
                 <script id="continue-to-rot-template" type="text/template">
                     <div class="rot-back-to-og-container">
@@ -252,12 +360,94 @@
                     </div>                    
                 </script>
 
+                <script id="continue-to-rot-neg-num-template" type="text/template">
+                    <div class="rot-back-to-og-container">
+                        <hr style="background: white; height: 1px; border: #333;">
+                        <p>You have just fit the most significant parts of your original number into the bottom 8 bits. Now, recall that we have to invert the entire bit string, so that when we finally call MVN with a specified rotation amount, the bottom 8 bits will be moved back to their original position and then inverted to get back to the original value. Then, <a id="invert-pre-rot-neg-bits"></a> inverted becomes <a id="invert-post-rot-neg-bits"></a>, whose bottom 8 bits will be used in the final instruction. </p>                        
+                        <p>Use the right arrow button to determine the amount of right rotation needed to bring the bottom 8 bits back to the original position. Remember that after the rotation, we also have to invert the entire bit string before it can match the original bit string. Press the show original value button to show the original value that you are trying to match.</p>                                        
+                        <div class="btn-containers" style="margin-bottom: 2px">
+                            <button type="button" class="lr-arrows" id="rot-back-neg-num-right-arrow">&gt</button>
+                            <button type="button" class="lr-arrows" id="rot-back-neg-num-reset">Reset</button>
+                        </div>                    
+                        <div class="bits-container">
+                            <div class="bits" id="invert-post-rot-neg-bits-2-0">1</div>
+                            <div class="bits" id="invert-post-rot-neg-bits-2-1">1</div>
+                            <div class="bits" id="invert-post-rot-neg-bits-2-2">0</div>
+                            <div class="bits" id="invert-post-rot-neg-bits-2-3">0</div>
+                            <div class="bits" id="invert-post-rot-neg-bits-2-4">1</div>
+                            <div class="bits" id="invert-post-rot-neg-bits-2-5">0</div>
+                            <div class="bits" id="invert-post-rot-neg-bits-2-6">0</div>
+                            <div class="bits" id="invert-post-rot-neg-bits-2-7">1</div>
+                            <div class="bits" id="invert-post-rot-neg-bits-2-8">0</div>
+                            <div class="bits" id="invert-post-rot-neg-bits-2-9">0</div>
+                            <div class="bits" id="invert-post-rot-neg-bits-2-10">1</div>
+                            <div class="bits" id="invert-post-rot-neg-bits-2-11">0</div>
+                            <div class="bits" id="invert-post-rot-neg-bits-2-12">0</div>
+                            <div class="bits" id="invert-post-rot-neg-bits-2-13">1</div>
+                            <div class="bits" id="invert-post-rot-neg-bits-2-14">0</div>
+                            <div class="bits" id="invert-post-rot-neg-bits-2-15">0</div>
+                            <div class="bits" id="invert-post-rot-neg-bits-2-16">1</div>
+                            <div class="bits" id="invert-post-rot-neg-bits-2-17">0</div>
+                            <div class="bits" id="invert-post-rot-neg-bits-2-18">1</div>
+                            <div class="bits" id="invert-post-rot-neg-bits-2-19">0</div>
+                            <div class="bits" id="invert-post-rot-neg-bits-2-20">0</div>
+                            <div class="bits" id="invert-post-rot-neg-bits-2-21">1</div>
+                            <div class="bits" id="invert-post-rot-neg-bits-2-22">0</div>
+                            <div class="bits" id="invert-post-rot-neg-bits-2-23">0</div>
+                            <div class="bits" id="invert-post-rot-neg-bits-2-24">1</div>
+                            <div class="bits" id="invert-post-rot-neg-bits-2-25">0</div>
+                            <div class="bits" id="invert-post-rot-neg-bits-2-26">0</div>
+                            <div class="bits" id="invert-post-rot-neg-bits-2-27">1</div>
+                            <div class="bits" id="invert-post-rot-neg-bits-2-28">0</div>
+                            <div class="bits" id="invert-post-rot-neg-bits-2-29">0</div>
+                            <div class="bits" id="invert-post-rot-neg-bits-2-30">1</div>
+                            <div class="bits" id="invert-post-rot-neg-bits-2-31">0</div>                                     
+                        </div>
+                        <p>You have rotated the bottom 8 bits <a id="neg-num-rot-amt">0</a> times to the right. Inverting it results in the following inverted bit string. Check that it matches the original value.</p>
+                        <div class="bits-container">
+                            <div class="bits" id="invert-post-rot-post-neg-bits-0">1</div>
+                            <div class="bits" id="invert-post-rot-post-neg-bits-1">1</div>
+                            <div class="bits" id="invert-post-rot-post-neg-bits-2">0</div>
+                            <div class="bits" id="invert-post-rot-post-neg-bits-3">0</div>
+                            <div class="bits" id="invert-post-rot-post-neg-bits-4">1</div>
+                            <div class="bits" id="invert-post-rot-post-neg-bits-5">0</div>
+                            <div class="bits" id="invert-post-rot-post-neg-bits-6">0</div>
+                            <div class="bits" id="invert-post-rot-post-neg-bits-7">1</div>
+                            <div class="bits" id="invert-post-rot-post-neg-bits-8">0</div>
+                            <div class="bits" id="invert-post-rot-post-neg-bits-9">0</div>
+                            <div class="bits" id="invert-post-rot-post-neg-bits-10">1</div>
+                            <div class="bits" id="invert-post-rot-post-neg-bits-11">0</div>
+                            <div class="bits" id="invert-post-rot-post-neg-bits-12">0</div>
+                            <div class="bits" id="invert-post-rot-post-neg-bits-13">1</div>
+                            <div class="bits" id="invert-post-rot-post-neg-bits-14">0</div>
+                            <div class="bits" id="invert-post-rot-post-neg-bits-15">0</div>
+                            <div class="bits" id="invert-post-rot-post-neg-bits-16">1</div>
+                            <div class="bits" id="invert-post-rot-post-neg-bits-17">0</div>
+                            <div class="bits" id="invert-post-rot-post-neg-bits-18">1</div>
+                            <div class="bits" id="invert-post-rot-post-neg-bits-19">0</div>
+                            <div class="bits" id="invert-post-rot-post-neg-bits-20">0</div>
+                            <div class="bits" id="invert-post-rot-post-neg-bits-21">1</div>
+                            <div class="bits" id="invert-post-rot-post-neg-bits-22">0</div>
+                            <div class="bits" id="invert-post-rot-post-neg-bits-23">0</div>
+                            <div class="bits" id="invert-post-rot-post-neg-bits-24">1</div>
+                            <div class="bits" id="invert-post-rot-post-neg-bits-25">0</div>
+                            <div class="bits" id="invert-post-rot-post-neg-bits-26">0</div>
+                            <div class="bits" id="invert-post-rot-post-neg-bits-27">1</div>
+                            <div class="bits" id="invert-post-rot-post-neg-bits-28">0</div>
+                            <div class="bits" id="invert-post-rot-post-neg-bits-29">0</div>
+                            <div class="bits" id="invert-post-rot-post-neg-bits-30">1</div>
+                            <div class="bits" id="invert-post-rot-post-neg-bits-31">0</div>                                     
+                        </div>
+                        <div class="btn-containers"><button type="button" id="show-neg-num-og-bits-btn" style="margin-bottom: 10px; background-color: #333; border: 1px solid white; color: white;">Show original value</button></div>
+                        <div class="og-neg-num-input-bits"></div>
+                        <p id="neg-num-correct-answer"></p>
+                        <div id="neg-num-animation-container"></div>     
+                    </div>                                                         
+                </script>
+
                 <script id="play-animation-template" type="text/template">
                     <h2>Animation</h2>
                     <p id="pre-animation-blurb">Here's a visualization of how ARM reconstructs</p>
-                    <div class="btn-containers">
-                        <button type="button" id="play-animation-btn" style="margin-bottom: 10px; background-color: #333; border: 1px solid white; color: white;">Play animation</button>
-                    </div>
                     <div class="bits-container">
                         <div class="bits" id="animation-bits-0">1</div>
                         <div class="bits" id="animation-bits-1">1</div>
@@ -292,7 +482,10 @@
                         <div class="bits" id="animation-bits-30">1</div>
                         <div class="bits" id="animation-bits-31">0</div>                                     
                     </div>
-                    <p id="animation-blurb"></p>                    
+                    <p id="animation-blurb"></p>
+                    <div class="btn-containers">
+                        <button type="button" id="play-animation-btn" style="margin-bottom: 10px; background-color: #333; border: 1px solid white; color: white;">Play animation</button>
+                    </div>                    
                 </script>
 
             <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
