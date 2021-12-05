@@ -125,7 +125,21 @@ input {
     display: flex;
     flex-direction: row;
     margin-bottom: 10px;
+    margin-top: 5px;
+}
+.num-container {
+    display: flex;
+    flex-direction: row;
+    margin-bottom: 0;
     margin-top: 10px;
+}
+.num {
+    font-family: 'Consolas';
+	border: 1px solid transparent;
+    width: 20px;
+    text-align: center;	
+	font-size: 12px;
+	margin-bottom: 0;
 }
 .bits {
     font-family: 'Consolas';
