@@ -189,12 +189,15 @@ a:active
 {
    color: #fff;
 }
-@media screen and (min-width: 560px) {
+@media screen and (max-width: 560px) {
 	html {
 		font-size: 1rem
 	}
 	code {
 		font-size: 16px
+	}
+	.num {
+		font-size: 6px;
 	}
 }
 #toc_container li, #toc_container ul, #toc_container ul li{
