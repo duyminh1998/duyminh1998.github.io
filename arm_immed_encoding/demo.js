@@ -354,7 +354,7 @@ jQuery(function($){
                 App.setBits(~App.getBits("#find-cor-bits-"), "#invert-post-rot-neg-bits-2-");
                 App.setBits(App.getBits("#find-cor-bits-"), "#invert-post-rot-post-neg-bits-");
                 App.rotAmt = 0;
-                $("#rot-amt-blurb").text("You have rotated the bottom 8 bits ".concat(App.rotAmt, " times to the right."));   
+                $("#neg-num-rot-amt").text(App.rotAmt);   
                 $("#neg-num-correct-answer").text('');   
                 $('#neg-num-animation-container').html('');          
                 for (let i = 0; i <= 31; i++) {
