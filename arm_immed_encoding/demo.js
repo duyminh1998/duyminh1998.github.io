@@ -150,6 +150,10 @@ jQuery(function($){
                         ogBits,
                         " ROR ",
                         App.rotAmt,
+                        ". Alternatively, you can also use the command MOV r0, #",
+                        ogBits,
+                        ", ",
+                        App.rotAmt,
                         "."
                     ));
                     $('#animation-container').html($('#play-animation-template').html());
