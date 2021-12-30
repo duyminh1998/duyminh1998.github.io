@@ -176,7 +176,7 @@ jQuery(function($){
             App.$doc.on('click', '#rot-back-reset', function() {
                 App.setBits(App.getBits("#find-cor-bits-"), "#rot-back-bits-");
                 App.rotAmt = 0;
-                $("#rot-amt-blurb").text("You have rotated the original value ".concat(App.rotAmt, " times to the right."));   
+                $("#rot-amt-blurb").text("You have rotated the bottom 8 bits ".concat(App.rotAmt, " times to the right."));   
                 $("#correct-answer").text('');   
                 $('#animation-container').html('');          
                 for (let i = 0; i <= 31; i++) {

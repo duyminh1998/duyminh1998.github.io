@@ -163,8 +163,10 @@
                 <div class="continue-container"></div>
                 <div class="continue-to-rot-container"></div>
                 <div class="copyright"><a href="#">Back to top</a><br> © 2021 Minh Hua</div>
+                <p><i>Please send questions or suggestions for improvements to mhua2_at_jh_dot_edu</i></p>                
 
                 <script id="og-input-bits-template" type="text/template">
+                    <p style="margin-bottom: -2px"><i>The original 32 bits (the final number you are trying to encode):</i></p>
                     <div class="bits-n-num-container">
                         <div class="num-container">
                             <div class="num">31</div>
@@ -238,6 +240,7 @@
                 </script>
 
                 <script id="og-neg-num-input-bits-template" type="text/template">
+                    <p style="margin-bottom: -2px"><i>The original 32 bits (the final number you are trying to encode):</i></p>
                     <div class="bits-n-num-container">
                         <div class="num-container">
                             <div class="num">31</div>
@@ -314,7 +317,7 @@
                     <div class="dynamic-content">
                         <div class="get-correct-8-bits-containter">
                             <hr style="background: white; height: 1px; border: #333;">
-                            <p>Your number is longer than 8-bits. The red highlights the number of significant bits that are beyond the bottom 8-bit bucket. Use the arrow buttons to see if you can move the significant parts of the number (longest trail of ones) into the bottom 8 bits.</p>
+                            <p>Your number is longer than 8-bits. The red highlights the number of significant bits that are beyond the bottom 8-bit bucket (recall that we only have 8 bits to encode the actual number plus 4 bits for a rotation amount). Use the arrow buttons to see if you can move the significant parts of the number (longest trail of ones) into the bottom 8 bits.</p>
                             <p> If you cannot fit the significant portions of the number into the bottom 8 bits, then you will not be able to encode the number. Usually, this is either because the significant portion is longer than 8 bits, or it requires an odd rotation to get back to the original number. Remember that the rotation amount has to be an even number from zero to 30.</p>
                             <div class="bits-n-num-container">
                                 <div class="num-container">
@@ -494,8 +497,6 @@
                         <hr style="background: white; height: 1px; border: #333;">
                         <p>The bits that you rotated into bits 0-7 equals <a id="8-bit-equals"></a>, and you have just fit the most significant parts of your original number into 8 bits. Therefore, <a id="8-bit-equals-2"></a> or 0b<a id="8-bit-equals-bit"></a> will be going into the bottom 8 bits of the ARM instruction. However, <a id="8-bit-equals-3"></a> is not the original number, and this is where the rotation comes in. To reconstruct the original number, notice that we can just rotate those 8 bits (e.g. 0b<a id="8-bit-equals-bit-2"></a>) back to their original position. Therefore, we need to determine the amount of right rotation needed to get back to the original position of the bits in the original value. Use the "Show original value" button to reveal the original value
                         to see if you have been able to match it. Use the provided right arrow key for rotation and the reset button if you went too far.</p>
-                        <div class="btn-containers"><button type="button" id="show-og-bits-btn" style="margin-bottom: 10px; background-color: #333; border: 1px solid white; color: white;">Show original value</button></div>
-                        <div class="og-input-bits"></div>
                         <div class="bits-n-num-container">
                             <div class="num-container">
                                 <div class="num">31</div>
@@ -571,7 +572,9 @@
                             <button type="button" class="lr-arrows" id="rot-back-reset">Reset</button>
                         </div>
                         <p id="rot-amt-blurb"> You have rotated the bottom 8 bits 0 times to the right.</p>
-                        <hr style="background: white; height: 1px; border: #333;">
+                        <div class="btn-containers"><button type="button" id="show-og-bits-btn" style="margin-bottom: 10px; background-color: #333; border: 1px solid white; color: white;">Show original value</button></div>
+                        <div class="og-input-bits"></div>                        
+                        
                         <p id="correct-answer"></p>
                         <div id="animation-container"></div>                        
                     </div>                    
@@ -581,7 +584,7 @@
                     <div class="rot-back-to-og-container">
                         <hr style="background: white; height: 1px; border: #333;">
                         <p>You have just fit the most significant parts of your original number into the bottom 8 bits. Now, recall that we have to invert the entire bit string, so that when we finally call MVN with a specified rotation amount, the bottom 8 bits will be moved back to their original position and then inverted to get back to the original value. Then, <a id="invert-pre-rot-neg-bits"></a> inverted becomes <a id="invert-post-rot-neg-bits"></a>, whose bottom 8 bits will be used in the final instruction. </p>                        
-                        <p>Use the right arrow button to determine the amount of right rotation needed to bring the bottom 8 bits back to the original position. Remember that after the rotation, we also have to invert the entire bit string before it can match the original bit string. Press the show original value button to show the original value that you are trying to match.</p>                                        
+                        <p>Use the right arrow button to determine the amount of right rotation needed to bring the <i>inverted</i> bottom 8 bits back to the original position. Remember that after the rotation, we also have to invert the entire bit string before it can match the original bit string. Press the show original value button to show the original value that you are trying to match.</p>                                        
                         <p><i>The following 32 bits are the inverted version of the two's complement representation of your negative number above. Use the right arrow key to rotate the bits:</i></p>
                         <div class="bits-n-num-container">
                             <div class="num-container">
@@ -658,7 +661,7 @@
                             <button type="button" class="lr-arrows" id="rot-back-neg-num-reset">Reset</button>
                         </div>
                         <p>You have rotated the bottom 8 bits <a id="neg-num-rot-amt">0</a> times to the right.</p>
-                        <p><i>The following 32 bits are the inverted version of the 32 bits above. You need to match these bits with the original 32 bits:</i></p>
+                        <p><i>The following 32 bits are the inverted version of the 32 bits above. You need to match these bits with the original 32 bits (shown below if you press the "Show original value" button):</i></p>
                         <div class="bits-n-num-container">
                             <div class="num-container">
                                 <div class="num">31</div>
@@ -729,7 +732,7 @@
                                 <div class="bits" id="invert-post-rot-post-neg-bits-31">0</div>                                     
                             </div>
                         </div>
-                        <div class="btn-containers"><button type="button" id="show-neg-num-og-bits-btn" style="margin-bottom: 10px; background-color: #333; border: 1px solid white; color: white;">Show original value</button></div>
+                        <div class="btn-containers"><button type="button" id="show-neg-num-og-bits-btn" style="margin-bottom: 10px; background-color: #333; border: 1px solid white; color: white; margin-top: 10px;">Show original value</button></div>
                         <div class="og-neg-num-input-bits"></div>
                         <p id="neg-num-correct-answer"></p>
                         <div id="neg-num-animation-container"></div>     
