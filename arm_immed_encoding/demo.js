@@ -318,7 +318,7 @@ jQuery(function($){
                     $('#neg-num-animation-container').html($('#play-animation-template').html());
                     $("#pre-animation-blurb").text("Here is a visualization of how ARM reconstructs the original number ".concat(
                         $(".val-input").val(),
-                        " by rotating ",
+                        " by rotating 0b",
                         ogBits,
                         " to the right ",
                         App.rotAmt,
