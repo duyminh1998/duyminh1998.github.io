@@ -400,6 +400,7 @@
                             <hr style="background: white; height: 1px; border: #333;">
                             <p>Your number is longer than 8-bits. The red highlights the number of significant bits that are beyond the bottom 8-bit bucket. Use the arrow buttons to see if you can move the significant parts of the number (longest trail of zeros) into the bottom 8 bits.</p>
                             <p> If you cannot fit the significant portions of the number into the bottom 8 bits, then you will not be able to encode the number. Usually, this is either because the significant portion is longer than 8 bits, or it requires an odd rotation to get back to the original number. Remember that the rotation amount has to be an even number from zero to 30.</p>
+                            <p><i>The following 32 bits represent the two's complement representation of your negative number. Use the arrow buttons to rotate the bits:</i></p>
                             <div class="bits-n-num-container">
                                 <div class="num-container">
                                     <div class="num">31</div>
@@ -581,10 +582,7 @@
                         <hr style="background: white; height: 1px; border: #333;">
                         <p>You have just fit the most significant parts of your original number into the bottom 8 bits. Now, recall that we have to invert the entire bit string, so that when we finally call MVN with a specified rotation amount, the bottom 8 bits will be moved back to their original position and then inverted to get back to the original value. Then, <a id="invert-pre-rot-neg-bits"></a> inverted becomes <a id="invert-post-rot-neg-bits"></a>, whose bottom 8 bits will be used in the final instruction. </p>                        
                         <p>Use the right arrow button to determine the amount of right rotation needed to bring the bottom 8 bits back to the original position. Remember that after the rotation, we also have to invert the entire bit string before it can match the original bit string. Press the show original value button to show the original value that you are trying to match.</p>                                        
-                        <div class="btn-containers" style="margin-bottom: 2px">
-                            <button type="button" class="lr-arrows" id="rot-back-neg-num-right-arrow">&gt</button>
-                            <button type="button" class="lr-arrows" id="rot-back-neg-num-reset">Reset</button>
-                        </div>
+                        <p><i>The following 32 bits are the inverted version of the two's complement representation of your negative number above. Use the right arrow key to rotate the bits:</i></p>
                         <div class="bits-n-num-container">
                             <div class="num-container">
                                 <div class="num">31</div>
@@ -655,7 +653,12 @@
                                 <div class="bits" id="invert-post-rot-neg-bits-2-31">0</div>                                     
                             </div>
                         </div>
-                        <p>You have rotated the bottom 8 bits <a id="neg-num-rot-amt">0</a> times to the right. Inverting it results in the following inverted bit string. Check that it matches the original value.</p>
+                        <div class="btn-containers" style="margin-bottom: 2px">
+                            <button type="button" class="lr-arrows" id="rot-back-neg-num-right-arrow">&gt</button>
+                            <button type="button" class="lr-arrows" id="rot-back-neg-num-reset">Reset</button>
+                        </div>
+                        <p>You have rotated the bottom 8 bits <a id="neg-num-rot-amt">0</a> times to the right.</p>
+                        <p><i>The following 32 bits are the inverted version of the 32 bits above. You need to match these bits with the original 32 bits:</i></p>
                         <div class="bits-n-num-container">
                             <div class="num-container">
                                 <div class="num">31</div>

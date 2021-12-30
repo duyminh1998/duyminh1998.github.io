@@ -326,10 +326,11 @@ jQuery(function($){
                     ));
                     App.setBits(~(App.getBits("#find-cor-bits-")), "#animation-bits-");                    
                 } else {
-                    for (let i = 0; i <= leadingBit; i++) {
+                    for (let i = 0; i <= 31; i++) {
                         $("#invert-post-rot-post-neg-bits-".concat(31 - i)).css("color", "");
                     }
                     $("#neg-num-correct-answer").text('');
+                    $('#neg-num-animation-container').html('');
                 };
             });
             // Show original input bits
