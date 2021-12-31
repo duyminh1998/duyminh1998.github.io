@@ -258,7 +258,11 @@ jQuery(function($){
                     //App.setBits(~bitRotated, "#invert-post-rot-neg-bits-");
                     $("#invert-pre-rot-neg-bits").text(bitRotated.toString(2));
                     let temp = (~bitRotated).toString(2);
-                    $("#invert-post-rot-neg-bits").text("0".repeat(32 - temp.length) + temp);
+                    let extendedBits = "0".repeat(32 - temp.length) + temp;
+                    let extendedBitsBottom8 = extendedBits.substring(24);
+                    let extendedBitsTop = extendedBits.substring(0, 24);
+                    $("#invert-post-rot-neg-bits").text(extendedBitsTop);
+                    $("#invert-post-rot-neg-bits-bot-8").text(extendedBitsBottom8);
                     App.setBits(~bitRotated, "#invert-post-rot-neg-bits-2-"); 
                     App.setBits(bitRotated, "#invert-post-rot-post-neg-bits-"); 
                 };               
@@ -290,7 +294,11 @@ jQuery(function($){
                     //App.setBits(~bitRotated, "#invert-post-rot-neg-bits-");
                     $("#invert-pre-rot-neg-bits").text(bitRotated.toString(2));
                     let temp = (~bitRotated).toString(2);
-                    $("#invert-post-rot-neg-bits").text("0".repeat(32 - temp.length) + temp);                 
+                    let extendedBits = "0".repeat(32 - temp.length) + temp;
+                    let extendedBitsBottom8 = extendedBits.substring(24);
+                    let extendedBitsTop = extendedBits.substring(0, 24);
+                    $("#invert-post-rot-neg-bits").text(extendedBitsTop);
+                    $("#invert-post-rot-neg-bits-bot-8").text(extendedBitsBottom8);             
                     App.setBits(~bitRotated, "#invert-post-rot-neg-bits-2-");
                     App.setBits(bitRotated, "#invert-post-rot-post-neg-bits-");                     
                 };                 
@@ -313,7 +321,7 @@ jQuery(function($){
                     }
                     $("#neg-num-correct-answer").text("Congratulations! You have transformed the 8-bit number back to the original bits. Therefore, the correct instruction to move ".concat(
                         $(".val-input").val(),
-                        " into register r0 (for example) is MVN r0, 0b",
+                        " into register r0 (for example) is MVN r0, #0b",
                         ogBits,
                         ", ",
                         App.rotAmt,
