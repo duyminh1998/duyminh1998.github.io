@@ -27,32 +27,48 @@
                     <a id="date">2-6-2023</a>
                 </div>
 
-                <!-- <div id="toc_container">
+                <div id="toc_container">
                   <h2>Contents</h2>
                   <ul class="toc_list">
                   <li><a href="#intro-head">1 Introduction</a>
+                  </li>
+                  <li><a href="#background-head">2 Background</a></li>
+                  <ul>
+                    <li><a href="#rl-env-head">2.1 Reinforcement Learning Environments</a></li>
+                    <li><a href="#pysc2-head">2.2 PySC2</a></li>
+                  </ul>                  
+                  <li><a href="#pycmo-head">3 PyCMO</a></li>
                     <ul>
-                      <li><a href="#parts-head">1.1 Parts List</a></li>
+                      <li><a href="#obs-head">3.1 Observations</a></li>
+                      <li><a href="#actions-head">3.2 Actions</a></li>
+                      <li><a href="#env-head">3.3 Environment</a></li>
+                      <li><a href="#agents-head">3.4 Agents</a></li>                      
                     </ul>
                   </li>
-                  <li><a href="#motive-head">2 Motivation</a></li>
-                  <li><a href="#background-head">3 Background</a></li>
-                  <li><a href="#build-head">4 The Build</a></li>
-                  <li><a href="#demo-head">5 Demo</a>
-                    <ul>
-                      <li><a href="#neg-head">5.1 Negation</a></li>
-                      <li><a href="#xor-head">5.2 XOR</a></li>
-                      <li><a href="#nand-head">5.3 NAND</a></li>
-                    </ul>
-                  </li>
-                  <li><a href="#conclusion-head">6 Conclusion</a></li>
+                  <li><a href="#conclusion-head">4 Conclusions</a></li>
                   </ul>
-                </div> -->                
+                </div>                
                 <h2 id="intro-head">Introduction</h2>
-                <p>This blog post chronicles the development of <a href="https://github.com/duyminh1998/pycmo" target="_blank" rel="noopener noreferrer">pyCMO</a>, a reinforcement learning environment for <a href="https://store.steampowered.com/app/1076160/Command_Modern_Operations/" target="_blank" rel="noopener noreferrer">Command: Modern Operations</a> (CMO), a warfare simulation video game that simulates military engagements and all-domain operations at the tactical level. This post serves as a record of my design choices and documents my thoughts for the project's future. Although this blog post was published in February 2023, the majority of the work took place around August 2021. The only reason I am publishing this so late is because I have been busy with graduate school for the majority of 2022 (I graduated!). More on my work during that time will come in subsequent blog posts.</p>
+                <p>This blog post chronicles the development of <a href="https://github.com/duyminh1998/pycmo" target="_blank" rel="noopener noreferrer">pyCMO</a>, a reinforcement learning environment for <a href="https://store.steampowered.com/app/1076160/Command_Modern_Operations/" target="_blank" rel="noopener noreferrer">Command: Modern Operations</a> (CMO), a warfare simulation video game that simulates military engagements and all-domain operations at the tactical level. This post serves as a record of my design choices and documents my thoughts for the project's future. Although this blog post was published in February 2023, most of the work took place around August 2021. The only reason I am publishing this so late is because I have been busy with graduate school for most of 2022 (I graduated!). More on my work during that time will come in subsequent blog posts.</p>
                 <p>On August 2021, in partnership with the Air Force Research Laboratory (AFRL) Information Directorate, the National Security Innovation Network (NSIN) hosted a competition that challenged contestants to develop an artificial intelligence (AI) agent capable of autonomously playing CMO. In particular, the agents were judged on their ability to complete the scenario objectives, completion time, and expenditures. The judges also evaluated the novelty and generalizability of each approach.</p>
                 <p>At the time, there were several motivations that galvanized me to enter the competition. First, I was familiar with CMO from work, and I had experience developing software for CMO. For example, I had already developed a GUI to automatically generate scenario files (.scen) for design of experiments (DOE) studies, and a GUI to filter and process output data. Second, I was aware of <a href="https://www.deepmind.com/blog/alphastar-mastering-the-real-time-strategy-game-starcraft-ii" target="_blank" rel="noopener noreferrer">AlphaStar</a>, a reinforcement learning agent that bested human players in the real-time strategy game <i>StarCraft II</i>, and I thought that most of the same that DeepMind had accomplished in <i>StarCraft II</i> (SC2) with AlphaStar could be replicated in CMO given the similarities between the two video games. The gameplay loop in both entails the movement and tasking of units to achieve objectives against opponents. Finally, my experience conducting undergraduate research on language models gave me just enough knowledge and confidence to tackle reinforcement learning (RL), a machine learning (ML) area that I had not yet explored.</p>
                 <p>The preparation phase consisted of learning about AlphaStar and how the software interacted with the game; my goal was to build a version of AlphaStar compatible with CMO. Preliminary research revealed that this work would need to proceed in two phases. Whereas AlphaStar represents the game-playing agent, the environment is managed by a separate DeepMind project, the <a href="https://arxiv.org/abs/1708.04782" target="_blank" rel="noopener noreferrer">StarCraft II Learning Environment</a> (SC2LE), and the repository is hereafter referred to as <a href="https://github.com/deepmind/pysc2" target="_blank" rel="noopener noreferrer">PySC2</a>. PySC2 is a Python RL environment built around SC2 and manages the exchange of observations, actions, and rewards between the game and the agent. At this point, given the limited competition time and my one-person team’s manpower, I decided to pivot my project. I prioritized the development of a reinforcement learning environment around CMO (which did not exist at the time) and left the development of the agent as a possibility only if time permits. Even if I did not get to building the agent (spoiler alert: I did not and still have not), an environment for CMO that can provide a level of abstraction akin to an <a href="https://github.com/openai/gym" target="_blank" rel="noopener noreferrer">OpenAI Gym</a> environment would be immensely helpful to the research community writ large.</p>
+
+                <h2 id="background-head">Background</h2>
+                <h3 id="rl-env-head">Reinforcement Learning Environments</h3>
+
+                <h3 id="pysc2-head">PySC2</h3>
+                
+                <h2 id="pycmo-head">PyCMO</h2>
+                <h3 id="obs-head">Observations</h3>
+
+                <h3 id="actions-head">Actions</h3>
+
+                <h3 id="env-head">Environment</h3>
+
+                <h3 id="agents-head">Agents</h3>
+                
+                <h2 id="conclusion-head">Conclusions</h2>                
 
                 <div class="copyright"><a href="#">Back to top</a><br> © 2023 Minh Hua</div>             
 
