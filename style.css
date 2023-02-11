@@ -297,6 +297,10 @@ ul {
 	color: #fcc28c
 }
 
+.code_snippet_inline {
+	background: rgba(252,131,252,.2)
+}
+
 .hljs-comment,
 .hljs-cdata,
 .hljs-preprocessor,
