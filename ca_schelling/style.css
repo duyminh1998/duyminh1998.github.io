@@ -1,0 +1,51 @@
+.table-container {
+    width: 90%;
+    height: 90%;
+    margin: 1%;
+}
+
+table.board, td.cell {
+    border: 1px solid black;
+}
+
+table {
+    border-collapse: collapse;
+}
+
+table {
+    display: table;
+    box-sizing: border-box;
+    text-indent: initial;
+    border-spacing: 2px;
+    text-align:center; 
+    margin-left:auto; 
+    margin-right:auto; 
+    width:500px;
+    height:500px;
+}
+
+table > tr {
+    vertical-align: middle;
+}
+
+tr {
+    display: table-row;
+    border-color: inherit;
+}
+
+td.one {
+    background-color: #ff71ce;
+}
+
+td {
+    display: table-cell;
+    vertical-align: inherit;
+}
+
+td.zero {
+    background-color: #05ffa1;
+}
+
+td.blank {
+    background-color: None;
+}
