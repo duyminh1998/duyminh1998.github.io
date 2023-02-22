@@ -5,7 +5,7 @@ jQuery(function($) {
     var App = {
         // Global variables
         n: 50, // the dimensions of the board
-        tolerance: 0.8, // each cell's tolerance for their neighbors
+        tolerance: 0.7, // each cell's tolerance for their neighbors
         initialRatio: 0.5, // initial percentage of cells of one kind to the other
         emptyPerc: 0.1, // the percentage of empty cells
         delay: 100, // the delay between each step for the animation (ms)
@@ -29,19 +29,23 @@ jQuery(function($) {
             // Range input sliders
             App.$doc.on('input', '#tolerance-range', function() {
                 App.tolerance = document.getElementById('tolerance-range').value / 100;
+                $("#similarity-intext").text(document.getElementById('tolerance-range').value.toString());
             });            
             App.$doc.on('input', '#initial-ratio-range', function() {
                 App.initialRatio = document.getElementById('initial-ratio-range').value / 100;
+                $("#initial-ratio-intext").text(document.getElementById('initial-ratio-range').value.toString());
                 App.initBoard();
                 App.observe('#pos');
             });
             App.$doc.on('input', '#empty-range', function() {
                 App.emptyPerc = document.getElementById('empty-range').value / 100;
+                $("#empty-intext").text(document.getElementById('empty-range').value.toString());
                 App.initBoard();
                 App.observe('#pos');
             });
             App.$doc.on('input', '#delay-range', function() {
                 App.delay = document.getElementById('delay-range').value;
+                $("#delay-intext").text(App.delay.toString());
             });  
             App.$doc.on('input', '#board-size-range', function() {
                 App.n = document.getElementById('board-size-range').value;
@@ -201,7 +205,7 @@ jQuery(function($) {
             }
             // save the configuration
             App.config = config;
-            App.nextconfig = config;
+            // App.nextconfig = structuredClone(App.config);
             App.step = 0;
             App.countGenNoChange = 0;
             App.totalSatisfied = App.sumSatisfaction();
@@ -424,7 +428,9 @@ jQuery(function($) {
             Return:
                 (None)
             */
-            App.nextconfig = App.config;
+            // App.nextconfig = App.copy2DArr(App.config);
+            // App.nextconfig = JSON.parse(JSON.stringify(App.config))
+            App.nextconfig = structuredClone(App.config);
             App.totalSatisfied = 0;
             let moved = false; // if no agents moved, stop the simulation
             // loop through the agents and look for all dissatisfied agents
@@ -438,7 +444,7 @@ jQuery(function($) {
                                 let newHomeX = newHome[0];
                                 let newHomeY = newHome[1];
                                 App.nextconfig[newHomeX][newHomeY] = App.config[x][y];
-                                App.config[x][y] = -1 // make the agent's old location empty
+                                App.nextconfig[x][y] = -1 // make the agent's old location empty
                                 if (!moved) {
                                     moved = true;
                                 }
@@ -449,6 +455,8 @@ jQuery(function($) {
                     }
                 }
             }
+            // should implement a truly random loop by getting a random shuffling of the indices of the cells
+
             // step the config forward
             App.config = App.nextconfig;
             App.step = App.step + 1;
@@ -463,6 +471,15 @@ jQuery(function($) {
             // update the blog page's text
             $("#generation-intext").text(App.step);
             $("#percent-satisfied-intext").text(((App.totalSatisfied / App.totalAgents) * 100).toFixed(2));   
+        },
+        copy2DArr: function(arr1) {
+            let arr2 = App.createArray(App.n, App.n);
+            for (let x = 0; x < arr1.length; x++) {
+                for (let y = 0; y < arr1[x].length; y++) {
+                    arr2[x][y] = arr1[x][y];
+                }
+            }
+            return arr2;
         },
         startSimulation: async function() {
             /*
