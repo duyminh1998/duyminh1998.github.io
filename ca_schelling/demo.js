@@ -11,7 +11,7 @@ jQuery(function($) {
         delay: 100, // the delay between each step for the animation (ms)
         neighborhoodType: 'moore', // the type of neighborhoods, ['moore', 'neumann']
         boundaryCond: 'cut-off', // the boundary conditions, ['cut-off', 'periodic']
-        cellClasses: ["cell blank", "cell zero", "cell one"], // strings that identify the colors of the cells
+        cellClasses: ["cell white", "cell blue", "cell red"], // strings that identify the colors of the cells
         paused: true, // whether or not the simulation is paused
         maxGenNoChange: 1, // the maximum number of generations to check for no change
         countGenNoChange: 0, // the current number of generations where no agents moved
@@ -22,6 +22,7 @@ jQuery(function($) {
 
             // On init, call these functions to set up area
             App.initBoard();
+            App.setBoardInHTML();
             App.observe('#pos');
 
             // Event bindings
@@ -41,10 +42,18 @@ jQuery(function($) {
             });
             App.$doc.on('input', '#delay-range', function() {
                 App.delay = document.getElementById('delay-range').value;
-            });             
+            });  
+            App.$doc.on('input', '#board-size-range', function() {
+                App.n = document.getElementById('board-size-range').value;
+                $("#board-size-intext").text(App.n.toString().concat('x', App.n));
+                App.initBoard();
+                App.setBoardInHTML();
+                App.observe('#pos');
+            });                 
+
             // Buttons                
             // Reset the board
-            App.$doc.on('click', '#reset-board-btn', function() {
+            App.$doc.on('click', '#reset-board-btn', function() {           
                 App.initBoard();
                 App.observe('#pos');
             });
@@ -62,25 +71,39 @@ jQuery(function($) {
                 App.updateConfig();
                 App.observe('#pos');
             });
+
             // Drop-downs
-            $("#pop-1-color").on("change", function() {
-                // Pure JS
+            $("#neighborhood-type").on("change", function() {
                 let selectedVal = this.value;
-                let selectedText = this.options[this.selectedIndex].text;
+                App.neighborhoodType = selectedVal;
+            });      
+            $("#boundary-cond").on("change", function() {
+                let selectedVal = this.value;
+                App.boundaryCond = selectedVal;
+            });                     
+            $("#pop-1-color").on("change", function() {
+                let selectedVal = this.value;
                 // console.log(selectedText);
                 // console.log(selectedVal);
-                App.updateColor('#pos', 0, selectedVal)
+                App.updateColor(1, selectedVal);
+                App.observe('#pos');
             });
             $("#pop-2-color").on("change", function() {
-                // Pure JS
                 let selectedVal = this.value;
-                let selectedText = this.options[this.selectedIndex].text;
                 // console.log(selectedText);
                 // console.log(selectedVal);
-                App.updateColor('#pos', 1, selectedVal)
-            });            
+                App.updateColor(2, selectedVal);
+                App.observe('#pos');
+            });
+            $("#blank-cells-color").on("change", function() {
+                let selectedVal = this.value;
+                // console.log(selectedText);
+                // console.log(selectedVal);
+                App.updateColor(0, selectedVal);
+                App.observe('#pos');
+            });                        
         },
-
+        // Methods
         randomlySetBoard: function(src) {
             /*
             Description:
@@ -96,6 +119,30 @@ jQuery(function($) {
                 $(src.concat(i)).attr('class', App.cellClasses[Math.floor(Math.random() * App.cellClasses.length)]);
             }
         },
+        setBoardInHTML: function() {
+            /*
+            Description:
+                Resets the CA board in HTML.
+
+            Arguments:
+                None
+
+            Return:
+                (None)
+            */
+            // Clear the html board
+            $('#config-table').empty();
+            let i = 0;
+            // add td elements
+            for (let x = 0; x < App.n; x++) {
+                // add a row
+                $('#config-table').append("<tr id='tr".concat(x, "'></tr>"));
+                for (let y = 0; y < App.n; y++) {
+                    $('#tr'.concat(x)).append("<td id='pos".concat(i, "'></td>"));
+                    i++;
+                }
+            }
+        },
         initBoard: function() {
             /*
             Description:
@@ -107,6 +154,10 @@ jQuery(function($) {
             Return:
                 (None)
             */
+            // pause the simulation if it is already running
+            if (!App.paused) {
+                App.paused = true;
+            }
             // CA configurations
             let config = App.createArray(App.n, App.n);
             // fill initial config with ones
@@ -155,8 +206,11 @@ jQuery(function($) {
             App.countGenNoChange = 0;
             App.totalSatisfied = App.sumSatisfaction();
             App.totalAgents = App.n * App.n - (parseInt(Math.floor(App.emptyPerc * App.n * App.n)));
+            // update the blog page's text
+            $("#generation-intext").text(App.step);
+            $("#percent-satisfied-intext").text(((App.totalSatisfied / App.totalAgents) * 100).toFixed(2));            
         },
-        observe: function(src) {
+        observe: function(src = '#pos') {
             /*
             Description:
                 Use config to put color on the board in the HTML document.
@@ -175,7 +229,7 @@ jQuery(function($) {
                 }
             }
         },
-        updateColor: function(src, population, color) {
+        updateColor: function(population, color) {
             /*
             Description:
                 Use config to put color on the board in the HTML document.
@@ -187,15 +241,8 @@ jQuery(function($) {
             Return:
                 (None)
             */
-            for (let x = 0; x < App.n; x++) {
-                for (let y = 0; y < App.n; y++) {
-                    let currentAgent = App.config[x][y];
-                    if (population == currentAgent) {
-                        let i = x + App.n * y;
-                        $(src.concat(i)).css({"background-color": color});
-                    }
-                }
-            }
+           let newColor = 'cell '.concat(color);
+           App.cellClasses[population] = newColor;
         },        
         createArray: function(length) {
             // https://stackoverflow.com/questions/966225/how-can-i-create-a-two-dimensional-array-in-javascript/966938#966938
@@ -263,7 +310,7 @@ jQuery(function($) {
                 let dy = offsetCoord[1];
                 let neighbor = null;
                 if (boundaryCond == 'periodic') {
-                    neighbor = [(x + dx) % App.n, (y + dy) % App.n];
+                    neighbor = [App.mod(x + dx, App.n), App.mod(y + dy, App.n)];
                 } else if (boundaryCond == 'cut-off') {
                     if (!(x + dx >= App.n || x + dx < 0 || y + dy >= App.n || y + dy < 0)) {
                         neighbor = [x + dx, y + dy];
@@ -400,6 +447,9 @@ jQuery(function($) {
                 App.paused = true;
                 // console.log("Done")
             }
+            // update the blog page's text
+            $("#generation-intext").text(App.step);
+            $("#percent-satisfied-intext").text(((App.totalSatisfied / App.totalAgents) * 100).toFixed(2));   
         },
         startSimulation: async function() {
             /*
@@ -412,15 +462,9 @@ jQuery(function($) {
             Return:
                 (None)
             */
-            let curSatisfaction = App.totalSatisfied;
-            App.updateConfig();
-            App.observe('#pos');
-            let nextSatisfaction = App.totalSatisfied;
             while (!App.paused) {
                 await App.sleep(App.delay);
-                curSatisfaction = nextSatisfaction;
                 App.updateConfig();
-                nextSatisfaction = App.totalSatisfied;
                 App.observe('#pos')
             }
         },
@@ -439,6 +483,10 @@ jQuery(function($) {
         },
         sleep: function(ms) {
             return new Promise(resolve => setTimeout(resolve, ms));
+        },
+        mod: function(n, m) {
+            // https://stackoverflow.com/questions/4467539/javascript-modulo-gives-a-negative-result-for-negative-numbers
+            return ((n % m) + m) % m;
         }
     };
 

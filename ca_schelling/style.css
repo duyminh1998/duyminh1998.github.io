@@ -49,3 +49,37 @@ td.zero {
 td.blank {
     background-color: None;
 }
+
+td.blue {
+    background-color: blue;
+}
+td.red {
+    background-color: red;
+}
+td.aquamarine {
+    background-color: #05ffa1;
+}
+td.magenta {
+    background-color: #ff71ce;
+}
+td.yellow {
+    background-color: #ffd319;
+}
+td.orange {
+    background-color: #ff901f;
+}
+td.brightpurple {
+    background-color: #c700b5;
+}
+td.homepurple {
+    background-color: #FC83FC;
+}
+td.homeblue {
+    background-color: #A7BCFD;
+}
+td.white {
+    background-color: white;
+}
+td.black {
+    background-color: black;
+}
