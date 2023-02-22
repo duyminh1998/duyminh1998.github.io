@@ -98,3 +98,44 @@ td.white {
 td.black {
     background-color: black;
 }
+
+/* CA Schelling controls */
+.dropdown-container {
+    display: flex;
+    justify-content: right;
+}
+.dropdowns-container {
+    display: flex;
+    justify-content: left;
+    flex-direction: column;
+    row-gap: 0.25em
+}
+.slider-container {
+    display: flex;
+    justify-content: left
+}
+.sliders-container {
+    display: flex;
+    flex-direction: column;
+    row-gap: 0.25em
+}
+.ca-schelling-controls {
+    display: flex;
+    column-gap: 1em
+}
+.ca-schelling-btns {
+    width: 50px;
+    background-color: #333;
+    border: 1px solid white;
+    color: white;  
+}
+#ca-schelling-btn-containers {
+    display: flex;
+    justify-content: left;
+    column-gap: 0.5em
+}
+#ca-schelling-walkthrough-control-box {
+    display: flex;
+    flex-direction: column;
+    row-gap: 0.5em
+}  

@@ -41,96 +41,116 @@
                 <h2 id="background-head">Background</h2>
 
                 <h2 id="interactive-exercise">Interactive walkthrough</h2>
-                <div class="btn-containers" style="margin-bottom: 10px;">
-                    <button type="button" class="lr-arrows" id="reset-board-btn">Reset</button>
-                    <button type="button" class="lr-arrows" id="start-btn">Start</button>
-                    <button type="button" class="lr-arrows" id="stop-btn">Stop</button>
-                    <button type="button" class="lr-arrows" id="step-btn">Step</button>                    
-                </div>
-                <div class="sliders-container">
-                    <a>Similarity (<a id="similarity-intext">70</a>%)</a>
-                    <input type="range" min="0" max="100" value="80" class="slider" id="tolerance-range">
-                    <a>Initial ratio (<a id="initial-ratio-intext">50</a>%)</a>
-                    <input type="range" min="0" max="100" value="50" class="slider" id="initial-ratio-range">
-                    <br>
-                    <a>Empty percentage (<a id="empty-intext">10</a>%)</a>
-                    <input type="range" min="0" max="100" value="10" class="slider" id="empty-range">
-                    <a>Delay (<a id="delay-intext">100</a>ms)</a>
-                    <input type="range" min="0" max="3000" value="100" class="slider" id="delay-range">
-                    <br>
-                    <a>Board size (<a id="board-size-intext">50x50</a>)</a>
-                    <input type="range" min="10" max="80" value="50" class="slider" id="board-size-range">
-                </div>
-                <div class="dropdown-container" id="neighborhood-type-dropdown-container">
-                    <label for="neighborhood-type">Neighborhood type:</label>
-                    <select name="neighborhood-type" id="neighborhood-type">
-                        <option value="moore" selected>Moore</option>
-                        <option value="neumann">Von Neumann</option>
-                    </select>
-                </div>
-                <div class="dropdown-container" id="boundary-cond-dropdown-container">
-                    <label for="boundary-cond">Boundary condition:</label>
-                    <select name="boundary-cond" id="boundary-cond">
-                        <option value="cut-off" selected>Cut-off</option>
-                        <option value="periodic">Periodic</option>
-                    </select>
-                </div>                                 
-                <div class="dropdown-container" id="color-dropdown-container-1">
-                    <label for="pop-1-color">Population 1 color:</label>
-                    <select name="pop-1-color" id="pop-1-color">
-                        <option value="red">Red</option>
-                        <option value="blue" selected>Blue</option>
-                        <option value="aquamarine">Aquamarine</option>
-                        <option value="magenta">Magenta</option>
-                        <option value="yellow">Yellow</option>
-                        <option value="orange">Orange</option>
-                        <option value="brightpurple">Purple</option>
-                        <option value="homepurple">BTS Purple</option> 
-                        <option value="homeblue">BTS Blue</option>
-                        <option value="white">White</option>   
-                        <option value="black">Black</option> 
-                        <option value="blank">Blank</option>                                                 
-                    </select>
-                </div>
-                <div class="dropdown-container" id="color-dropdown-container-2">
-                    <label for="pop-2-color">Population 2 color:</label>
-                    <select name="pop-2-color" id="pop-2-color">
-                        <option value="red" selected>Red</option>
-                        <option value="blue">Blue</option>
-                        <option value="aquamarine">Aquamarine</option>
-                        <option value="magenta">Magenta</option>
-                        <option value="yellow">Yellow</option>
-                        <option value="orange">Orange</option>
-                        <option value="brightpurple">Purple</option>
-                        <option value="homepurple">BTS Purple</option> 
-                        <option value="homeblue">BTS Blue</option>
-                        <option value="white">White</option>   
-                        <option value="black">Black</option> 
-                        <option value="blank">Blank</option>                                                   
-                    </select>
-                </div>
-                <div class="dropdown-container" id="color-dropdown-container-blank">
-                    <label for="blank-cells-color">Blank cells color:</label>
-                    <select name="blank-cells-color" id="blank-cells-color">
-                        <option value="red">Red</option>
-                        <option value="blue">Blue</option>
-                        <option value="aquamarine">Aquamarine</option>
-                        <option value="magenta">Magenta</option>
-                        <option value="yellow">Yellow</option>
-                        <option value="orange">Orange</option>
-                        <option value="brightpurple">Purple</option>
-                        <option value="homepurple">BTS Purple</option> 
-                        <option value="homeblue">BTS Blue</option>
-                        <option value="white" selected>White</option>   
-                        <option value="black">Black</option> 
-                        <option value="blank">Blank</option>                                  
-                    </select>
-                </div>                
-                <p>Generation: <a id="generation-intext">0</a></p>
-                <p>Percentage satisfied: <a id="percent-satisfied-intext">0</a>%</p>
                 <div class="table-container">
                     <table class="board" id="config-table"></table>
                 </div>
+                <div id="ca-schelling-walkthrough-control-box">
+                    <div style="display: flex; flex-direction: column">
+                        <div>
+                            <a>Generation: <a id="generation-intext">0</a></a>
+                        </div>
+                        <div>
+                            <a>Percentage satisfied: <a id="percent-satisfied-intext">0</a>%</a>
+                        </div>
+                    </div>
+                    <div class="btn-containers" id="ca-schelling-btn-containers">
+                        <button type="button" class="ca-schelling-btns" id="reset-board-btn">Reset</button>
+                        <button type="button" class="ca-schelling-btns" id="start-btn">Start</button>
+                        <button type="button" class="ca-schelling-btns" id="stop-btn">Stop</button>
+                        <button type="button" class="ca-schelling-btns" id="step-btn">Step</button>            
+                    </div>
+                    <div class="ca-schelling-controls">
+                      <div class="sliders-container">
+                          <div class="slider-container">
+                          <a>Similarity (<a id="similarity-intext">70</a>%)</a>
+                          <input type="range" min="0" max="100" value="80" class="slider" id="tolerance-range">
+                          </div>
+                          <div class="slider-container">
+                          <a>Initial ratio (<a id="initial-ratio-intext">50</a>%)</a>
+                          <input type="range" min="0" max="100" value="50" class="slider" id="initial-ratio-range">
+                          </div>
+                          <div class="slider-container">
+                          <a>Empty percentage (<a id="empty-intext">10</a>%)</a>
+                          <input type="range" min="0" max="100" value="10" class="slider" id="empty-range">
+                          </div>
+                          <div class="slider-container">
+                          <a>Delay (<a id="delay-intext">100</a>ms)</a>
+                          <input type="range" min="0" max="3000" value="100" class="slider" id="delay-range">
+                          </div>
+                          <div class="slider-container">
+                          <a>Board size (<a id="board-size-intext">50x50</a>)</a>
+                          <input type="range" min="10" max="80" value="50" class="slider" id="board-size-range">
+                          </div>
+                      </div>
+                      <div class="dropdowns-container">
+                        <div class="dropdown-container" id="neighborhood-type-dropdown-container">
+                          <label for="neighborhood-type">Neighborhood type: </label>
+                          <select name="neighborhood-type" id="neighborhood-type">
+                            <option value="moore" selected>Moore</option>
+                            <option value="neumann">Von Neumann</option>
+                          </select>
+                        </div>
+                        <div class="dropdown-container" id="boundary-cond-dropdown-container">
+                          <label for="boundary-cond">Boundary condition: </label>
+                          <select name="boundary-cond" id="boundary-cond">
+                            <option value="cut-off" selected>Cut-off</option>
+                            <option value="periodic">Periodic</option>
+                          </select>
+                        </div>                                
+                        <div class="dropdown-container" id="color-dropdown-container-1">
+                          <label for="pop-1-color">Population 1 color: </label>
+                          <select name="pop-1-color" id="pop-1-color">
+                            <option value="red">Red</option>
+                            <option value="blue" selected>Blue</option>
+                            <option value="aquamarine">Aquamarine</option>
+                            <option value="magenta">Magenta</option>
+                            <option value="yellow">Yellow</option>
+                            <option value="orange">Orange</option>
+                            <option value="brightpurple">Purple</option>
+                            <option value="homepurple">BTS Purple</option>
+                            <option value="homeblue">BTS Blue</option>
+                            <option value="white">White</option>  
+                            <option value="black">Black</option>
+                            <option value="blank">Blank</option>                                                
+                          </select>
+                        </div>
+                        <div class="dropdown-container" id="color-dropdown-container-2">
+                          <label for="pop-2-color">Population 2 color: </label>
+                          <select name="pop-2-color" id="pop-2-color">
+                            <option value="red" selected>Red</option>
+                            <option value="blue">Blue</option>
+                            <option value="aquamarine">Aquamarine</option>
+                            <option value="magenta">Magenta</option>
+                            <option value="yellow">Yellow</option>
+                            <option value="orange">Orange</option>
+                            <option value="brightpurple">Purple</option>
+                            <option value="homepurple">BTS Purple</option>
+                            <option value="homeblue">BTS Blue</option>
+                            <option value="white">White</option>  
+                            <option value="black">Black</option>
+                            <option value="blank">Blank</option>                                                  
+                          </select>
+                        </div>
+                        <div class="dropdown-container" id="color-dropdown-container-blank">
+                          <label for="blank-cells-color">Blank cells color: </label>
+                          <select name="blank-cells-color" id="blank-cells-color">
+                            <option value="red">Red</option>
+                            <option value="blue">Blue</option>
+                            <option value="aquamarine">Aquamarine</option>
+                            <option value="magenta">Magenta</option>
+                            <option value="yellow">Yellow</option>
+                            <option value="orange">Orange</option>
+                            <option value="brightpurple">Purple</option>
+                            <option value="homepurple">BTS Purple</option>
+                            <option value="homeblue">BTS Blue</option>
+                            <option value="white" selected>White</option>  
+                            <option value="black">Black</option>
+                            <option value="blank">Blank</option>                                  
+                          </select>
+                        </div>
+                      </div>
+                    </div>
+                </div>                
             
             <div class="copyright"><a href="#">Back to top</a><br> © 2023 Minh Hua</div>  
 
