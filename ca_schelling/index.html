@@ -43,7 +43,39 @@
                 <h2 id="interactive-exercise">Interactive walkthrough</h2>
                 <div class="btn-containers" style="margin-bottom: 10px;">
                     <button type="button" class="lr-arrows" id="reset-board-btn">Reset</button>
-                </div>                
+                    <button type="button" class="lr-arrows" id="start-btn">Start</button>
+                    <button type="button" class="lr-arrows" id="stop-btn">Stop</button>
+                    <button type="button" class="lr-arrows" id="step-btn">Step</button>                    
+                </div>
+                <div class="sliders-container">
+                    <a>Tolerance</a>
+                    <input type="range" min="0" max="100" value="80" class="slider" id="tolerance-range">
+                    <a>Initial ratio</a>
+                    <input type="range" min="0" max="100" value="50" class="slider" id="initial-ratio-range">
+                    <br>
+                    <a>Empty percentage</a>
+                    <input type="range" min="0" max="100" value="10" class="slider" id="empty-range">
+                    <a>Delay (ms)</a>
+                    <input type="range" min="0" max="3000" value="100" class="slider" id="delay-range">
+                </div>
+                <div class="dropdown-container">
+                    <label for="pop-1-color">Population 1 color:</label>
+                    <select name="pop-1-color" id="pop-1-color">
+                        <option value="red" selected>Red</option>
+                        <option value="blue">Blue</option>
+                        <option value="#05ffa1">Aquamarine</option>
+                        <option value="#ff71ce">Magenta</option>
+                    </select>
+                </div>
+                <div class="dropdown-container">
+                    <label for="pop-2-color">Population 2 color:</label>
+                    <select name="pop-2-color" id="pop-2-color">
+                        <option value="red">Red</option>
+                        <option value="blue" selected>Blue</option>
+                        <option value="#05ffa1">Aquamarine</option>
+                        <option value="#ff71ce">Magenta</option>
+                    </select>
+                </div>                  
                 <div class="table-container">
                 <table class="board"><tr><td class="cell one" id="pos0"></td>
                     <td class="cell zero" id="pos1"></td>
