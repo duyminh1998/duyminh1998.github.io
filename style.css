@@ -199,20 +199,6 @@ a:active
 	.num {
 		font-size: 0.5rem;
 	}
-	body .table {
-		display: flex;  
-		flex-wrap: nowrap;
-		justify-content: center;
-	}
-
-	.table .tr {
-		display: flex;
-		flex-direction: column;
-	}
-
-	.table .td {
-		white-space: nowrap;
-	}	
 }
 #toc_container li, #toc_container ul, #toc_container ul li{
     list-style: outside none none !important;
