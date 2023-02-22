@@ -49,7 +49,7 @@ jQuery(function($) {
                 App.initBoard();
                 App.setBoardInHTML();
                 App.observe('#pos');
-            });                 
+            });
 
             // Buttons                
             // Reset the board
@@ -310,7 +310,19 @@ jQuery(function($) {
                 let dy = offsetCoord[1];
                 let neighbor = null;
                 if (boundaryCond == 'periodic') {
-                    neighbor = [App.mod(x + dx, App.n), App.mod(y + dy, App.n)];
+                    let new_x = null;
+                    let new_y = null;
+                    if (x + dx < 0) {
+                        new_x = App.n - 1;
+                    } else {
+                        new_x = (x + dx) % App.n;
+                    }
+                    if (y + dy < 0) {
+                        new_y = App.n - 1;
+                    } else {
+                        new_y = (y + dy) % App.n;
+                    }
+                    neighbor = [new_x, new_y];
                 } else if (boundaryCond == 'cut-off') {
                     if (!(x + dx >= App.n || x + dx < 0 || y + dy >= App.n || y + dy < 0)) {
                         neighbor = [x + dx, y + dy];
@@ -342,6 +354,7 @@ jQuery(function($) {
             neighbors.forEach(function(neighborCoord) {
                 let neighborX = neighborCoord[0];
                 let neighborY = neighborCoord[1];
+                // console.log(neighborCoord);
                 let neighbor = App.config[neighborX][neighborY];
                 if (neighbor != -1 && neighbor == currentAgent) {
                     countSimilar += 1;
