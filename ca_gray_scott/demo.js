@@ -76,10 +76,11 @@ jQuery(function($) {
                 $("#animation-gen-status").text("Idle");
             });            
             // Start the simulation
-            App.$doc.on('click', '#start-btn', async function() {
-            	$("#animation-gen-status").text("Generating...");
-                await App.startSimulation();
-                $("#animation-gen-status").text("Done!");
+            App.$doc.on('click', '#start-btn', function() {
+            	// $("#animation-gen-status").text("Generating...");
+                // await App.sleep(100);
+                App.startSimulation();
+                // $("#animation-gen-status").text("Done!");
             });
             // Play the animation
             App.$doc.on('click', '#play-btn', function() {
@@ -185,20 +186,28 @@ jQuery(function($) {
                 (None)
             */
             // CA configurations
-            // let u = nj.ones([App.n + 2, App.n + 2], "float64");
-            // let v = nj.zeros([App.n + 2, App.n + 2], "float64");
-            let u = nj.random([App.n + 2, App.n + 2]).multiply(0.02);
-            let v = nj.random([App.n + 2, App.n + 2]).multiply(0.02);          
+            let u = nj.ones([App.n + 2, App.n + 2], "float64");
+            let v = nj.zeros([App.n + 2, App.n + 2], "float64");
+            // let u = nj.random([App.n + 2, App.n + 2]).multiply(0.02);
+            // let v = nj.random([App.n + 2, App.n + 2]).multiply(0.02);          
             // define radius of initial conditions
             let n2 = Math.floor(App.n / 2);
-            let r = 16;
+            let r = 10;
             // initial conditions
             for (let x = 0; x < App.n + 2; x++) {
                 for (let y = 0; y < App.n + 2; y++) {
-                    if (n2 - r <= x && x <= n2 + r && n2 - r <= y && y <= n2 + r) {
+                    // if (n2 - r <= x && x <= n2 + r && n2 - r <= y && y <= n2 + r) {
+                    //     u.set(x, y, 0.5);
+                    //     v.set(x, y, 0.25);
+                    // }
+                    if ((Math.floor(0.39 * App.n) <= x && x <= Math.floor(0.41 * App.n) || Math.floor(0.59 * App.n) <= x && x <= Math.floor(0.61 * App.n)) && n2 - r <= y && y <= n2 + r) {
                         u.set(x, y, 0.5);
                         v.set(x, y, 0.25);
                     }
+                    if ((Math.floor(0.39 * App.n) <= y && y <= Math.floor(0.41 * App.n) || Math.floor(0.59 * App.n) <= y && y <= Math.floor(0.61 * App.n)) && n2 - r <= x && x <= n2 + r) {
+                        u.set(x, y, 0.5);
+                        v.set(x, y, 0.25);
+                    }                                        
                 }
             }      
             
@@ -463,7 +472,7 @@ jQuery(function($) {
             App.u = App.periodicBC(App.u);
             App.v = App.periodicBC(App.v);  
         },
-        createFrames: function(resolve) {
+        createFrames: async function() {
             /*
             Description:
                 Runs the model and creates a set of frames.
@@ -486,7 +495,8 @@ jQuery(function($) {
                 uFrames.push(App.u);
                 vFrames.push(App.v);
                 // console.log("Frame ".concat(i));
-                $("#animation-gen-status").text("Generating frame ".concat(i));
+                await App.sleep(1);
+                $("#animation-gen-status").text("Generating frame ".concat(i + 1, " of ", App.nFrames));
             };
             // need to do some scaling to u and v frames
             
@@ -494,7 +504,7 @@ jQuery(function($) {
             frames.push(vFrames);
             App.uFrames = frames[0];
             App.vFrames = frames[1];
-            return 0;
+            $("#animation-gen-status").text("Done!");
         },
         startSimulation: function() {
             /*
@@ -508,7 +518,7 @@ jQuery(function($) {
                 (None)
             */
             App.initBoardNP();
-            return new Promise(resolve => App.createFrames(resolve));
+            App.createFrames();
             // console.log(App.uFrames.length);
         },
         playAnimation: async function() {
@@ -530,7 +540,7 @@ jQuery(function($) {
                     App.observeNP(App.vFrames[App.animationIteration], "#pos");
                 }
                 App.animationIteration = (App.animationIteration + 1) % App.vFrames.length;
-                $("#animation-frame").text("Playing frame ".concat(App.animationIteration));
+                // $("#animation-frame").text("Playing frame ".concat(App.animationIteration));
                 await App.sleep(App.delay);
                 // $("#result").text(App.animationIteration + 1);
             }
