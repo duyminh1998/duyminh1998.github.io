@@ -504,7 +504,7 @@ jQuery(function($) {
             frames.push(vFrames);
             App.uFrames = frames[0];
             App.vFrames = frames[1];
-            $("#animation-gen-status").text("Done!");
+            $("#animation-gen-status").text("Done! Press 'Play' to play the animation.");
         },
         startSimulation: function() {
             /*

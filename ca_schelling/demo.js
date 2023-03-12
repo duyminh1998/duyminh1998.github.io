@@ -11,7 +11,7 @@ jQuery(function($) {
         delay: 100, // the delay between each step for the animation (ms)
         neighborhoodType: 'moore', // the type of neighborhoods, ['moore', 'neumann']
         boundaryCond: 'cut-off', // the boundary conditions, ['cut-off', 'periodic']
-        cellClasses: ["cell white", "cell blue", "cell red"], // strings that identify the colors of the cells
+        cellClasses: ["cell white", "cell homeblue", "cell brightpurple"], // strings that identify the colors of the cells
         paused: true, // whether or not the simulation is paused
         maxGenNoChange: 1, // the maximum number of generations to check for no change
         countGenNoChange: 0, // the current number of generations where no agents moved

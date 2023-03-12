@@ -1,7 +1,7 @@
 <!doctype html>
 <html>
     <head>
-        <title>Cellular Automata: Schelling's Models of Segregation</title>
+        <title>Cellular Automata: Schelling's Model of Segregation</title>
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <meta name="description" value="A writeup on a cellular automata model of Schelling's model of segregation with an interactive demo.">
@@ -23,7 +23,7 @@
                     </nav>
                 </header>                
                 <div class="meta-info">
-                    <h1>Cellular Automata: Schelling's Models of Segregation</h1>
+                    <h1>Cellular Automata: Schelling's Model of Segregation</h1>
                     <hr>
                     <a id="date">02-19-2023</a>
                 </div>
@@ -32,15 +32,27 @@
                     <ul class="toc_list">
                     <li><a href="#intro-head">1 Introduction</a></li>
                     <li><a href="#background-head">2 Background</a>
+                      <ul>
+                        <li><a href="#ca-head">2.1 Cellular Automata</a></li>
+                        <li><a href="#seg-head">2.2 Schelling's Model of Segregation</a></li>
+                      </ul>                      
                     </li>
-                    <li><a href="#interactive-exercise">3 Interactive walkthrough</a></li>
+                    <li><a href="#interactive-exercise">3 Interactive demo</a></li>
                     </ul>
                 </div>
                 <h2 id="intro-head">Introduction</h2>
+                <p>During the last term of my M.S. in Computer Science program at Johns Hopkins, I took an Independent Study course with Dr. Wiley focused on Cellular Automata (CA). We investigated a total of five CA models, and this blog post serves as the first in a series of several documentations of those projects. In this post, I will present a CA implementation of Schelling's model of segregation. This blog is intended to be a companion to Frank McCown's excellent <a href="http://nifty.stanford.edu/2014/mccown-schelling-model-segregation/" target="_blank" rel="noopener noreferrer">blog post</a> on the same topic. The only difference is that my blog post's interactive component adds more control over the simulation (e.g. the ability to specify neighborhood type, boundary conditions, and colors).</p>
 
                 <h2 id="background-head">Background</h2>
+                <h3 id="ca-head">Cellular Automata</h3>
+                <p>Since this is the first post in a series of posts about CA, we should start with a brief introduction on the topic. My summary draws straight from Hiroki Sayama's <a href="https://knightscholar.geneseo.edu/oer-ost/14/" target="_blank" rel="noopener noreferrer">book</a> on Complex Systems, so you should read chapter 11 if you want more details about CA. An automaton (automata is plural) is a theoretical machine with an internal state that changes according to its previous state and some input. The domain for the state is usually finite and discrete, and we often encounter the binary state space (0 or 1). Cellular automata (CA) are a collection of automata arranged on a grid (see the grid in the demo section). On a traditional two-dimensional CA grid, each automaton (hereafter also referred to as cell or unit) is surrounded by eight neighbors, which affects the cell's next state. The state of every cell on the grid is updated simultaneously using a state-transition function that takes as input the cell's current state and the current state of its neighbors. For example, consider a toy example where we have a grid of two cells, so that each cell only has one neighbor. A transition function might say "change your state to match your neighbor's if your states do not match. Otherwise, do not change your current state." The idea of CA is that simple transition rules can give rise to complex behaviors. Lest we forget our history, we remark that the idea of CA was originally invented by John von Neumann and Stanislaw Ulam in the 1940s and 1950s.</p>
+                <p>There are two other concepts that we should be familiar with before we close our discussion of CA. First, there are a few different neighborhood types that a CA model can have. For a two-dimensional CA, the two most common neighborhood types are von Neumann and Moore (see Figure 1). In a von Neumann neighborhood, each cell has four neighbors represented by the cells to the top, left, right, and bottom of the current cell. The more fun neighborhood is the Moore neighborhood, which adds four more neighbors in the form of cells to the top-right, top-left, bottom-right, and bottom-left of the current cell. Then, the neighborhood type determines the number of cells that affect the current cell's next state. </p>
+                <div class="img-container"><img src="img/ca_neighborhoods.png" alt="CA neighborhoods" class="man-nn-img"></div><figcaption>Figure 1. CA neighborhood types (from <a href="https://knightscholar.geneseo.edu/oer-ost/14/" target="_blank" rel="noopener noreferrer">Sayama</a>).</figcaption>
+                <p>The final concept that we should discuss are boundary conditions. Since CA is a spatial as well as temporal model, we need to consider what happens to the cells at the edge of the CA grid. For example, consider the cell at the very top right corner of the grid. Does it have neighbors to the top or left of it? There are two important boundary conditions that we can consider. In a cut-off boundary condition, we assume that cells at the edge do not have neighbors beyond the boundaries. Therefore, our very top-right cell will only have three neighbors, i.e. cells to the right, bottom-right, and bottom of it. This is because there are no cells to the top-right, top, top-left, left, and bottom-left of that cell. Conversely, in a periodic boundary condition, we assume that the grid is wrapped around each spatial axis. Then, a one-dimensional CA grid becomes a ring and a two-dimensional CA grid becomes a torus. In this boundary condition, our top-right cell would have nine neighbors. Its top-left and top neighbors would come from the bottom right of the grid. Its top-right neighbor would come from the bottom left of the grid. Its right and bottom-right neighbors would come from the top-left of the grid. At least, this would be right if my mental math was correct. It is easier to visualize the periodic boundary condition in the one-dimensional case. The very last cell on the right has as its right neighbor the very first cell on the left, and vice versa.</p>
 
-                <h2 id="interactive-exercise">Interactive walkthrough</h2>
+                <h3 id="seg-head">Schelling's Model of Segregation</h3>
+
+                <h2 id="interactive-exercise">Interactive demo</h2>
                 <div class="table-container">
                     <table class="board" id="config-table"></table>
                 </div>
@@ -101,14 +113,14 @@
                           <label for="pop-1-color">Population 1 color: </label>
                           <select name="pop-1-color" id="pop-1-color">
                             <option value="red">Red</option>
-                            <option value="blue" selected>Blue</option>
+                            <option value="blue">Blue</option>
                             <option value="aquamarine">Aquamarine</option>
                             <option value="magenta">Magenta</option>
                             <option value="yellow">Yellow</option>
                             <option value="orange">Orange</option>
                             <option value="brightpurple">Purple</option>
                             <option value="homepurple">BTS Purple</option>
-                            <option value="homeblue">BTS Blue</option>
+                            <option value="homeblue" selected>BTS Blue</option>
                             <option value="white">White</option>  
                             <option value="black">Black</option>
                             <option value="blank">Blank</option>                                                
@@ -117,13 +129,13 @@
                         <div class="dropdown-container" id="color-dropdown-container-2">
                           <label for="pop-2-color">Population 2 color: </label>
                           <select name="pop-2-color" id="pop-2-color">
-                            <option value="red" selected>Red</option>
+                            <option value="red">Red</option>
                             <option value="blue">Blue</option>
                             <option value="aquamarine">Aquamarine</option>
                             <option value="magenta">Magenta</option>
                             <option value="yellow">Yellow</option>
                             <option value="orange">Orange</option>
-                            <option value="brightpurple">Purple</option>
+                            <option value="brightpurple" selected>Purple</option>
                             <option value="homepurple">BTS Purple</option>
                             <option value="homeblue">BTS Blue</option>
                             <option value="white">White</option>  
