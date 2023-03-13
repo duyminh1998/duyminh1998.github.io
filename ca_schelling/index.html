@@ -51,8 +51,58 @@
                 <p>The final concept that we should discuss are boundary conditions. Since CA is a spatial as well as temporal model, we need to consider what happens to the cells at the edge of the CA grid. For example, consider the cell at the very top right corner of the grid. Does it have neighbors to the top or left of it? There are two important boundary conditions that we can consider. In a cut-off boundary condition, we assume that cells at the edge do not have neighbors beyond the boundaries. Therefore, our very top-right cell will only have three neighbors, i.e. cells to the right, bottom-right, and bottom of it. This is because there are no cells to the top-right, top, top-left, left, and bottom-left of that cell. Conversely, in a periodic boundary condition, we assume that the grid is wrapped around each spatial axis. Then, a one-dimensional CA grid becomes a ring and a two-dimensional CA grid becomes a torus. In this boundary condition, our top-right cell would have nine neighbors. Its top-left and top neighbors would come from the bottom right of the grid. Its top-right neighbor would come from the bottom left of the grid. Its right and bottom-right neighbors would come from the top-left of the grid. At least, this would be right if my mental math was correct. It is easier to visualize the periodic boundary condition in the one-dimensional case. The very last cell on the right has as its right neighbor the very first cell on the left, and vice versa.</p>
 
                 <h3 id="seg-head">Schelling's Model of Segregation</h3>
-
+                <p>In 1971, American economist Thomas Schelling released a paper describing a model of how distinct populations segregate over time. Given two populations that exhibit differences (e.g. sex, age, income, language, color, taste, etc.) and the degree that each individual tolerates being near individuals from a different population, Schelling's model gives rise to various macroscopic behaviors. </p>
+                <p>We can readily implement Schelling's model using CA by designating each cell on the CA grid as an individual. Then, assume that each automaton can take on one of two values, each of which represents a population. The main mechanism that drives the grid's evolution is the fact that dissatisfied individuals will move whereas satisfied individuals will not. An individual's satisfaction is determined by their tolerance for difference and the number of neighbors from a different population in their neighborhood. For example, assume that each individual will only be satisfied if 50 percent of their neighbors come from the same population. In this sense, the individual in the middle of the neighborhood below will be satisfied because four of their neighbors are the same (50 percent of the neighbors are the same color as the individual).</p>
+                <div class="table-container">
+                  <table class="board" id="example-1-table">
+                    <tr>
+                      <td class="cell homeblue"></td>
+                      <td class="cell homeblue"></td>
+                      <td class="cell homeblue"></td>
+                    </tr>
+                    <tr>
+                      <td class="cell homeblue"></td>
+                      <td class="cell homeblue"></td>
+                      <td class="cell homepurple"></td>
+                    </tr>
+                    <tr>
+                      <td class="cell homepurple"></td>
+                      <td class="cell homepurple"></td>
+                      <td class="cell homepurple"></td>
+                    </tr>                                        
+                  </table>
+                  <figcaption>Individual in the middle is satisfied with a tolerance of 50 percent.</figcaption>
+                </div>
+                <p>However, the individual in the middle of the neighborhood below will not be satisfied because only three of their neighbors are the same (37.5 percent of the neighbors are the same color, which is less than the required 50 percent).</p>
+                <div class="table-container">
+                  <table class="board" id="example-2-table">
+                    <tr>
+                      <td class="cell homeblue"></td>
+                      <td class="cell homeblue"></td>
+                      <td class="cell homepurple"></td>
+                    </tr>
+                    <tr>
+                      <td class="cell homeblue"></td>
+                      <td class="cell homeblue"></td>
+                      <td class="cell homepurple"></td>
+                    </tr>
+                    <tr>
+                      <td class="cell homepurple"></td>
+                      <td class="cell homepurple"></td>
+                      <td class="cell homepurple"></td>
+                    </tr>                                        
+                  </table>
+                  <figcaption>Individual in the middle is not satisfied with a tolerance of 50 percent.</figcaption>
+                </div>    
+                <p>Since the board is populated with individuals as well as empty squares, any dissatisfied individual will move to an available empty square during each update. Every dissatisfied individual will move in the same iteration of the simulation, and a move is not guaranteed to keep every individual satisfied. The simulation continues running until everyone is satisfied, which is not always possible. I have listed below some example configurations that could arise from different parameter combinations (see Figures 2 and 3).</p>
+                <div class="img-container"><img src="img/s30_ir50_e10_moore_cutoff.PNG" alt="CA with similarity param of 30 percent" class="man-nn-img"></div><figcaption>Figure 2. CA configuration with similarity tolerance of 30 percent.</figcaption>
+                <div class="img-container"><img src="img/s70_ir50_e10_moore_cutoff.PNG" alt="CA with similarity param of 70 percent" class="man-nn-img"></div><figcaption>Figure 3. CA configuration with similarity tolerance of 70 percent.</figcaption>
+                
                 <h2 id="interactive-exercise">Interactive demo</h2>
+                <p>To run the simulation, first use the sliders to tweak the parameters. On the left, the <b>Similarity</b> slider controls the percentage of similar individuals that an individual requires to be in their neighborhood to be satisfied. The higher the percentage, the harder it is to keep individuals satisfied. The <b>Initial ratio</b> determines the ratio of one population to the other. The <b>Empty percentage</b> determines the number of empty spaces that dissatisfied individuals can move to. The <b>Delay</b> control determines the delay between each frame when playing the animation. Finally, the <b>Board size</b> slider controls the number of individuals in the configuration.</p>
+                <p>On the right, the <b>Neighborhood type</b> dropdown determines the type of neighborhood that the model employs. The <b>Boundary condition</b> dropdown is also self-explanatory. Finally, the last three dropdowns allow the user to specify the color of the two populations and the empty spaces.</p>
+                <p>Users can use the <b>Reset</b> button to reset the configuration. The <b>Start</b> button can be used to start the simulation, which will run until the user presses the <b>Stop</b> button or every individual is satisfied. To step through the simulation incrementally, press the <b>step</b> button.</p>   
+                
                 <div class="table-container">
                     <table class="board" id="config-table"></table>
                 </div>
@@ -162,7 +212,7 @@
                         </div>
                       </div>
                     </div>
-                </div>                
+                </div>             
             
             <div class="copyright"><a href="#">Back to top</a><br> © 2023 Minh Hua</div>  
 
