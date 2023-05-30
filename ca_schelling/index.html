@@ -91,10 +91,14 @@
                           <a>Similarity (<a id="similarity-intext">70</a>%)</a>
                           <input type="range" min="0" max="100" value="70" class="slider" id="tolerance-range">
                           </div>
-                          <div class="slider-container">
-                          <a>Initial ratio (<a id="initial-ratio-intext">50</a>%)</a>
-                          <input type="range" min="0" max="100" value="50" class="slider" id="initial-ratio-range">
+                          
+                          <div id="initial-ratio-controls">
+                            <div class="slider-container">
+                            <a>Initial ratio (<a id="initial-ratio-intext">50</a>%)</a>
+                            <input type="range" min="0" max="100" value="50" class="slider" id="initial-ratio-range">
+                            </div>                          
                           </div>
+
                           <div class="slider-container">
                           <a>Empty percentage (<a id="empty-intext">10</a>%)</a>
                           <input type="range" min="0" max="100" value="10" class="slider" id="empty-range">
@@ -109,6 +113,20 @@
                           </div>
                       </div>
                       <div class="dropdowns-container">
+                        <div class="dropdown-container" id="populations-cnt-dropdown-container">
+                          <label for="populations-cnt">Populations: </label>
+                          <select name="populations-cnt" id="populations-cnt">
+                            <option value=2 selected>2</option>
+                            <option value=3>3</option>
+                            <option value=4>4</option>
+                            <option value=5>5</option>
+                            <option value=6>6</option>
+                            <option value=7>7</option>
+                            <option value=8>8</option>
+                            <option value=9>9</option>
+                            <option value=10>10</option>
+                          </select>
+                        </div>                      
                         <div class="dropdown-container" id="neighborhood-type-dropdown-container">
                           <label for="neighborhood-type">Neighborhood type: </label>
                           <select name="neighborhood-type" id="neighborhood-type">
@@ -122,41 +140,7 @@
                             <option value="cut-off" selected>Cut-off</option>
                             <option value="periodic">Periodic</option>
                           </select>
-                        </div>                                
-                        <div class="dropdown-container" id="color-dropdown-container-1">
-                          <label for="pop-1-color">Population 1 color: </label>
-                          <select name="pop-1-color" id="pop-1-color">
-                            <option value="red">Red</option>
-                            <option value="blue">Blue</option>
-                            <option value="aquamarine">Aquamarine</option>
-                            <option value="magenta">Magenta</option>
-                            <option value="yellow">Yellow</option>
-                            <option value="orange">Orange</option>
-                            <option value="brightpurple">Purple</option>
-                            <option value="homepurple">BTS Purple</option>
-                            <option value="homeblue" selected>BTS Blue</option>
-                            <option value="white">White</option>  
-                            <option value="black">Black</option>
-                            <option value="blank">Blank</option>                                                
-                          </select>
-                        </div>
-                        <div class="dropdown-container" id="color-dropdown-container-2">
-                          <label for="pop-2-color">Population 2 color: </label>
-                          <select name="pop-2-color" id="pop-2-color">
-                            <option value="red">Red</option>
-                            <option value="blue">Blue</option>
-                            <option value="aquamarine">Aquamarine</option>
-                            <option value="magenta">Magenta</option>
-                            <option value="yellow">Yellow</option>
-                            <option value="orange">Orange</option>
-                            <option value="brightpurple" selected>Purple</option>
-                            <option value="homepurple">BTS Purple</option>
-                            <option value="homeblue">BTS Blue</option>
-                            <option value="white">White</option>  
-                            <option value="black">Black</option>
-                            <option value="blank">Blank</option>                                                  
-                          </select>
-                        </div>
+                        </div> 
                         <div class="dropdown-container" id="color-dropdown-container-blank">
                           <label for="blank-cells-color">Blank cells color: </label>
                           <select name="blank-cells-color" id="blank-cells-color">
@@ -171,9 +155,68 @@
                             <option value="homeblue">BTS Blue</option>
                             <option value="white" selected>White</option>  
                             <option value="black">Black</option>
+                            <option value="peach">Peach</option>
+                            <option value="maroon">Maroon</option>
+                            <option value="brown">Brown</option>
+                            <option value="green">Green</option>
+                            <option value="lime">Lime</option>
+                            <option value="mint">Mint</option>
+                            <option value="skyblue">Sky</option>                                                        
                             <option value="blank">Blank</option>                                  
                           </select>
+                        </div>                        
+
+                        <div id="pop-color-controls">  
+                          <div class="dropdown-container" id="color-dropdown-container-1">
+                            <label for="pop-color-1">Population 1 color: </label>
+                            <select class="pop-color-sel" name="pop-color-1" id="pop-color-1">
+                              <option value="red">Red</option>
+                              <option value="blue">Blue</option>
+                              <option value="aquamarine">Aquamarine</option>
+                              <option value="magenta">Magenta</option>
+                              <option value="yellow">Yellow</option>
+                              <option value="orange">Orange</option>
+                              <option value="brightpurple">Purple</option>
+                              <option value="homepurple">BTS Purple</option>
+                              <option value="homeblue" selected>BTS Blue</option>
+                              <option value="white">White</option>  
+                              <option value="black">Black</option>
+                              <option value="peach">Peach</option>
+                              <option value="maroon">Maroon</option>
+                              <option value="brown">Brown</option>
+                              <option value="green">Green</option>
+                              <option value="lime">Lime</option>
+                              <option value="mint">Mint</option>
+                              <option value="skyblue">Sky</option>                                                        
+                              <option value="blank">Blank</option>                                                
+                            </select>
+                          </div>
+                          <div class="dropdown-container" id="color-dropdown-container-2">
+                            <label for="pop-color-2">Population 2 color: </label>
+                            <select class="pop-color-sel" name="pop-color-2" id="pop-color-2">
+                              <option value="red">Red</option>
+                              <option value="blue">Blue</option>
+                              <option value="aquamarine">Aquamarine</option>
+                              <option value="magenta">Magenta</option>
+                              <option value="yellow">Yellow</option>
+                              <option value="orange">Orange</option>
+                              <option value="brightpurple" selected>Purple</option>
+                              <option value="homepurple">BTS Purple</option>
+                              <option value="homeblue">BTS Blue</option>
+                              <option value="white">White</option>  
+                              <option value="black">Black</option>
+                              <option value="peach">Peach</option>
+                              <option value="maroon">Maroon</option>
+                              <option value="brown">Brown</option>
+                              <option value="green">Green</option>
+                              <option value="lime">Lime</option>
+                              <option value="mint">Mint</option>
+                              <option value="skyblue">Sky</option>                                                        
+                              <option value="blank">Blank</option>                                                 
+                            </select>
+                          </div>                        
                         </div>
+                        
                       </div>
                     </div>
                 </div>             
@@ -182,6 +225,84 @@
 
             <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
             <script type="text/javascript" src="demo.js"></script>
+            
+            <script id="initial-ratio-controls-2-pop-template" type="text/template">
+            	<div class="slider-container">
+                <a>Initial ratio (<a id="initial-ratio-intext">50</a>%)</a>
+                <input type="range" min="0" max="100" value="50" class="slider" id="initial-ratio-range">
+              </div>
+            </script>
+            <script id="pop-color-choices-template" type="text/template">
+                <option value="red">Red</option>
+                <option value="blue">Blue</option>
+                <option value="aquamarine">Aquamarine</option>
+                <option value="magenta">Magenta</option>
+                <option value="yellow">Yellow</option>
+                <option value="orange">Orange</option>
+                <option value="brightpurple">Purple</option>
+                <option value="homepurple">BTS Purple</option>
+                <option value="homeblue">BTS Blue</option>
+                <option value="white">White</option>  
+                <option value="black">Black</option>
+                <option value="peach">Peach</option>
+                <option value="maroon">Maroon</option>
+                <option value="brown">Brown</option>
+                <option value="green">Green</option>
+                <option value="lime">Lime</option>
+                <option value="mint">Mint</option>
+                <option value="skyblue">Sky</option>                                                        
+                <option value="blank">Blank</option>
+            </script>
+            <script id="2-pop-color-choices-template" type="text/template">
+              <div class="dropdown-container" id="color-dropdown-container-1">
+                <label for="pop-color-1">Population 1 color: </label>
+                <select class="pop-color-sel" name="pop-color-1" id="pop-color-1">
+                  <option value="red">Red</option>
+                  <option value="blue">Blue</option>
+                  <option value="aquamarine">Aquamarine</option>
+                  <option value="magenta">Magenta</option>
+                  <option value="yellow">Yellow</option>
+                  <option value="orange">Orange</option>
+                  <option value="brightpurple">Purple</option>
+                  <option value="homepurple">BTS Purple</option>
+                  <option value="homeblue" selected>BTS Blue</option>
+                  <option value="white">White</option>  
+                  <option value="black">Black</option>
+                  <option value="peach">Peach</option>
+                  <option value="maroon">Maroon</option>
+                  <option value="brown">Brown</option>
+                  <option value="green">Green</option>
+                  <option value="lime">Lime</option>
+                  <option value="mint">Mint</option>
+                  <option value="skyblue">Sky</option>                                                        
+                  <option value="blank">Blank</option>                                              
+                </select>
+              </div>
+              <div class="dropdown-container" id="color-dropdown-container-2">
+                <label for="pop-color-2">Population 2 color: </label>
+                <select class="pop-color-sel" name="pop-color-2" id="pop-color-2">
+                  <option value="red">Red</option>
+                  <option value="blue">Blue</option>
+                  <option value="aquamarine">Aquamarine</option>
+                  <option value="magenta">Magenta</option>
+                  <option value="yellow">Yellow</option>
+                  <option value="orange">Orange</option>
+                  <option value="brightpurple" selected>Purple</option>
+                  <option value="homepurple">BTS Purple</option>
+                  <option value="homeblue">BTS Blue</option>
+                  <option value="white">White</option>  
+                  <option value="black">Black</option>
+                  <option value="peach">Peach</option>
+                  <option value="maroon">Maroon</option>
+                  <option value="brown">Brown</option>
+                  <option value="green">Green</option>
+                  <option value="lime">Lime</option>
+                  <option value="mint">Mint</option>
+                  <option value="skyblue">Sky</option>                                                        
+                  <option value="blank">Blank</option>                                                 
+                </select>
+              </div>                          
+            </script>
             </article>
         </main>
     </body>

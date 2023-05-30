@@ -5,13 +5,15 @@ jQuery(function($) {
     var App = {
         // Global variables
         n: 50, // the dimensions of the board
+        populations: 2, // the number of populations
         tolerance: 0.7, // each cell's tolerance for their neighbors
         initialRatio: 0.5, // initial percentage of cells of one kind to the other
+        initialRatios: [33, 33, 34], // a list to hold initial percentage of cells for simulations with more than two populations
         emptyPerc: 0.1, // the percentage of empty cells
         delay: 100, // the delay between each step for the animation (ms)
         neighborhoodType: 'moore', // the type of neighborhoods, ['moore', 'neumann']
         boundaryCond: 'cut-off', // the boundary conditions, ['cut-off', 'periodic']
-        cellClasses: ["cell white", "cell homeblue", "cell brightpurple"], // strings that identify the colors of the cells
+        cellClasses: ["cell white", "cell homeblue", "cell brightpurple", "cell orange", "cell yellow", "cell blue", "cell red", "cell green", "cell lime", "cell brown", "cell peach"], // strings that identify the colors of the cells
         paused: true, // whether or not the simulation is paused
         maxGenNoChange: 1, // the maximum number of generations to check for no change
         countGenNoChange: 0, // the current number of generations where no agents moved
@@ -54,10 +56,29 @@ jQuery(function($) {
                 App.setBoardInHTML();
                 App.observe('#pos');
             });
+            App.$doc.on('input', '.initial-ratio-range-slider', function() {
+                let sliderID = $(this).attr('id');
+                let sliderIdx = sliderID.charAt(sliderID.length - 1);
+                let sliderVal = document.getElementById(sliderID).value.toString();
+                $("#pop-initial-ratio-intext-".concat(sliderIdx)).text(sliderVal);
+                App.initialRatios[sliderIdx - 1] = sliderVal;
+                // update initial ratio sliders max range
+                for (let i = 1; i <= App.populations; i++) {
+                    let newMax = 100;
+                    for (let j = 0; j < App.initialRatios.length; j++) {
+                    if (j + 1 != i) newMax = newMax - App.initialRatios[j];
+                    }
+                    $("#pop-max-ratio-intext-".concat(i)).text(newMax);
+                    $("#pop-initial-ratio-range-".concat(i)).attr({max: newMax});
+                }
+                App.initBoard();
+                App.observe('#pos');
+            });
 
             // Buttons                
             // Reset the board
-            App.$doc.on('click', '#reset-board-btn', function() {           
+            App.$doc.on('click', '#reset-board-btn', function() {      
+            		App.setInitialPopulationControlsInHTML();
                 App.initBoard();
                 App.observe('#pos');
             });
@@ -77,6 +98,13 @@ jQuery(function($) {
             });
 
             // Drop-downs
+            $("#populations-cnt").on("change", function() {
+                let selectedVal = this.value;
+                App.populations = selectedVal;
+                App.setInitialPopulationControlsInHTML();
+                App.initBoard();
+                App.observe('#pos');
+            });            
             $("#neighborhood-type").on("change", function() {
                 let selectedVal = this.value;
                 App.neighborhoodType = selectedVal;
@@ -84,21 +112,8 @@ jQuery(function($) {
             $("#boundary-cond").on("change", function() {
                 let selectedVal = this.value;
                 App.boundaryCond = selectedVal;
-            });                     
-            $("#pop-1-color").on("change", function() {
-                let selectedVal = this.value;
-                // console.log(selectedText);
-                // console.log(selectedVal);
-                App.updateColor(1, selectedVal);
-                App.observe('#pos');
             });
-            $("#pop-2-color").on("change", function() {
-                let selectedVal = this.value;
-                // console.log(selectedText);
-                // console.log(selectedVal);
-                App.updateColor(2, selectedVal);
-                App.observe('#pos');
-            });
+            App.setColorSelectionCallback();
             $("#blank-cells-color").on("change", function() {
                 let selectedVal = this.value;
                 // console.log(selectedText);
@@ -122,6 +137,59 @@ jQuery(function($) {
             for (let i = 0; i < (App.n * App.n); i++) {
                 $(src.concat(i)).attr('class', App.cellClasses[Math.floor(Math.random() * App.cellClasses.length)]);
             }
+        },
+        setColorSelectionCallback: function() {
+            /*
+            Description:
+                Set up a function to change the cells' colors in the event of a color dropdown change (in case the function gets deleted.)
+
+            Arguments:
+                None
+
+            Return:
+                (None)
+            */            
+            $(".pop-color-sel").on("change", function() {
+                let selID = $(this).attr('id');
+                let selIdx = selID.charAt(selID.length - 1);
+                let selectedVal = document.getElementById(selID).value.toString();
+                App.updateColor(selIdx, selectedVal);
+                App.observe('#pos');
+            });
+        },
+        setInitialPopulationControlsInHTML: function() {
+            /*
+            Description:
+                Set up the initial population controls in HTML depending on the number of populations.
+
+            Arguments:
+                None
+
+            Return:
+                (None)
+            */
+            // Clear the initial ratio controls div
+            $('#initial-ratio-controls').empty();
+            $('#pop-color-controls').empty();
+            if (App.populations == 2) {
+            	$('#initial-ratio-controls').html($("#initial-ratio-controls-2-pop-template").html());
+                $('#pop-color-controls').html($('#2-pop-color-choices-template').html());
+            }
+            else {
+            	let equalDistribution = Math.floor(100 / App.populations);
+            	for (let i = 1; i <= App.populations; i++) {
+                    if (i == App.populations) equalDistribution = 100 - ((App.populations - 1) * equalDistribution);
+                    $('#initial-ratio-controls').append('<div class="slider-container"><a>Pop '.concat(i, ' ratio (<a id="pop-initial-ratio-intext-', i, '">', equalDistribution, '</a>% out of&nbsp<a id="pop-max-ratio-intext-', i, '">', equalDistribution, '</a>%)</a><input type="range" min="0" max="', equalDistribution, '" value="', equalDistribution, '" class="initial-ratio-range-slider" id="pop-initial-ratio-range-', i, '"></div>'));
+                    App.initialRatios[i - 1] = equalDistribution;
+                    
+                    // add new population color control
+                    $('#pop-color-controls').append('<div class="dropdown-container" id="color-dropdown-container-'.concat(i, '"><label for="pop-color-', i, '">Population ', i, ' color: </label><select class="pop-color-sel" name="pop-color-', i, '" id="pop-color-', i, '"></select></div>'));
+                    $('#pop-color-'.concat(i)).html($("#pop-color-choices-template").html());
+                    // $('#pop-color-'.concat(i)).prop('selectedIndex', i);
+                    $('#pop-color-'.concat(i)).val(App.cellClasses[i].substring(5));
+                }
+            }
+            App.setColorSelectionCallback();
         },
         setBoardInHTML: function() {
             /*
@@ -167,7 +235,7 @@ jQuery(function($) {
             // fill initial config with ones
             for (let x = 0; x < App.n; x++) {
                 for (let y = 0; y < App.n; y++) {
-                    config[x][y] = 1;
+                    config[x][y] = 0;
                 }
             }
             // let nextconfig = App.createArray(App.n, App.n);
@@ -182,18 +250,41 @@ jQuery(function($) {
                 // remove the indices of the empty spaces from the original index list
                 og_idx = og_idx.filter(x => !emptyIdx.includes(x));
             }
-            let first_pop_idx = App.getRandomSubarray(og_idx, parseInt(Math.floor(App.initialRatio * og_idx.length)));
-            // assign levels for the empty spaces and the two populations: -1 = empty space, 0 = first population, 1 = second population
             // empty spaces
             if (App.emptyPerc > 0.0 && emptyIdx.length > 0) {
                 emptyIdx.forEach(function(e_idx) {
                     config[Math.floor(e_idx / App.n)][e_idx % App.n] = -1
                 });
+            }            
+            // assign levels for the empty spaces and the two populations: -1 = empty space, 0 = first population, 1 = second population
+            if (App.populations == 2) {
+              // first population
+              let first_pop_idx = App.getRandomSubarray(og_idx, parseInt(Math.floor(App.initialRatio * og_idx.length)));
+              first_pop_idx.forEach(function(fp_idx) {
+                  config[Math.floor(fp_idx / App.n)][fp_idx % App.n] = 1
+              });
+            } else {
+            	let agentCap = og_idx.length;
+            	for (let i = 1; i < App.populations; i++) {
+              	let ith_pop_idx = App.getRandomSubarray(og_idx, parseInt(Math.floor((App.initialRatios[i] / 100) * agentCap)));
+                ith_pop_idx.forEach(function(ip_idx) {
+                	config[Math.floor(ip_idx / App.n)][ip_idx % App.n] = i
+                });
+                // remove the indices of the empty spaces from the original index list   
+                og_idx = og_idx.filter(x => !ith_pop_idx.includes(x));   
+              }
+              // if the populations do not add up to 100, allocate some empty spaces
+              let ratioSum = 100;
+              App.initialRatios.forEach(ratio => {
+              	ratioSum -= ratio;
+              })
+              if (ratioSum != 0) {
+              		emptyIdx = App.getRandomSubarray(og_idx, parseInt(Math.floor((ratioSum / 100) * agentCap)));
+                  emptyIdx.forEach(function(e_idx) {
+                    config[Math.floor(e_idx / App.n)][e_idx % App.n] = -1
+                	});
+              }
             }
-            // first population
-            first_pop_idx.forEach(function(fp_idx) {
-                config[Math.floor(fp_idx / App.n)][fp_idx % App.n] = 0
-            });
             // save a list of empty spaces and agents for future re-allocation
             App.emptySpaces = [];
             for (let x = 0; x < App.n; x++) {

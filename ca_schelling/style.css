@@ -98,6 +98,27 @@ td.white {
 td.black {
     background-color: black;
 }
+td.green {
+    background-color: green;
+}
+td.lime {
+    background-color: greenyellow;
+}
+td.mint {
+    background-color: mediumspringgreen;
+}
+td.brown {
+    background-color: brown;
+}
+td.maroon {
+    background-color: maroon;
+}
+td.skyblue {
+    background-color: skyblue;
+}
+td.peach {
+    background-color: peachpuff;
+}
 
 /* CA Schelling controls */
 .dropdown-container {
