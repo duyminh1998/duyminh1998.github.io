@@ -14,6 +14,7 @@ jQuery(function($) {
         neighborhoodType: 'moore', // the type of neighborhoods, ['moore', 'neumann']
         boundaryCond: 'cut-off', // the boundary conditions, ['cut-off', 'periodic']
         cellClasses: ["cell white", "cell homeblue", "cell brightpurple", "cell orange", "cell yellow", "cell blue", "cell red", "cell green", "cell lime", "cell brown", "cell peach"], // strings that identify the colors of the cells
+        availableColors: ["cell white", "cell blue", "cell red", "cell aquamarine", "cell magenta", "cell yellow", "cell orange", "cell brightpurple", "cell homepurple", "cell homeblue", "cell blank", "cell black", "cell green", "cell lime", "cell brown", "cell maroon", "cell skyblue", "cell peach"], // all the possible colors
         paused: true, // whether or not the simulation is paused
         maxGenNoChange: 1, // the maximum number of generations to check for no change
         countGenNoChange: 0, // the current number of generations where no agents moved
@@ -96,11 +97,16 @@ jQuery(function($) {
                 App.updateConfig();
                 App.observe('#pos');
             });
+            // Pick random colors for the cells
+            App.$doc.on('click', '#random-colors-btn', function() {
+                App.randomizeCellColors();
+                App.observe('#pos');
+            });
 
             // Drop-downs
             $("#populations-cnt").on("change", function() {
                 let selectedVal = this.value;
-                App.populations = selectedVal;
+                App.populations = parseInt(selectedVal);
                 App.setInitialPopulationControlsInHTML();
                 App.initBoard();
                 App.observe('#pos');
@@ -157,6 +163,26 @@ jQuery(function($) {
                 App.observe('#pos');
             });
         },
+        randomizeCellColors: function() {
+            /*
+            Description:
+                Randomly sets the colors of the populations.
+
+            Arguments:
+                None
+
+            Return:
+                (None)
+            */
+            let randomColors = App.getRandomSubarray(App.availableColors, App.populations + 1);
+            for (let i = 0; i < randomColors.length - 1; i++) {
+                App.cellClasses[i + 1] = randomColors[i];
+                $('#pop-color-'.concat(i + 1)).val(App.cellClasses[i + 1].substring(5));
+            }
+            // Blank cell
+            App.cellClasses[0] = randomColors[randomColors.length - 1];
+            $('#blank-cells-color').val(App.cellClasses[0].substring(5));           
+        },
         setInitialPopulationControlsInHTML: function() {
             /*
             Description:
@@ -174,6 +200,9 @@ jQuery(function($) {
             if (App.populations == 2) {
             	$('#initial-ratio-controls').html($("#initial-ratio-controls-2-pop-template").html());
                 $('#pop-color-controls').html($('#2-pop-color-choices-template').html());
+                for (let i = 0; i < App.populations; i++) {
+                    $('#pop-color-'.concat(i + 1)).val(App.cellClasses[i + 1].substring(5));
+                }
             }
             else {
             	let equalDistribution = Math.floor(100 / App.populations);
