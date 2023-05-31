@@ -73,6 +73,11 @@
                 
                 <h3 id="sample-patterns-head">Sample patterns</h3>
                 <p>Here are some of my favorite patterns and the parameters that generated them.</p>
+                <div id="sample-images-container"><div class="img-container"><img id="sample-pattern-gif" src="img/2.gif" alt="Sample pattern" class="man-nn-img" style="width:50%"></div></div><figcaption>F: <a id='sample-pattern-F-intext'>0.01</a>, k: <a id='sample-pattern-k-intext'>0.06</a>, D_u: <a id='sample-pattern-Du-intext'>0.16</a>, D_v: <a id='sample-pattern-Dv-intext'>0.008</a></figcaption>
+                <div class="btn-containers" style="margin-bottom: 10px;">
+                  <button type="button" class="lr-arrows" id="find-cor-bits-left-arrow">&lt</button>
+                  <button type="button" class="lr-arrows" id="find-cor-bits-right-arrow">&gt</button>
+                </div>
 
                 <h2 id="interactive-exercise">Interactive walkthrough</h2>
                 <p>To run the simulation, first use the input boxes on the left to tweak the parameters. The first four input boxes correspond to the feed rate, kill rate, and diffusion rates of the system. Since it can sometimes be hard to find a combination of parameters that produce an interesting pattern, users can also insert preset parameters using the <b>Sample parameters</b> dropdown menu. The <b>Frames</b> and <b>Steps per frame</b> parameters can be used to tweak the smoothness of the animation. Since diffusion often happens slowly, users are encouraged to use a larger number of timesteps per frame. The <b>Delay</b> control determines the delay between each frame when playing the animation. Finally, the <b>Board size</b> slider controls the number of locations in the configuration. The <b>Chemical type</b> dropdown can be used to display the chemical type (V is usually the more interesting one). Finally, users can also use the <b>Initial conditions</b> dropdown to choose between several different initial conditions.</p>
