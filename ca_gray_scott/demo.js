@@ -26,6 +26,7 @@ jQuery(function($) {
         canceled: false, // whether to cancel the generation of the animation
         uFrames: [], // frames for U chem
         vFrames: [], // frames for V chem
+        curGif: 0, // the current gif to display
 
         init: function() {
             // JQuery stuff. Renders the main game
@@ -117,7 +118,16 @@ jQuery(function($) {
             // Cancel the frames generation
             App.$doc.on('click', '#cancel-btn', function() {
                 App.canceled = true;
-            });                        
+            });
+            // Left and right buttons to choose gifs
+            App.$doc.on('click', '#find-cor-bits-right-arrow', function() {
+                App.curGif = App.mod(App.curGif + 1, 36);
+                $('#sample-pattern-gif').attr({src: 'img/'.concat(App.curGif + 2, '.gif')});
+            });                         
+            App.$doc.on('click', '#find-cor-bits-left-arrow', function() {
+                App.curGif = App.mod(App.curGif - 1, 36);
+                $('#sample-pattern-gif').attr({src: 'img/'.concat(App.curGif + 2, '.gif')});
+            });            
 
             // Drop-downs
             $("#chemical-type").on("change", function() {
