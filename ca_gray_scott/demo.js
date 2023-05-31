@@ -5,29 +5,43 @@ jQuery(function($) {
     var App = {
         // Global variables
         n: 100, // the dimensions of the board
-        F: 0.014, // parameter in the Gray-Scott equation
-        k: 0.039, // parameter in the Gray-Scott equation
-        Dh: 1, // spatial resolution
-        Dt: 1, // temporal resolution. Default is 0.02
-        Du: 0.1, // diffusion constant of u. Default is 2x10e-5
-        Dv: 0.05, // diffusion constant of v. Default is 10e-5
+        F: 0.03, // parameter in the Gray-Scott equation
+        k: 0.06, // parameter in the Gray-Scott equation
+        Du: 0.16, // diffusion constant of u. Default is 2e-5
+        Dv: 0.03, // diffusion constant of v. Default is 1e-5
         delay: 0, // the delay between each frame for the animation (ms)
         neighborhoodType: 'moore', // the type of neighborhoods, ['moore', 'neumann']
-        boundaryCond: 'cut-off', // the boundary conditions, ['cut-off', 'periodic']
-        cellClasses: ["cell white", "cell white", "cell white"], // strings that identify the colors of the cells
+        boundaryCond: 'periodic', // the boundary conditions, ['cut-off', 'periodic']
         paused: true, // whether or not the simulation is paused
         maxGenNoChange: 1, // the maximum number of generations to check for no change
         countGenNoChange: 0, // the current number of generations where no agents moved
         // animation parameters
         nFrames: 100, // the number of frames to generate the animation for
-        stepsPerFrames: 40, // the number of simulation steps per frame
+        stepsPerFrames: 10, // the number of simulation steps per frame
         animationIteration: 0, // the current iteration of the animation we are playing
         lo: 0,
         hi: 1,
+        initConds: ["center square", "center point", "random"], // possible initial conditions
+        curInitCond: "center square", // the type of initial condition
+        canceled: false, // whether to cancel the generation of the animation
+        uFrames: [], // frames for U chem
+        vFrames: [], // frames for V chem
 
         init: function() {
             // JQuery stuff. Renders the main game
             App.$doc = $(document);
+
+            // Set default parameters in HTML page during init
+            $('#F-range').val(App.F);
+            $('#k-range').val(App.k);
+            $('#du-range').val(App.Du);
+            $('#dv-range').val(App.Dv);
+            $('#n-frames-range').val(App.nFrames);
+            $('#steps-per-frame-range').val(App.stepsPerFrames);
+            $('#delay-range').val(App.delay);
+            $("#delay-intext").text("(".concat(App.delay.toString(), "ms", ")"));
+            $('#board-size-range').val(App.n);
+            $("#board-size-intext").text("(".concat(App.n.toString(), 'x', App.n, ")"));
 
             // On init, call these functions to set up area
             App.initBoardNP();
@@ -70,41 +84,63 @@ jQuery(function($) {
 
             // Buttons   
             // Reset the board
-            App.$doc.on('click', '#reset-board-btn', function() {           
+            App.$doc.on('click', '#reset-board-btn', function() {
+                App.pauseAnimation();
+                App.canceled = false;         
                 App.initBoardNP();
                 App.observeNP(App.chemType, '#pos');
                 $("#animation-gen-status").text("Idle");
             });            
             // Start the simulation
             App.$doc.on('click', '#start-btn', function() {
-            	// $("#animation-gen-status").text("Generating...");
-                // await App.sleep(100);
+                App.pauseAnimation();
+                App.canceled = false;
+                App.observeNP(App.chemType, '#pos');
                 App.startSimulation();
-                // $("#animation-gen-status").text("Done!");
             });
             // Play the animation
             App.$doc.on('click', '#play-btn', function() {
-            	App.paused = false;
-                $("#animation-gen-status").text("Playing animation...");
-                App.playAnimation();
+                if (App.uFrames.length == 0 || App.vFrames.length == 0) {
+                    $("#animation-gen-status").text("No animation available. Please press the 'Generate' button.");
+                } else {
+                    App.paused = false;
+                    $("#animation-gen-status").text("Playing animation...");
+                    App.playAnimation();
+                }
             });
             // Pause the animation
             App.$doc.on('click', '#pause-btn', function() {
+                App.canceled = true;
                 App.pauseAnimation();
                 $("#animation-gen-status").text("Paused animation...");
-            });            
+            });
+            // Cancel the frames generation
+            App.$doc.on('click', '#cancel-btn', function() {
+                App.canceled = true;
+            });                        
 
             // Drop-downs
             $("#chemical-type").on("change", function() {
-                let selectedVal = this.value;
-                App.chemTypeStr = selectedVal;
-                if (App.chemTypeStr == "u-chem") {
-                		App.chemType = App.u;
-                } else {
-                		App.chemType = App.v;
-                };
+                App.updateChemType();
                 App.observeNP(App.chemType, '#pos');
-            });             
+            });
+            $("#init-cond").on("change", function() {
+                App.updateInitCond();
+                App.initBoardNP();
+                App.observeNP(App.chemType, '#pos');
+                $("#animation-gen-status").text("Idle");
+            });
+            $("#sample-params").on("change", function() {
+                let selectedParams = $("#sample-params option:selected").text().split(" | ");
+                App.F = parseFloat(selectedParams[0]);
+                App.k = parseFloat(selectedParams[1]);
+                App.Du = parseFloat(selectedParams[2]);
+                App.Dv = parseFloat(selectedParams[3]);
+                $('#F-range').val(App.F);
+                $('#k-range').val(App.k);
+                $('#du-range').val(App.Du);
+                $('#dv-range').val(App.Dv);                
+            });                                    
         },
         // Methods
         setBoardInHTML: function() {
@@ -127,53 +163,11 @@ jQuery(function($) {
                 $('#config-table').append("<tr id='tr".concat(x, "'></tr>"));
                 for (let y = 0; y < App.n; y++) {
                     $('#tr'.concat(x)).append("<td id='pos".concat(i, "'></td>"));
-                    $("#pos".concat(i)).attr('class', "cell black");
+                    $("#pos".concat(i)).attr('class', "cell white");
                     i++;
                 }
             }
         },
-        initBoard: function() {
-            /*
-            Description:
-                Initializes the CA board with a new configuration.
-
-            Arguments:
-                None
-
-            Return:
-                (None)
-            */
-            // CA configurations
-            let u = App.createArray(App.n, App.n);
-            let v = App.createArray(App.n, App.n);
-            let nextu = App.createArray(App.n, App.n);
-            let nextv =  App.createArray(App.n, App.n);
-            // initial conditions
-            for (let x = 0; x < App.n; x++) {
-            		for (let y = 0; y < App.n; y++) {
-                		if (Math.floor(0.4 * App.n) < x && x < Math.floor(0.6 * App.n) && Math.floor(0.4 * App.n) < y && y < Math.floor(0.6 * App.n)) {
-                    		u[x][y] = 0.5;
-                            nextu[x][y] = 0.5;
-                            v[x][y] = 0.25;
-                            nextv[x][y] = 0.25;
-                        }
-                        else {
-                                u[x][y] = 1;
-                                nextu[x][y] = 1;
-                                v[x][y] = 0;
-                                nextv[x][y] = 0;                    
-                        }
-            		}
-            }
-            // save the configuration
-            App.u = u;
-            App.v = v;
-            App.nextu = nextu;
-            App.nextv = nextv;
-            
-            App.step = 0;
-            App.countGenNoChange = 0;        
-        },  
         initBoardNP: function() {
             /*
             Description:
@@ -188,70 +182,45 @@ jQuery(function($) {
             // CA configurations
             let u = nj.ones([App.n + 2, App.n + 2], "float64");
             let v = nj.zeros([App.n + 2, App.n + 2], "float64");
-            // let u = nj.random([App.n + 2, App.n + 2]).multiply(0.02);
-            // let v = nj.random([App.n + 2, App.n + 2]).multiply(0.02);          
+          
             // define radius of initial conditions
-            let n2 = Math.floor(App.n / 2);
-            let r = 10;
+            // let n2 = Math.floor(App.n / 2);
+            // let r = 10;
+
             // initial conditions
-            for (let x = 0; x < App.n + 2; x++) {
-                for (let y = 0; y < App.n + 2; y++) {
-                    // if (n2 - r <= x && x <= n2 + r && n2 - r <= y && y <= n2 + r) {
-                    //     u.set(x, y, 0.5);
-                    //     v.set(x, y, 0.25);
-                    // }
-                    if ((Math.floor(0.39 * App.n) <= x && x <= Math.floor(0.41 * App.n) || Math.floor(0.59 * App.n) <= x && x <= Math.floor(0.61 * App.n)) && n2 - r <= y && y <= n2 + r) {
-                        u.set(x, y, 0.5);
-                        v.set(x, y, 0.25);
+            if (App.curInitCond == "center point") {
+                let mid = Math.floor(App.n / 2);
+                u.set(mid, mid, 0);
+                v.set(mid, mid, 1);
+            }
+            else if (App.curInitCond == "random") {
+                u = nj.random([App.n + 2, App.n + 2]).multiply(0.02);
+                v = nj.random([App.n + 2, App.n + 2]).multiply(0.02);
+            }
+            else { // default, "center square" initial conditions
+                for (let x = 0; x < App.n + 2; x++) {
+                    for (let y = 0; y < App.n + 2; y++) {
+                        if (Math.floor(0.4 * App.n) < x && x < Math.floor(0.6 * App.n) && Math.floor(0.4 * App.n) < y && y < Math.floor(0.6 * App.n)) {
+                            u.set(x, y, 0.25);
+                            v.set(x, y, 0.5);
+                        }                                     
                     }
-                    if ((Math.floor(0.39 * App.n) <= y && y <= Math.floor(0.41 * App.n) || Math.floor(0.59 * App.n) <= y && y <= Math.floor(0.61 * App.n)) && n2 - r <= x && x <= n2 + r) {
-                        u.set(x, y, 0.5);
-                        v.set(x, y, 0.25);
-                    }                                        
                 }
-            }      
+            }    
             
             // save the configuration
             App.u = u;
             App.v = v;
-            App.chemTypeStr = $("#chemical-type").val();
-            if (App.chemTypeStr == "u-chem") {
-              App.chemType = App.u;
-            } else {
-              App.chemType = App.v;
-            }
+            // save the type of chemical to display
+            App.updateChemType();
+            // reset frames
+            App.uFrames = [];
+            App.vFrames = [];
             
             // meta info
             App.step = 0;
             App.countGenNoChange = 0;
             App.animationIteration = 0;       
-        },
-        observe: function(obj, src = '#pos') {
-            /*
-            Description:
-                Use config to put color on the board in the HTML document.
-                
-            Arguments:
-                src: the common ID of the cells. To be concatenated with numbers to find the cells.
-                
-            Return:
-                (None)
-            */
-            for (let x = 0; x < App.n; x++) {
-                for (let y = 0; y < App.n; y++) {
-                    let cellVal;
-                    if (obj[x][y] <= 1 && obj[x][y] >= 0) {
-                        cellVal =  obj[x][y];
-                    } else if (obj[x][y] < 0) {
-                        cellVal =  0;
-                    } else {
-                        cellVal =  1;
-                    };
-                    let i = x + App.n * y;
-                    $(src.concat(i)).attr('class', App.cellClasses[0]);
-                    $(src.concat(i)).css("opacity", String(cellVal));
-                }
-            }
         },
         observeNP: function(obj, src = '#pos') {
             /*
@@ -264,19 +233,54 @@ jQuery(function($) {
             Return:
                 (None)
             */
+            let chemMax = obj.max();
+            let chemMin = obj.min();
+            let chemDiff = chemMax - chemMin;
             for (let x = 0; x < App.n; x++) {
                 for (let y = 0; y < App.n; y++) {
-                    let cellVal = obj.get(x + 1, y + 1);
-                    if (cellVal === undefined) {
+                    let cellVal = obj.get(x + 1, y + 1); // 0 = white, 1 = black on v chem type
+                    if (cellVal === undefined) { // error checking
                         console.log(x);
                         console.log(y);
                     }
                     let i = x + App.n * y;
-                    // $(src.concat(i)).attr('class', App.cellClasses[0]);
-                    $(src.concat(i)).css("opacity", cellVal.toString());
+                    // scale cell value
+                    let cellValScaled = 255 - parseInt(255 * (cellVal - chemMin) / chemDiff);
+                    $(src.concat(i)).css("background-color", 'rgb('.concat(cellValScaled, ',', cellValScaled, ',', cellValScaled, ')'));
                 }
             }
-        },                 
+        },    
+        updateChemType: function() {
+            /*
+            Description:
+                Updates the type of chemical being displayed.
+                
+            Arguments:
+                (None)
+                
+            Return:
+                (None)
+            */
+            App.chemTypeStr = $("#chemical-type").val();
+            if (App.chemTypeStr == "u-chem") {
+                App.chemType = App.u;
+            } else {
+                App.chemType = App.v;
+            }           
+        },
+        updateInitCond: function() {
+            /*
+            Description:
+                Updates the type of initial condition.
+                
+            Arguments:
+                (None)
+                
+            Return:
+                (None)
+            */
+            App.curInitCond = $("#init-cond").val();          
+        },                  
         updateColor: function(population, color) {
             /*
             Description:
@@ -318,75 +322,6 @@ jQuery(function($) {
             }
             return shuffled.slice(min);
         },
-        updateConfig: function() {
-            /*
-            Description:
-                Loop through the current configuration and update each cell's value according to its neighbors.
-            
-            Arguments:
-                None
-            
-            Return:
-                (None)
-            */
-            // loop through the config and update each cell's value according to its neighbors
-            for (let x = 0; x < App.n; x++) {
-                for (let y = 0; y < App.n; y++) {
-                    let safe_x_minus_1 = (x - 1 < 0) ? App.n - 1 : (x - 1) % App.n;
-                    let safe_y_minus_1 = (y - 1 < 0) ? App.n - 1 : (y - 1) % App.n;
-                    
-                		let uC = App.u[x][y];
-                    let uR = App.u[(x + 1) % App.n][y];
-                    let uL = App.u[safe_x_minus_1][y];
-                    let uU = App.u[x][(y + 1) % App.n];
-                    let uD = App.u[x][safe_y_minus_1];
-                    // let uUL = App.u[safe_x_minus_1][(y + 1) % App.n];
-                    // let uUR = App.u[(x + 1) % App.n][(y + 1) % App.n];
-                    // let uDL = App.u[safe_x_minus_1][safe_y_minus_1];
-                    // let uDR = App.u[(x + 1) % App.n][safe_y_minus_1];
-                    
-                		let vC = App.v[x][y];
-                    let vR = App.v[(x + 1) % App.n][y];
-                    let vL = App.v[safe_x_minus_1][y];
-                    let vU = App.v[x][(y + 1) % App.n];
-                    let vD = App.v[x][safe_y_minus_1];
-                    // let vUL = App.v[safe_x_minus_1][(y + 1) % App.n];
-                    // let vUR = App.v[(x + 1) % App.n][(y + 1) % App.n];
-                    // let vDL = App.v[safe_x_minus_1][safe_y_minus_1];
-                    // let vDR = App.v[(x + 1) % App.n][safe_y_minus_1];
-                    
-                    let uLap = (uR + uL + uU + uD - 4 * uC) / (App.Dh ** 2);
-                    let vLap = (vR + vL + vU + vD - 4 * vC) / (App.Dh ** 2);
-                    
-                    App.nextu[x][y] = uC + (App.F * (1 - uC) - uC * (vC**2) + App.Du * uLap) * App.Dt;
-                    App.nextv[x][y] = vC + (-(App.F + App.k) * vC + uC * (vC**2) + App.Dv * vLap) * App.Dt;                                        
-                }
-            }
-            // should implement a truly random loop by getting a random shuffling of the indices of the cells
-
-            // step the config forward
-            let tempU = structuredClone(App.u);
-            App.u = App.nextu;
-            App.nextu = tempU;
-            let tempV = structuredClone(App.v);
-            App.v = App.nextv;
-            App.nextv = tempV;            
-            /* App.u = structuredClone(nextu);
-            App.nextu = structuredClone(u);
-            App.v = structuredClone(nextv);
-            App.nextv = structuredClone(v); */
-            // if we did not move any agents, stop the simulation
-            /* if (!moved) {
-                App.countGenNoChange = App.countGenNoChange + 1;
-            }
-            if (App.countGenNoChange > App.maxGenNoChange) {
-                App.paused = true;
-                // console.log("Done")
-            } */
-            // update the blog page's text
-            // $("#generation-intext").text(App.step);
-            // $("#percent-satisfied-intext").text(((App.totalSatisfied / App.totalAgents) * 100).toFixed(2));   
-        },
         periodicBC: function(u) {
             /*
             Description:
@@ -418,19 +353,16 @@ jQuery(function($) {
                 (np.array) the Laplacian at each point of u.
             */
             // left neighbor, bottom neighbor, top neighbor, left neighbor
-        	// return (u[:-2, 1:-1] + u[1:-1, :-2] - 4*u[1:-1, 1:-1] + u[1:-1, 2:] + u[2:, 1:-1])
             let Neighbor1 = u.slice([null, -2], [1, -1]);
             let Neighbor2 = u.slice([1, -1], [null, -2]);
             let Neighbor3 = u.slice([1, -1], [1, -1]);
             let Neighbor4 = u.slice([1, -1], 2);
             let Neighbor5 = u.slice(2, [1, -1]);
-            // $("#result").text(Neighbor5.shape);
             
             let result = Neighbor1.add(Neighbor2);
             result = result.subtract(Neighbor3.multiply(4));          
             result = result.add(Neighbor4);
             result = result.add(Neighbor5);
-            // $("#result").text(result.get(0, 0));  
             return result;
         },
         updateConfigNP: function() {
@@ -483,27 +415,28 @@ jQuery(function($) {
             Return:
                 (None)
             */
-            let frames = [];
             let uFrames = [];
             let vFrames = [];
             for (let i = 0; i < App.nFrames; i++) {
-            	// update the model for stepsPerFrames and save the frames
-                for (let j = 0; j < App.stepsPerFrames; j++) {
-                	App.updateConfigNP();
+                if (!App.canceled) {
+                    // update the model for stepsPerFrames and save the frames
+                    for (let j = 0; j < App.stepsPerFrames; j++) {
+                        App.updateConfigNP();
+                    }
+                    // need to do some scaling to u and v frames
+
+                    // save frames
+                    uFrames.push(App.u);
+                    vFrames.push(App.v);
+                    await App.sleep(1);
+                    $("#animation-gen-status").text("Generating frame ".concat(i + 1, " of ", App.nFrames));                    
+                } else {
+                    break;
                 }
-                // save frames
-                uFrames.push(App.u);
-                vFrames.push(App.v);
-                // console.log("Frame ".concat(i));
-                await App.sleep(1);
-                $("#animation-gen-status").text("Generating frame ".concat(i + 1, " of ", App.nFrames));
-            };
-            // need to do some scaling to u and v frames
-            
-            frames.push(uFrames);
-            frames.push(vFrames);
-            App.uFrames = frames[0];
-            App.vFrames = frames[1];
+            }; 
+            // save completed frames or partially completed frames
+            App.uFrames = uFrames;
+            App.vFrames = vFrames;
             $("#animation-gen-status").text("Done! Press 'Play' to play the animation.");
         },
         startSimulation: function() {
@@ -519,7 +452,6 @@ jQuery(function($) {
             */
             App.initBoardNP();
             App.createFrames();
-            // console.log(App.uFrames.length);
         },
         playAnimation: async function() {
             /*
@@ -533,7 +465,6 @@ jQuery(function($) {
                 (None)
             */
             while (!App.paused) {
-                // console.log(App.animationIteration);
                 if (App.chemTypeStr == "u-chem") {
                     App.observeNP(App.uFrames[App.animationIteration], "#pos");
                 } else {

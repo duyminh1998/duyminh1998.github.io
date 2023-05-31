@@ -56,52 +56,73 @@
                     <div class="btn-containers" id="ca-gray-scott-btn-containers">
                       <button type="button" class="ca-gray-scott-btns" id="reset-board-btn">Reset</button>
                       <button type="button" class="ca-gray-scott-btns" id="start-btn" style="width: 75px;">Generate</button>
+                      <button type="button" class="ca-gray-scott-btns" id="cancel-btn" style="width: 60px;">Cancel</button>
                       <button type="button" class="ca-gray-scott-btns" id="play-btn">Play</button>
                       <button type="button" class="ca-gray-scott-btns" id="pause-btn">Pause</button>              
                     </div>
                     <div class="ca-gray-scott-controls">
                       <div class="inputs-container">
                         <div class="input-container">
-                          <a>F</a>
-                          <input type="text" value="0.0545" class="slider" id="F-range">
+                          <a>F: </a>
+                          <input type="text" value="0.03" class="slider" id="F-range">
                         </div>
                         <div class="input-container">
-                          <a>k</a>
-                          <input type="text" value="0.062" class="slider" id="k-range">
+                          <a>k: </a>
+                          <input type="text" value="0.06" class="slider" id="k-range">
                         </div>
                         <div class="input-container">
-                          <a>Du</a>
-                          <input type="text" value="0.1" class="slider" id="du-range">
+                          <a>Du: </a>
+                          <input type="text" value="0.16" class="slider" id="du-range">
                         </div>
                         <div class="input-container">
-                          <a>Dv</a>
-                          <input type="text" value="0.05" class="slider" id="dv-range">
+                          <a>Dv: </a>
+                          <input type="text" value="0.03" class="slider" id="dv-range">
                         </div>
                         <div class="input-container">
-                          <a>Frames</a>
+                          <a>Frames: </a>
                           <input type="text" value="100" class="slider" id="n-frames-range">
                         </div>
                         <div class="input-container">
-                          <a>Steps per frame</a>
-                          <input type="text" value="40" class="slider" id="steps-per-frame-range">
+                          <a>Steps per frame: </a>
+                          <input type="text" value="10" class="slider" id="steps-per-frame-range">
                         </div>                  
                         <div class="input-container">
-                          <a>Delay<a id="delay-intext">(100ms)</a></a>
+                          <a>Delay<a id="delay-intext">(0ms)</a></a>
                           <input type="range" min="0" max="3000" value="0" class="slider" id="delay-range">
                         </div>
                         <div class="input-container">
                           <a>Board size<a id="board-size-intext">(100x100)</a></a>
-                          <input type="range" min="10" max="300" value="100" class="slider" id="board-size-range">
+                          <input type="range" min="10" max="200" value="100" class="slider" id="board-size-range">
                         </div>
                       </div>
                       <div class="dropdowns-container">
                         <div class="dropdown-container" id="chemical-type-dropdown-container">
-                          <label for="chemical-type">Chemical type</label>
+                          <label for="chemical-type">Chemical type: </label>
                           <select name="chemical-type" id="chemical-type">
-                            <option value="u-chem" selected>U</option>
-                            <option value="v-chem">V</option>
+                            <option value="u-chem" >U</option>
+                            <option value="v-chem" selected>V</option>
                           </select>
                         </div>
+                        <div class="dropdown-container" id="init-cond-dropdown-container">
+                          <label for="init-cond">Initial conditions: </label>
+                          <select name="init-cond" id="init-cond">
+                            <option value="center square" selected>center square</option>
+                            <option value="center point">center point</option>
+                            <option value="random">random</option>
+                          </select>
+                        </div>
+                        <div class="dropdown-container" id="sample-params-dropdown-container">
+                          <label for="sample-params">Sample parameters: </label>
+                          <select name="sample-params" id="sample-params">
+                            <option value=0 selected>0.03 | 0.06 | 0.16 | 0.03</option>
+                            <option value=1>0.03 | 0.06 | 0.16 | 0.08</option>
+                            <option value=2>0.06 | 0.03 | 0.16 | 0.08</option>
+                            <option value=3>0.014 | 0.039 | 0.16 | 0.08</option>
+                            <option value=4>0.06 | 0.062 | 0.16 | 0.08</option>
+                            <option value=5>0.04 | 0.062 | 0.16 | 0.08</option>
+                            <option value=6>0.02 | 0.057 | 0.16 | 0.08</option>
+                          </select>
+                        </div>                        
                       </div>
                     </div>
                 </div>                
