@@ -57,52 +57,21 @@ td {
 		white-space: nowrap;
 	}	
 }
-td.zero {
-    background-color: #05ffa1;
-}
 
-td.blank {
-    background-color: None;
-}
-
-td.blue {
-    background-color: blue;
-}
-td.red {
-    background-color: red;
-}
-td.aquamarine {
-    background-color: #05ffa1;
+td.peach {
+    background-color: peachpuff;
 }
 td.magenta {
     background-color: #ff71ce;
 }
-td.yellow {
-    background-color: #ffd319;
-}
-td.orange {
-    background-color: #ff901f;
+td.homepurple {
+    background-color: #FC83FC;
 }
 td.brightpurple {
     background-color: #c700b5;
 }
-td.homepurple {
-    background-color: #FC83FC;
-}
-td.homeblue {
-    background-color: #A7BCFD;
-}
-td.white {
-    background-color: white;
-}
-td.black {
-    background-color: black;
-}
-td.green {
-    background-color: green;
-}
-td.lime {
-    background-color: greenyellow;
+td.red {
+    background-color: red;
 }
 td.brown {
     background-color: brown;
@@ -110,11 +79,38 @@ td.brown {
 td.maroon {
     background-color: maroon;
 }
+td.orange {
+    background-color: #ff901f;
+}
+td.yellow {
+    background-color: #ffd319;
+}
+td.lime {
+    background-color: greenyellow;
+}
+td.green {
+    background-color: green;
+}
+td.aquamarine {
+    background-color: #05ffa1;
+}
+td.homeblue {
+    background-color: #A7BCFD;
+}
 td.skyblue {
     background-color: skyblue;
 }
-td.peach {
-    background-color: peachpuff;
+td.blue {
+    background-color: blue;
+}
+td.white {
+    background-color: white;
+}
+td.black {
+    background-color: black;
+}
+td.blank {
+    background-color: None;
 }
 
 /* CA Schelling controls */

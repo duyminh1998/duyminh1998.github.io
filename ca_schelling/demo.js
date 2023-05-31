@@ -8,13 +8,13 @@ jQuery(function($) {
         populations: 2, // the number of populations
         tolerance: 0.7, // each cell's tolerance for their neighbors
         initialRatio: 0.5, // initial percentage of cells of one kind to the other
-        initialRatios: [33, 33, 34], // a list to hold initial percentage of cells for simulations with more than two populations
+        initialRatios: [], // a list to hold initial percentage of cells for simulations with more than two populations
         emptyPerc: 0.1, // the percentage of empty cells
         delay: 100, // the delay between each step for the animation (ms)
         neighborhoodType: 'moore', // the type of neighborhoods, ['moore', 'neumann']
         boundaryCond: 'cut-off', // the boundary conditions, ['cut-off', 'periodic']
-        cellClasses: ["cell white", "cell homeblue", "cell brightpurple", "cell orange", "cell yellow", "cell blue", "cell red", "cell green", "cell lime", "cell brown", "cell peach"], // strings that identify the colors of the cells
-        availableColors: ["cell white", "cell blue", "cell red", "cell aquamarine", "cell magenta", "cell yellow", "cell orange", "cell brightpurple", "cell homepurple", "cell homeblue", "cell blank", "cell black", "cell green", "cell lime", "cell brown", "cell maroon", "cell skyblue", "cell peach"], // all the possible colors
+        cellClasses: ["cell white", "cell homeblue", "cell brightpurple", "cell orange", "cell yellow", "cell blue", "cell red", "cell green", "cell lime", "cell brown", "cell peach"], // strings that identify the colors of the cells. Default values.
+        availableColors: ["cell peach", "cell magenta", "cell homepurple", "cell brightpurple", "cell red", "cell brown", "cell maroon", "cell orange", "cell yellow", "cell lime", "cell green", "cell aquamarine", "cell homeblue", "cell skyblue", "cell blue", "cell white", "cell black", "cell blank"], // all the possible colors
         paused: true, // whether or not the simulation is paused
         maxGenNoChange: 1, // the maximum number of generations to check for no change
         countGenNoChange: 0, // the current number of generations where no agents moved
@@ -24,6 +24,7 @@ jQuery(function($) {
             App.$doc = $(document);
 
             // On init, call these functions to set up area
+            App.setInitialPopulationControlsInHTML();
             App.initBoard();
             App.setBoardInHTML();
             App.observe('#pos');
@@ -34,12 +35,7 @@ jQuery(function($) {
                 App.tolerance = document.getElementById('tolerance-range').value / 100;
                 $("#similarity-intext").text(document.getElementById('tolerance-range').value.toString());
             });            
-            App.$doc.on('input', '#initial-ratio-range', function() {
-                App.initialRatio = document.getElementById('initial-ratio-range').value / 100;
-                $("#initial-ratio-intext").text(document.getElementById('initial-ratio-range').value.toString());
-                App.initBoard();
-                App.observe('#pos');
-            });
+            App.setTwoPopulationInitRatioCallback();
             App.$doc.on('input', '#empty-range', function() {
                 App.emptyPerc = document.getElementById('empty-range').value / 100;
                 $("#empty-intext").text(document.getElementById('empty-range').value.toString());
@@ -57,29 +53,12 @@ jQuery(function($) {
                 App.setBoardInHTML();
                 App.observe('#pos');
             });
-            App.$doc.on('input', '.initial-ratio-range-slider', function() {
-                let sliderID = $(this).attr('id');
-                let sliderIdx = sliderID.charAt(sliderID.length - 1);
-                let sliderVal = document.getElementById(sliderID).value.toString();
-                $("#pop-initial-ratio-intext-".concat(sliderIdx)).text(sliderVal);
-                App.initialRatios[sliderIdx - 1] = sliderVal;
-                // update initial ratio sliders max range
-                for (let i = 1; i <= App.populations; i++) {
-                    let newMax = 100;
-                    for (let j = 0; j < App.initialRatios.length; j++) {
-                    if (j + 1 != i) newMax = newMax - App.initialRatios[j];
-                    }
-                    $("#pop-max-ratio-intext-".concat(i)).text(newMax);
-                    $("#pop-initial-ratio-range-".concat(i)).attr({max: newMax});
-                }
-                App.initBoard();
-                App.observe('#pos');
-            });
+            App.setMultiPopulationInitRatioCallback();
 
             // Buttons                
             // Reset the board
             App.$doc.on('click', '#reset-board-btn', function() {      
-            		App.setInitialPopulationControlsInHTML();
+            	// App.setInitialPopulationControlsInHTML();
                 App.initBoard();
                 App.observe('#pos');
             });
@@ -129,21 +108,6 @@ jQuery(function($) {
             });                        
         },
         // Methods
-        randomlySetBoard: function(src) {
-            /*
-            Description:
-                Resets the CA board with a new configuration.
-
-            Arguments:
-                src: the common ID of the cells. To be concatenated with numbers to find the cells.
-
-            Return:
-                (None)
-            */
-            for (let i = 0; i < (App.n * App.n); i++) {
-                $(src.concat(i)).attr('class', App.cellClasses[Math.floor(Math.random() * App.cellClasses.length)]);
-            }
-        },
         setColorSelectionCallback: function() {
             /*
             Description:
@@ -160,6 +124,55 @@ jQuery(function($) {
                 let selIdx = selID.charAt(selID.length - 1);
                 let selectedVal = document.getElementById(selID).value.toString();
                 App.updateColor(selIdx, selectedVal);
+                App.observe('#pos');
+            });
+        },
+        setTwoPopulationInitRatioCallback: function() {
+            /*
+            Description:
+                Set up a function to change the population initial ratios in the event of a slider change (in case the function gets deleted.)
+
+            Arguments:
+                None
+
+            Return:
+                (None)
+            */              
+            App.$doc.on('input', '#initial-ratio-range', function() {
+                App.initialRatio = document.getElementById('initial-ratio-range').value / 100;
+                $("#initial-ratio-intext").text(document.getElementById('initial-ratio-range').value.toString());
+                App.initBoard();
+                App.observe('#pos');
+            });
+        },        
+        setMultiPopulationInitRatioCallback: function() {
+            /*
+            Description:
+                Set up a function to change the population initial ratios in the event of a slider change (in case the function gets deleted.)
+
+            Arguments:
+                None
+
+            Return:
+                (None)
+            */              
+            App.$doc.on('input', '.initial-ratio-range-slider', function() { // range slider class for n > 2 populations
+                let sliderID = $(this).attr('id');
+                let sliderIdx = parseInt(sliderID.charAt(sliderID.length - 1));
+                if (sliderID.length > 25) sliderIdx = parseInt(sliderID.charAt(sliderID.length - 2).concat(sliderID.charAt(sliderID.length - 1)));
+                let sliderVal = document.getElementById(sliderID).value.toString();
+                App.initialRatios[sliderIdx - 1] = sliderVal;
+                // update initial ratio sliders max range
+                for (let i = 1; i <= App.populations; i++) {
+                    let newMax = 100;
+                    for (let j = 0; j < App.initialRatios.length; j++) {
+                        if (j + 1 != i) newMax = newMax - App.initialRatios[j];
+                    }
+                    $("#pop-max-ratio-intext-".concat(i)).text(newMax);
+                    $("#pop-initial-ratio-range-".concat(i)).attr({max: newMax});
+                }
+                $("#pop-initial-ratio-intext-".concat(sliderIdx)).text(sliderVal);
+                App.initBoard();
                 App.observe('#pos');
             });
         },
@@ -203,20 +216,22 @@ jQuery(function($) {
                 for (let i = 0; i < App.populations; i++) {
                     $('#pop-color-'.concat(i + 1)).val(App.cellClasses[i + 1].substring(5));
                 }
+                App.setTwoPopulationInitRatioCallback();
             }
             else {
             	let equalDistribution = Math.floor(100 / App.populations);
+                App.initialRatios = [];
             	for (let i = 1; i <= App.populations; i++) {
                     if (i == App.populations) equalDistribution = 100 - ((App.populations - 1) * equalDistribution);
-                    $('#initial-ratio-controls').append('<div class="slider-container"><a>Pop '.concat(i, ' ratio (<a id="pop-initial-ratio-intext-', i, '">', equalDistribution, '</a>% out of&nbsp<a id="pop-max-ratio-intext-', i, '">', equalDistribution, '</a>%)</a><input type="range" min="0" max="', equalDistribution, '" value="', equalDistribution, '" class="initial-ratio-range-slider" id="pop-initial-ratio-range-', i, '"></div>'));
+                    $('#initial-ratio-controls').append('<div class="slider-container"><a>Pop '.concat(i, ' (<a id="pop-initial-ratio-intext-', i, '">', equalDistribution, '</a>%/<a id="pop-max-ratio-intext-', i, '">', equalDistribution, '</a>%)</a><input type="range" min="0" max="', equalDistribution, '" value="', equalDistribution, '" class="initial-ratio-range-slider" id="pop-initial-ratio-range-', i, '"></div>'));
                     App.initialRatios[i - 1] = equalDistribution;
                     
                     // add new population color control
-                    $('#pop-color-controls').append('<div class="dropdown-container" id="color-dropdown-container-'.concat(i, '"><label for="pop-color-', i, '">Population ', i, ' color: </label><select class="pop-color-sel" name="pop-color-', i, '" id="pop-color-', i, '"></select></div>'));
+                    $('#pop-color-controls').append('<div class="dropdown-container" id="color-dropdown-container-'.concat(i, '"><label for="pop-color-', i, '">Pop ', i, ' color: </label><select class="pop-color-sel" name="pop-color-', i, '" id="pop-color-', i, '"></select></div>'));
                     $('#pop-color-'.concat(i)).html($("#pop-color-choices-template").html());
-                    // $('#pop-color-'.concat(i)).prop('selectedIndex', i);
                     $('#pop-color-'.concat(i)).val(App.cellClasses[i].substring(5));
                 }
+                App.setMultiPopulationInitRatioCallback();
             }
             App.setColorSelectionCallback();
         },
@@ -308,10 +323,10 @@ jQuery(function($) {
               	ratioSum -= ratio;
               })
               if (ratioSum != 0) {
-              		emptyIdx = App.getRandomSubarray(og_idx, parseInt(Math.floor((ratioSum / 100) * agentCap)));
-                  emptyIdx.forEach(function(e_idx) {
+                emptyIdx = App.getRandomSubarray(og_idx, parseInt(Math.floor((ratioSum / 100) * agentCap)));
+                emptyIdx.forEach(function(e_idx) {
                     config[Math.floor(e_idx / App.n)][e_idx % App.n] = -1
-                	});
+                });
               }
             }
             // save a list of empty spaces and agents for future re-allocation
