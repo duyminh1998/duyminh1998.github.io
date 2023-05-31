@@ -128,6 +128,12 @@ td.peach {
     flex-direction: column;
     row-gap: 0.25em
 }
+#pop-color-controls, #initial-ratio-controls {
+    display: flex;
+    justify-content: left;
+    flex-direction: column;
+    row-gap: 0.25em
+}
 .slider-container {
     display: flex;
     justify-content: left
