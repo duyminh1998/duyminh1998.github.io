@@ -21,7 +21,7 @@ jQuery(function($) {
         animationIteration: 0, // the current iteration of the animation we are playing
         lo: 0,
         hi: 1,
-        initConds: ["center square", "center point", "random"], // possible initial conditions
+        initConds: ["center square", "center point", "hollow square", "hashtag", "random"], // possible initial conditions
         curInitCond: "center square", // the type of initial condition
         canceled: false, // whether to cancel the generation of the animation
         uFrames: [], // frames for U chem
@@ -34,7 +34,36 @@ jQuery(function($) {
             [0.021, 0.06, 0.16, 0.008],
             [0.037, 0.055, 0.016, 0.08],
             [0.032, 0.065, 0.088, 0.044],
-            [0.032, 0.065, 0.088, 0.044]
+            [0.021, 0.055, 0.16, 0.08],
+            [0.026, 0.055, 0.088, 0.08],
+            [0.015, 0.055, 0.016, 0.08],
+            [0.037, 0.0625, 0.16, 0.08],
+            [0.01, 0.06, 0.16, 0.008],
+            [0.037, 0.0575, 0.088, 0.08],
+            [0.03, 0.06, 0.16, 0.08],
+            [0.01, 0.055, 0.16, 0.044],
+            [0.01, 0.06, 0.16, 0.008],
+            [0.0349, 0.055, 0.16, 0.08],
+            [0.05, 0.055, 0.16, 0.008], 
+            [0.04, 0.065, 0.16, 0.008],
+            [0.03, 0.055, 0.16, 0.08],
+            [0.05, 0.055, 0.16, 0.08],
+            [0.055, 0.065, 0.16, 0.08],
+            [0.06, 0.06, 0.16, 0.08],
+            [0.065, 0.065, 0.16, 0.008], 
+            [0.04, 0.055, 0.16, 0.08],
+            [0.045, 0.055, 0.016, 0.044],
+            [0.045, 0.055, 0.016, 0.08],
+            [0.045, 0.055, 0.16, 0.044],
+            [0.01, 0.055, 0.16, 0.044],
+            [0.02, 0.055, 0.088, 0.008], 
+            [0.04, 0.055, 0.16, 0.044],
+            [0.06, 0.06, 0.16, 0.008],
+            [0.01, 0.065, 0.16, 0.044],
+            [0.032, 0.055, 0.16, 0.08],
+            [0.032, 0.06, 0.16, 0.08],
+            [0.055, 0.065, 0.16, 0.08],
+            [0.055, 0.065, 0.16, 0.008]
         ], // parameters to display for the sample gifs
 
         init: function() {
@@ -132,18 +161,20 @@ jQuery(function($) {
             App.$doc.on('click', '#find-cor-bits-right-arrow', function() {
                 App.curGif = App.mod(App.curGif + 1, 36);
                 $('#sample-pattern-gif').attr({src: 'img/'.concat(App.curGif, '.gif')});
-                // $('#sample-pattern-F-intext').text(App.gifParams[App.curGif][0]);
-                // $('#sample-pattern-k-intext').text(App.gifParams[App.curGif][1]);
-                // $('#sample-pattern-Du-intext').text(App.gifParams[App.curGif][2]);
-                // $('#sample-pattern-Dv-intext').text(App.gifParams[App.curGif][3]);
+                $('#sample-pattern-F-intext').text(App.gifParams[App.curGif][0]);
+                $('#sample-pattern-k-intext').text(App.gifParams[App.curGif][1]);
+                $('#sample-pattern-Du-intext').text(App.gifParams[App.curGif][2]);
+                $('#sample-pattern-Dv-intext').text(App.gifParams[App.curGif][3]);
+                $('#sample-pattern-id-intext').text(App.curGif + 1);
             });                         
             App.$doc.on('click', '#find-cor-bits-left-arrow', function() {
                 App.curGif = App.mod(App.curGif - 1, 36);
                 $('#sample-pattern-gif').attr({src: 'img/'.concat(App.curGif, '.gif')});
-                // $('#sample-pattern-F-intext').text(App.gifParams[App.curGif][0]);
-                // $('#sample-pattern-k-intext').text(App.gifParams[App.curGif][1]);
-                // $('#sample-pattern-Du-intext').text(App.gifParams[App.curGif][2]);
-                // $('#sample-pattern-Dv-intext').text(App.gifParams[App.curGif][3]);                
+                $('#sample-pattern-F-intext').text(App.gifParams[App.curGif][0]);
+                $('#sample-pattern-k-intext').text(App.gifParams[App.curGif][1]);
+                $('#sample-pattern-Du-intext').text(App.gifParams[App.curGif][2]);
+                $('#sample-pattern-Dv-intext').text(App.gifParams[App.curGif][3]); 
+                $('#sample-pattern-id-intext').text(App.curGif + 1);               
             });            
 
             // Drop-downs
@@ -209,10 +240,6 @@ jQuery(function($) {
             // CA configurations
             let u = nj.ones([App.n + 2, App.n + 2], "float64");
             let v = nj.zeros([App.n + 2, App.n + 2], "float64");
-          
-            // define radius of initial conditions
-            // let n2 = Math.floor(App.n / 2);
-            // let r = 10;
 
             // initial conditions
             if (App.curInitCond == "center point") {
@@ -223,6 +250,30 @@ jQuery(function($) {
             else if (App.curInitCond == "random") {
                 u = nj.random([App.n + 2, App.n + 2]).multiply(0.02);
                 v = nj.random([App.n + 2, App.n + 2]).multiply(0.02);
+            }
+            else if (App.curInitCond == "hollow square" || App.curInitCond == "hashtag") {
+                // define radius of initial conditions
+                let n2 = Math.floor(App.n / 2);
+                let r = 10;
+                if (App.curInitCond == "hashtag") {
+                    r = Math.floor(App.n / 4);
+                }
+                let lhbound = 0.3999;
+                let rhbound = 0.39999;
+                let lvbound = 0.5999;
+                let rvbound = 0.59999;
+                for (let x = 0; x < App.n + 2; x++) {
+                    for (let y = 0; y < App.n + 2; y++) {
+                        if ((Math.floor(lhbound * App.n) <= x && x <= Math.floor(rhbound * App.n) || Math.floor(lvbound * App.n) <= x && x <= Math.floor(rvbound * App.n)) && n2 - r <= y && y <= n2 + r) {
+                            u.set(x, y, 0.5);
+                            v.set(x, y, 0.25);
+                        }
+                        if ((Math.floor(lhbound * App.n) <= y && y <= Math.floor(rhbound * App.n) || Math.floor(lvbound * App.n) <= y && y <= Math.floor(rvbound * App.n)) && n2 - r <= x && x <= n2 + r) {
+                            u.set(x, y, 0.5);
+                            v.set(x, y, 0.25);
+                        }                                       
+                    }
+                }
             }
             else { // default, "center square" initial conditions
                 for (let x = 0; x < App.n + 2; x++) {
