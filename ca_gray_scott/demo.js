@@ -27,6 +27,15 @@ jQuery(function($) {
         uFrames: [], // frames for U chem
         vFrames: [], // frames for V chem
         curGif: 0, // the current gif to display
+        gifParams: [
+            [0.045, 0.06, 0.16, 0.008],
+            [0.021, 0.06, 0.088, 0.044],
+            [0.021, 0.06, 0.16, 0.08],
+            [0.021, 0.06, 0.16, 0.008],
+            [0.037, 0.055, 0.016, 0.08],
+            [0.032, 0.065, 0.088, 0.044],
+            [0.032, 0.065, 0.088, 0.044]
+        ], // parameters to display for the sample gifs
 
         init: function() {
             // JQuery stuff. Renders the main game
@@ -122,11 +131,19 @@ jQuery(function($) {
             // Left and right buttons to choose gifs
             App.$doc.on('click', '#find-cor-bits-right-arrow', function() {
                 App.curGif = App.mod(App.curGif + 1, 36);
-                $('#sample-pattern-gif').attr({src: 'img/'.concat(App.curGif + 2, '.gif')});
+                $('#sample-pattern-gif').attr({src: 'img/'.concat(App.curGif, '.gif')});
+                // $('#sample-pattern-F-intext').text(App.gifParams[App.curGif][0]);
+                // $('#sample-pattern-k-intext').text(App.gifParams[App.curGif][1]);
+                // $('#sample-pattern-Du-intext').text(App.gifParams[App.curGif][2]);
+                // $('#sample-pattern-Dv-intext').text(App.gifParams[App.curGif][3]);
             });                         
             App.$doc.on('click', '#find-cor-bits-left-arrow', function() {
                 App.curGif = App.mod(App.curGif - 1, 36);
-                $('#sample-pattern-gif').attr({src: 'img/'.concat(App.curGif + 2, '.gif')});
+                $('#sample-pattern-gif').attr({src: 'img/'.concat(App.curGif, '.gif')});
+                // $('#sample-pattern-F-intext').text(App.gifParams[App.curGif][0]);
+                // $('#sample-pattern-k-intext').text(App.gifParams[App.curGif][1]);
+                // $('#sample-pattern-Du-intext').text(App.gifParams[App.curGif][2]);
+                // $('#sample-pattern-Dv-intext').text(App.gifParams[App.curGif][3]);                
             });            
 
             // Drop-downs
