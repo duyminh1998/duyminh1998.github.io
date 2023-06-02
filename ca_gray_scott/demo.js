@@ -254,7 +254,7 @@ jQuery(function($) {
             else if (App.curInitCond == "hollow square" || App.curInitCond == "hashtag") {
                 // define radius of initial conditions
                 let n2 = Math.floor(App.n / 2);
-                let r = 10;
+                let r = 11;
                 if (App.curInitCond == "hashtag") {
                     r = Math.floor(App.n / 4);
                 }
@@ -412,10 +412,10 @@ jQuery(function($) {
                 (np.array) the input configuration with periodic boundary conditions applied.
             */
             for (let i = 0; i < App.n + 2; i++) {
-                u.set(0, i, App.u.get(-2, i));
-                u.set(-1, i, App.u.get(1, i));
-                u.set(i, 0, App.u.get(i, -2));
-                u.set(i, -1, App.u.get(i, 1));
+                u.set(0, i, u.get(App.n, i));
+                u.set(App.n + 1, i, u.get(1, i));
+                u.set(i, 0, u.get(i, App.n));
+                u.set(i, App.n + 1, u.get(i, 1));
             };
             return u;
         },
@@ -456,31 +456,31 @@ jQuery(function($) {
             */
             App.u = nj.clip(App.u, App.lo, App.hi);
             App.v = nj.clip(App.v, App.lo, App.hi); 
-            let u = App.u.slice([1, -1], [1, -1]);
-            let v = App.v.slice([1, -1], [1, -1]);
+            const u = App.u.slice([1, -1], [1, -1]);
+            const v = App.v.slice([1, -1], [1, -1]);
 
-            let Lu = App.diffusion(App.u);
-            let Lv = App.diffusion(App.v);
+            const Lu = App.diffusion(App.u);
+            const Lv = App.diffusion(App.v);
             let uvv = u.multiply(v);
             uvv = uvv.multiply(v);
             
-            u = u.add(Lu.multiply(App.Du));
-            u = u.subtract(uvv);
-            u = u.add(u.multiply(-1).add(1).multiply(App.F));
+            let temp = u.multiply(-1);
+            temp.add(1, false);
+            temp.multiply(App.F, false);
+            u.add(temp, false);
             
-            v = v.add(Lv.multiply(App.Dv));
-            v = v.add(uvv);
-            v = v.subtract(v.multiply(App.F + App.k));
+            temp = Lu.multiply(App.Du);
+            u.add(temp, false);
+            u.subtract(uvv, false);
             
-            for (let x = 0; x < App.n; x++) {
-                for (let y = 0; y < App.n; y++) {
-                    App.u.set(x + 1, y + 1, u.get(x, y));
-                    App.v.set(x + 1, y + 1, v.get(x, y));
-                }
-            }                
+            temp = v.multiply(App.F + App.k);
+            v.subtract(temp, false);
+            temp = Lv.multiply(App.Dv);
+            v.add(temp, false);
+            v.add(uvv, false);            
 
-            App.u = App.periodicBC(App.u);
-            App.v = App.periodicBC(App.v);  
+            App.periodicBC(App.u);
+            App.periodicBC(App.v);  
         },
         createFrames: async function() {
             /*
