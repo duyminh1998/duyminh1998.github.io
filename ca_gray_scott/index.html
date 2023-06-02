@@ -80,8 +80,8 @@
                 </div>
 
                 <h2 id="interactive-exercise">Interactive walkthrough</h2>
-                <p>To run the simulation, first use the input boxes on the left to tweak the parameters. The first four input boxes correspond to the feed rate, kill rate, and diffusion rates of the system. Since it can sometimes be hard to find a combination of parameters that produce an interesting pattern, users can also insert preset parameters using the <b>Sample parameters</b> dropdown menu. The <b>Frames</b> and <b>Steps per frame</b> parameters can be used to tweak the smoothness of the animation. Since diffusion often happens slowly, users are encouraged to use a larger number of timesteps per frame. The <b>Delay</b> control determines the delay between each frame when playing the animation. Finally, the <b>Board size</b> slider controls the number of locations in the configuration. The <b>Chemical type</b> dropdown can be used to display the chemical type (V is usually the more interesting one). Finally, users can also use the <b>Initial conditions</b> dropdown to choose between several different initial conditions.</p>
-                <p>After selecting the parameters, click on the <b>Generate</b> button to generate the animation. Since the simulation can take a long time to complete, this demo works by first generating all the frames for the animation and then playing them afterwards for a smoother experience. After the animation is done generating, press the <b>Play</b> button to play the animation. The <b>Pause</b> button can be used to pause the animation, and the <b>Cancel</b> button can be used to stop the generation of an animation.</p>
+                <p>To run the simulation, first use the input boxes on the left to tweak the parameters. The first four input boxes correspond to the feed rate, kill rate, and diffusion rates of the system. Since it can sometimes be hard to find a combination of parameters that produce an interesting pattern, users can also insert preset parameters using the <b>Sample parameters</b> dropdown menu. The <b>Frames</b> and <b>Steps/frame</b> parameters can be used to tweak the smoothness of the animation. Since diffusion often happens slowly, users are encouraged to use a larger number of timesteps per frame. The <b>Delay</b> control determines the delay between each frame when playing the animation. Finally, the <b>Board size</b> slider controls the number of locations in the configuration. The <b>Chemical type</b> dropdown can be used to display the chemical type (V is usually the more interesting one). Finally, users can also use the <b>Initial conditions</b> dropdown to choose between several different initial conditions.</p>
+                <p>After selecting the parameters, click on the <b>Generate</b> button to generate the animation. Since the simulation can take a long time to complete, this demo works by first generating all the frames for the animation and then playing them afterwards for a smoother experience. After the animation is done generating, press the <b>Play</b> button to play the animation, or press the <b>Prev</b> or <b>Next</b> buttons to step through the frames. The <b>Pause</b> button can be used to pause the animation, and the <b>Cancel</b> button can be used to stop the generation of an animation.</p>
                 
                 <div class="table-container">
                     <table class="board" id="config-table"></table>
@@ -99,14 +99,16 @@
                       <button type="button" class="ca-gray-scott-btns" id="reset-board-btn">Reset</button>
                       <button type="button" class="ca-gray-scott-btns" id="start-btn" style="width: 75px;">Generate</button>
                       <button type="button" class="ca-gray-scott-btns" id="cancel-btn" style="width: 60px;">Cancel</button>
-                      <button type="button" class="ca-gray-scott-btns" id="play-btn">Play</button>
-                      <button type="button" class="ca-gray-scott-btns" id="pause-btn">Pause</button>              
+                      <button type="button" class="ca-gray-scott-btns" id="play-btn">Play</button>              
+                      <button type="button" class="ca-gray-scott-btns" id="prev-frame-btn">Prev</button>
+                      <button type="button" class="ca-gray-scott-btns" id="next-frame-btn">Next</button>
+                      <button type="button" class="ca-gray-scott-btns" id="pause-btn">Pause</button>
                     </div>
                     <div class="ca-gray-scott-controls">
                       <div class="inputs-container">
                         <div class="input-container">
                           <a>$F$: </a>
-                          <input type="text" value="0.03" class="slider" id="F-range">
+                          <input type="text" value="0.021" class="slider" id="F-range">
                         </div>
                         <div class="input-container">
                           <a>$k$: </a>
@@ -114,19 +116,19 @@
                         </div>
                         <div class="input-container">
                           <a>$D_u$: </a>
-                          <input type="text" value="0.16" class="slider" id="du-range">
+                          <input type="text" value="0.088" class="slider" id="du-range">
                         </div>
                         <div class="input-container">
                           <a>$D_v$: </a>
-                          <input type="text" value="0.03" class="slider" id="dv-range">
+                          <input type="text" value="0.044" class="slider" id="dv-range">
                         </div>
                         <div class="input-container">
                           <a>Frames: </a>
                           <input type="text" value="100" class="slider" id="n-frames-range">
                         </div>
                         <div class="input-container">
-                          <a>Steps per frame: </a>
-                          <input type="text" value="10" class="slider" id="steps-per-frame-range">
+                          <a>Steps/frame: </a>
+                          <input type="text" value="20" class="slider" id="steps-per-frame-range">
                         </div>                  
                         <div class="input-container">
                           <a>Delay<a id="delay-intext">(0ms)</a></a>
@@ -158,13 +160,31 @@
                         <div class="dropdown-container" id="sample-params-dropdown-container">
                           <label for="sample-params">Sample parameters: </label>
                           <select name="sample-params" id="sample-params">
-                            <option value=0 selected>0.03 | 0.06 | 0.16 | 0.03</option>
-                            <option value=1>0.03 | 0.06 | 0.16 | 0.08</option>
-                            <option value=2>0.06 | 0.03 | 0.16 | 0.08</option>
-                            <option value=3>0.014 | 0.039 | 0.16 | 0.08</option>
-                            <option value=4>0.06 | 0.062 | 0.16 | 0.08</option>
-                            <option value=5>0.04 | 0.062 | 0.16 | 0.08</option>
-                            <option value=6>0.02 | 0.057 | 0.16 | 0.08</option>
+                            <option value=0 selected>0.021 | 0.06 | 0.088 | 0.044</option>
+                            <option value=1>0.045 | 0.06 | 0.16 | 0.008</option>
+                            <option value=2>0.021 | 0.06 | 0.16 | 0.008</option>
+                            <option value=3>0.037 | 0.055 | 0.016 | 0.08</option>
+                            <option value=4>0.032 | 0.065 | 0.088 | 0.044</option>
+                            <option value=5>0.021 | 0.055 | 0.16 | 0.08</option>
+                            <option value=6>0.015 | 0.055 | 0.016 | 0.08</option>
+                            <option value=7>0.037 | 0.0625 | 0.16 | 0.08</option>
+                            <option value=8>0.037 | 0.0575 | 0.088 | 0.08</option>
+                            <option value=9>0.03 | 0.06 | 0.16 | 0.08</option>
+                            <option value=10>0.01 | 0.055 | 0.16 | 0.044</option>
+                            <option value=11>0.01 | 0.06 | 0.16 | 0.008</option>
+                            <option value=12>0.0349 | 0.055 | 0.16 | 0.08</option>
+                            <option value=13>0.05 | 0.055 | 0.16 | 0.008</option>
+                            <option value=14>0.04 | 0.065 | 0.16 | 0.008</option>
+                            <option value=15>0.03 | 0.055 | 0.16 | 0.08</option>
+                            <option value=16>0.045 | 0.055 | 0.16 | 0.044</option>
+                            <option value=17>0.02 | 0.055 | 0.088 | 0.008</option>
+                            <option value=18>0.04 | 0.055 | 0.16 | 0.044</option>
+                            <option value=19>0.06 | 0.06 | 0.16 | 0.008</option>
+                            <option value=20>0.01 | 0.065 | 0.16 | 0.044</option>
+                            <option value=21>0.032 | 0.055 | 0.16 | 0.08</option>
+                            <option value=22>0.032 | 0.06 | 0.16 | 0.08</option>
+                            <option value=23>0.055 | 0.065 | 0.16 | 0.08</option>
+                            <option value=24>0.055 | 0.065 | 0.16 | 0.008</option>                             
                           </select>
                         </div>                        
                       </div>

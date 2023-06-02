@@ -5,10 +5,10 @@ jQuery(function($) {
     var App = {
         // Global variables
         n: 100, // the dimensions of the board
-        F: 0.03, // parameter in the Gray-Scott equation
+        F: 0.021, // parameter in the Gray-Scott equation
         k: 0.06, // parameter in the Gray-Scott equation
-        Du: 0.16, // diffusion constant of u. Default is 2e-5
-        Dv: 0.03, // diffusion constant of v. Default is 1e-5
+        Du: 0.088, // diffusion constant of u. Default is 2e-5
+        Dv: 0.044, // diffusion constant of v. Default is 1e-5
         delay: 0, // the delay between each frame for the animation (ms)
         neighborhoodType: 'moore', // the type of neighborhoods, ['moore', 'neumann']
         boundaryCond: 'periodic', // the boundary conditions, ['cut-off', 'periodic']
@@ -17,7 +17,7 @@ jQuery(function($) {
         countGenNoChange: 0, // the current number of generations where no agents moved
         // animation parameters
         nFrames: 100, // the number of frames to generate the animation for
-        stepsPerFrames: 10, // the number of simulation steps per frame
+        stepsPerFrames: 20, // the number of simulation steps per frame
         animationIteration: 0, // the current iteration of the animation we are playing
         lo: 0,
         hi: 1,
@@ -132,6 +132,12 @@ jQuery(function($) {
             });            
             // Start the simulation
             App.$doc.on('click', '#start-btn', function() {
+                // Make sure we have the right parameters
+                App.F = parseFloat(document.getElementById('F-range').value);
+                App.k = parseFloat(document.getElementById('k-range').value);
+                App.Du = parseFloat(document.getElementById('du-range').value);
+                App.Dv = parseFloat(document.getElementById('dv-range').value);
+
                 App.pauseAnimation();
                 App.canceled = false;
                 App.observeNP(App.chemType, '#pos');
@@ -147,6 +153,26 @@ jQuery(function($) {
                     App.playAnimation();
                 }
             });
+            // Display the previous animation frame
+            App.$doc.on('click', '#prev-frame-btn', function() {
+                if (App.uFrames.length == 0 || App.vFrames.length == 0) {
+                    $("#animation-gen-status").text("No animation available. Please press the 'Generate' button.");
+                } else {
+                    App.paused = true;
+                    App.prevFrame();
+                    $("#animation-gen-status").text("Displaying frame ".concat(App.animationIteration + 1, " of ", App.nFrames));
+                }
+            });    
+            // Display the next animation frame
+            App.$doc.on('click', '#next-frame-btn', function() {
+                if (App.uFrames.length == 0 || App.vFrames.length == 0) {
+                    $("#animation-gen-status").text("No animation available. Please press the 'Generate' button.");
+                } else {
+                    App.paused = true;
+                    App.nextFrame();
+                    $("#animation-gen-status").text("Displaying frame ".concat(App.animationIteration + 1, " of ", App.nFrames));
+                }
+            });                    
             // Pause the animation
             App.$doc.on('click', '#pause-btn', function() {
                 App.canceled = true;
@@ -531,6 +557,46 @@ jQuery(function($) {
             App.initBoardNP();
             App.createFrames();
         },
+        nextFrame: function() {
+            /*
+            Description:
+                Plays the next frame of the animation.
+            
+            Arguments:
+                None
+            
+            Return:
+                (None)
+            */
+            if (App.paused) {
+                App.animationIteration = (App.animationIteration + 1) % App.vFrames.length;
+                if (App.chemTypeStr == "u-chem") {
+                    App.observeNP(App.uFrames[App.animationIteration], "#pos");
+                } else {
+                    App.observeNP(App.vFrames[App.animationIteration], "#pos");
+                }   
+            }      
+        },
+        prevFrame: function() {
+            /*
+            Description:
+                Plays the previous frame of the animation.
+            
+            Arguments:
+                None
+            
+            Return:
+                (None)
+            */
+           if (App.paused) {
+                App.animationIteration = App.mod(App.animationIteration - 1, App.vFrames.length);
+                if (App.chemTypeStr == "u-chem") {
+                    App.observeNP(App.uFrames[App.animationIteration], "#pos");
+                } else {
+                    App.observeNP(App.vFrames[App.animationIteration], "#pos");
+                }
+            }
+        },        
         playAnimation: async function() {
             /*
             Description:
