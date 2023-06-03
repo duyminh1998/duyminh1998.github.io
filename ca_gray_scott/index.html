@@ -80,7 +80,7 @@
                 </div>
 
                 <h2 id="interactive-exercise">Interactive walkthrough</h2>
-                <p>To run the simulation, first use the input boxes on the left to tweak the parameters. The first four input boxes correspond to the feed rate, kill rate, and diffusion rates of the system. Since it can sometimes be hard to find a combination of parameters that produce an interesting pattern, users can also insert preset parameters using the <b>Sample parameters</b> dropdown menu. The <b>Frames</b> and <b>Steps/frame</b> parameters can be used to tweak the smoothness of the animation. Since diffusion often happens slowly, users are encouraged to use a larger number of timesteps per frame. The <b>Delay</b> control determines the delay between each frame when playing the animation. Finally, the <b>Board size</b> slider controls the number of locations in the configuration. The <b>Chemical type</b> dropdown can be used to display the chemical type (V is usually the more interesting one). Finally, users can also use the <b>Initial conditions</b> dropdown to choose between several different initial conditions.</p>
+                <p>To run the simulation, first use the input boxes on the left to tweak the parameters. The first four input boxes correspond to the feed rate, kill rate, and diffusion rates of the system. Since it can sometimes be hard to find a combination of parameters that produce an interesting pattern, users can also insert preset parameters using the <b>Sample parameters</b> dropdown menu. The <b>Frames</b> and <b>Steps/frame</b> parameters can be used to tweak the smoothness of the animation. Since diffusion often happens slowly, users are encouraged to use a larger number of timesteps per frame. The <b>Delay</b> control determines the delay between each frame when playing the animation. Finally, the <b>Board size</b> slider controls the number of locations in the configuration. The <b>Chemical type</b> dropdown can be used to display the chemical type (V is usually the more interesting one). Finally, users can also use the <b>Initial conditions</b> dropdown to choose between several different initial conditions. Users can use the <b>Low color</b> and <b>High color</b> options to specify the colors that correspond to the concentration of the chemicals at each location.</p>
                 <p>After selecting the parameters, click on the <b>Generate</b> button to generate the animation. Since the simulation can take a long time to complete, this demo works by first generating all the frames for the animation and then playing them afterwards for a smoother experience. After the animation is done generating, press the <b>Play</b> button to play the animation, or press the <b>Prev</b> or <b>Next</b> buttons to step through the frames. The <b>Pause</b> button can be used to pause the animation, and the <b>Cancel</b> button can be used to stop the generation of an animation.</p>
                 
                 <div class="table-container">
@@ -163,79 +163,77 @@
                         <div class="dropdown-container" id="sample-params-dropdown-container">
                           <label for="sample-params">Sample parameters: </label>
                           <select name="sample-params" id="sample-params">
-                            <option value=0 selected>0.021 | 0.06 | 0.088 | 0.044</option>
-                            <option value=1>0.045 | 0.06 | 0.16 | 0.008</option>
-                            <option value=2>0.021 | 0.06 | 0.16 | 0.008</option>
-                            <option value=3>0.037 | 0.055 | 0.016 | 0.08</option>
-                            <option value=4>0.032 | 0.065 | 0.088 | 0.044</option>
-                            <option value=5>0.021 | 0.055 | 0.16 | 0.08</option>
-                            <option value=6>0.015 | 0.055 | 0.016 | 0.08</option>
-                            <option value=7>0.037 | 0.0625 | 0.16 | 0.08</option>
-                            <option value=8>0.037 | 0.0575 | 0.088 | 0.08</option>
-                            <option value=9>0.03 | 0.06 | 0.16 | 0.08</option>
-                            <option value=10>0.01 | 0.055 | 0.16 | 0.044</option>
-                            <option value=11>0.01 | 0.06 | 0.16 | 0.008</option>
-                            <option value=12>0.0349 | 0.055 | 0.16 | 0.08</option>
-                            <option value=13>0.05 | 0.055 | 0.16 | 0.008</option>
-                            <option value=14>0.04 | 0.065 | 0.16 | 0.008</option>
-                            <option value=15>0.03 | 0.055 | 0.16 | 0.08</option>
-                            <option value=16>0.045 | 0.055 | 0.16 | 0.044</option>
-                            <option value=17>0.02 | 0.055 | 0.088 | 0.008</option>
-                            <option value=18>0.04 | 0.055 | 0.16 | 0.044</option>
-                            <option value=19>0.06 | 0.06 | 0.16 | 0.008</option>
-                            <option value=20>0.01 | 0.065 | 0.16 | 0.044</option>
-                            <option value=21>0.032 | 0.055 | 0.16 | 0.08</option>
-                            <option value=22>0.032 | 0.06 | 0.16 | 0.08</option>
-                            <option value=23>0.055 | 0.065 | 0.16 | 0.08</option>
-                            <option value=24>0.055 | 0.065 | 0.16 | 0.008</option>                             
+                            <option value="0.021|0.06|0.088|0.044" selected>UFO</option>
+                            <option value="0.045|0.06|0.16|0.008">fleur de lys</option>
+                            <option value="0.021|0.06|0.16|0.008">snowflake</option>
+                            <option value="0.037|0.055|0.016|0.08">big bang</option>
+                            <option value="0.032|0.065|0.088|0.044">mitosis</option>
+                            <option value="0.021|0.055|0.16|0.08">cheese puffs</option>
+                            <option value="0.015|0.055|0.016|0.08">bloom</option>
+                            <option value="0.037|0.0625|0.16|0.08">X/clover</option>
+                            <option value="0.037|0.0575|0.088|0.08">black hole</option>
+                            <option value="0.03|0.06|0.16|0.08">hibiscus</option>
+                            <option value="0.01|0.055|0.16|0.044">fireworks</option>
+                            <option value="0.01|0.06|0.16|0.008">candy</option>
+                            <option value="0.0349|0.055|0.16|0.08">fart</option>
+                            <option value="0.05|0.055|0.16|0.008">shuriken</option>
+                            <option value="0.04|0.065|0.16|0.008">weird turtle</option>
+                            <option value="0.03|0.055|0.16|0.08">tile</option>
+                            <option value="0.045|0.055|0.16|0.044">pong</option>
+                            <option value="0.02|0.055|0.088|0.008">snowflake 2</option>
+                            <option value="0.04|0.055|0.16|0.044">mochi</option>
+                            <option value="0.06|0.06|0.16|0.008">painting</option>
+                            <option value="0.01|0.065|0.16|0.044">sesame</option>
+                            <option value="0.032|0.055|0.16|0.08">kaleidoscope</option>
+                            <option value="0.032|0.06|0.16|0.08">bacteria</option>
+                            <option value="0.055|0.065|0.16|0.08">worms</option>
+                            <option value="0.055|0.065|0.16|0.008">static</option>                             
                           </select>
                         </div>
-                        <div id="chem-color-controls">
-                          <div class="dropdown-container" id="color-dropdown-container-1">
-                            <label for="chem-color-1">Low color: </label>
-                            <select class="chem-color-sel" name="chem-color-1" id="chem-color-1">
-                              <option value="peach">Peach</option>
-                              <option value="magenta">Magenta</option>
-                              <option value="homepurple">Light Purple</option>
-                              <option value="brightpurple">Purple</option>
-                              <option value="red">Red</option>
-                              <option value="brown">Brown</option>
-                              <option value="maroon">Maroon</option>
-                              <option value="orange">Orange</option>
-                              <option value="yellow">Yellow</option>
-                              <option value="lime">Lime</option>
-                              <option value="green">Green</option>
-                              <option value="aquamarine">Aquamarine</option>
-                              <option value="homeblue" selected>Light Blue</option>
-                              <option value="skyblue">Sky</option> 
-                              <option value="blue">Blue</option>
-                              <option value="white">White</option>  
-                              <option value="black">Black</option>                                             
-                            </select>
-                          </div>
-                          <div class="dropdown-container" id="color-dropdown-container-2">
-                            <label for="chem-color-2">High color: </label>
-                            <select class="chem-color-sel" name="chem-color-2" id="chem-color-2">
-                              <option value="peach">Peach</option>
-                              <option value="magenta">Magenta</option>
-                              <option value="homepurple">Light Purple</option>
-                              <option value="brightpurple" selected>Purple</option>
-                              <option value="red">Red</option>
-                              <option value="brown">Brown</option>
-                              <option value="maroon">Maroon</option>
-                              <option value="orange">Orange</option>
-                              <option value="yellow">Yellow</option>
-                              <option value="lime">Lime</option>
-                              <option value="green">Green</option>
-                              <option value="aquamarine">Aquamarine</option>
-                              <option value="homeblue">Light Blue</option>
-                              <option value="skyblue">Sky</option> 
-                              <option value="blue">Blue</option>
-                              <option value="white">White</option>  
-                              <option value="black">Black</option>                                              
-                            </select>
-                          </div>                                                  
-                        </div>                        
+                        <div class="dropdown-container" id="color-dropdown-container-1">
+                          <label for="chem-color-1">Low color: </label>
+                          <select class="chem-color-sel" name="chem-color-1" id="chem-color-1">
+                            <option value="peach">Peach</option>
+                            <option value="magenta">Magenta</option>
+                            <option value="homepurple">Light Purple</option>
+                            <option value="brightpurple">Purple</option>
+                            <option value="red">Red</option>
+                            <option value="brown">Brown</option>
+                            <option value="maroon">Maroon</option>
+                            <option value="orange">Orange</option>
+                            <option value="yellow">Yellow</option>
+                            <option value="lime">Lime</option>
+                            <option value="green">Green</option>
+                            <option value="aquamarine">Aquamarine</option>
+                            <option value="homeblue">Light Blue</option>
+                            <option value="skyblue">Sky</option> 
+                            <option value="blue">Blue</option>
+                            <option value="white">White</option>  
+                            <option value="black" selected>Black</option>                                             
+                          </select>
+                        </div>
+                        <div class="dropdown-container" id="color-dropdown-container-2">
+                          <label for="chem-color-2">High color: </label>
+                          <select class="chem-color-sel" name="chem-color-2" id="chem-color-2">
+                            <option value="peach">Peach</option>
+                            <option value="magenta">Magenta</option>
+                            <option value="homepurple">Light Purple</option>
+                            <option value="brightpurple">Purple</option>
+                            <option value="red">Red</option>
+                            <option value="brown">Brown</option>
+                            <option value="maroon">Maroon</option>
+                            <option value="orange">Orange</option>
+                            <option value="yellow">Yellow</option>
+                            <option value="lime">Lime</option>
+                            <option value="green">Green</option>
+                            <option value="aquamarine" selected>Aquamarine</option>
+                            <option value="homeblue">Light Blue</option>
+                            <option value="skyblue">Sky</option> 
+                            <option value="blue">Blue</option>
+                            <option value="white">White</option>  
+                            <option value="black">Black</option>                                              
+                          </select>
+                        </div>                     
                       </div>
                     </div>
                 </div>                

@@ -84,8 +84,8 @@ jQuery(function($) {
             "white": [255, 255, 255],
             "black": [0, 0, 0]                        
         }, // all color codes
-        loColor: [167, 188, 253], // the color to use for the low concentration color
-        hiColor: [199, 0, 181], // the color to use for the high concentration color        
+        loColor: [0, 0, 0], // the color to use for the low concentration color
+        hiColor: [5, 255, 161], // the color to use for the high concentration color        
 
         init: function() {
             // JQuery stuff. Renders the main game
@@ -102,6 +102,18 @@ jQuery(function($) {
             $("#delay-intext").text("(".concat(App.delay.toString(), "ms", ")"));
             $('#board-size-range').val(App.n);
             $("#board-size-intext").text("(".concat(App.n.toString(), 'x', App.n, ")"));
+
+            // if we are in mobile browser, reduce the size of the board
+            if(window.matchMedia("(max-width: 767px)").matches){
+                // The viewport is less than 768 pixels wide
+                App.n = 50;
+                $("#board-size-intext").text("(".concat(App.n.toString(), 'x', App.n, ")"));
+                $("table").css({"width": "".concat(window.width(), "px"), "height": "".concat(window.width(), "px")});
+            };
+            // } else{
+            //     // The viewport is at least 768 pixels wide
+            //     alert("This is a tablet or desktop.");
+            // }
 
             // On init, call these functions to set up area
             App.initBoardNP();
@@ -249,7 +261,7 @@ jQuery(function($) {
                 $("#animation-gen-status").text("Idle");
             });
             $("#sample-params").on("change", function() {
-                let selectedParams = $("#sample-params option:selected").text().split(" | ");
+                let selectedParams = $("#sample-params option:selected").val().split("|");
                 App.F = parseFloat(selectedParams[0]);
                 App.k = parseFloat(selectedParams[1]);
                 App.Du = parseFloat(selectedParams[2]);
@@ -282,7 +294,7 @@ jQuery(function($) {
                         App.observeNP(App.vFrames[App.animationIteration], "#pos");
                     }
                 }
-            });                                                      
+            });
         },
         // Methods
         setBoardInHTML: function() {
