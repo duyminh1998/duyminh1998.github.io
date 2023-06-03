@@ -179,7 +179,7 @@ jQuery(function($) {
             });
             // Play the animation
             App.$doc.on('click', '#play-btn', function() {
-                if (App.uFrames.length == 0 || App.vFrames.length == 0) {
+                if (App.uFrames.length == 1 || App.vFrames.length == 1) {
                     $("#animation-gen-status").text("No animation available. Please press the 'Generate' button.");
                 } else {
                     App.paused = false;
@@ -189,29 +189,29 @@ jQuery(function($) {
             });
             // Display the previous animation frame
             App.$doc.on('click', '#prev-frame-btn', function() {
-                if (App.uFrames.length == 0 || App.vFrames.length == 0) {
+                if (App.uFrames.length == 1 || App.vFrames.length == 1) {
                     $("#animation-gen-status").text("No animation available. Please press the 'Generate' button.");
                 } else {
                     App.paused = true;
                     App.prevFrame();
-                    $("#animation-gen-status").text("Displaying frame ".concat(App.animationIteration + 1, " of ", App.nFrames));
+                    $("#animation-gen-status").text("Displaying frame ".concat(App.animationIteration + 1, " of ", App.vFrames.length));
                 }
             });    
             // Display the next animation frame
             App.$doc.on('click', '#next-frame-btn', function() {
-                if (App.uFrames.length == 0 || App.vFrames.length == 0) {
+                if (App.uFrames.length == 1 || App.vFrames.length == 1) {
                     $("#animation-gen-status").text("No animation available. Please press the 'Generate' button.");
                 } else {
                     App.paused = true;
                     App.nextFrame();
-                    $("#animation-gen-status").text("Displaying frame ".concat(App.animationIteration + 1, " of ", App.nFrames));
+                    $("#animation-gen-status").text("Displaying frame ".concat(App.animationIteration + 1, " of ", App.vFrames.length));
                 }
             });                    
             // Pause the animation
             App.$doc.on('click', '#pause-btn', function() {
                 App.canceled = true;
                 App.pauseAnimation();
-                $("#animation-gen-status").text("Paused animation...");
+                $("#animation-gen-status").text("Paused animation. Displaying frame ".concat(App.animationIteration + 1, " of ", App.vFrames.length));
             });
             // Cancel the frames generation
             App.$doc.on('click', '#cancel-btn', function() {
@@ -305,7 +305,19 @@ jQuery(function($) {
                 App.initBoardNP();
                 App.observeNP(App.chemType, '#pos');
                 App.startSimulation();                
-            });                                                                        
+            });          
+            // jump to specific frame
+            App.$doc.on('click', '#jump-btn', function() {
+                if (App.uFrames.length == 1 || App.vFrames.length == 1) {
+                    $("#animation-gen-status").text("No animation available. Please press the 'Generate' button.");
+                } 
+                else if ($('#frame-range').val()) {
+                    App.paused = true;
+                    let curFrame = parseInt($('#frame-range').val() - 1);
+                    App.displayFrame(curFrame);
+                    $("#animation-gen-status").text("Displaying frame ".concat(App.animationIteration + 1, " of ", App.vFrames.length));
+                }
+            });                                                                          
 
             // Drop-downs
             $("#chemical-type").on("change", function() {
@@ -323,7 +335,7 @@ jQuery(function($) {
                     } else {
                         App.observeNP(App.vFrames[App.animationIteration], "#pos");
                     }
-                    $("#animation-gen-status").text("Displaying frame ".concat(App.animationIteration + 1, " of ", App.nFrames));
+                    $("#animation-gen-status").text("Paused animation. Displaying frame ".concat(App.animationIteration + 1, " of ", App.vFrames.length));
                 }
             });
             $("#neighborhood-type").on("change", function() {
@@ -503,8 +515,8 @@ jQuery(function($) {
             // save the type of chemical to display
             App.updateChemType();
             // reset frames
-            App.uFrames = [];
-            App.vFrames = [];
+            App.uFrames = [App.u];
+            App.vFrames = [App.v];
             
             // meta info
             App.step = 0;
@@ -842,14 +854,14 @@ jQuery(function($) {
                     uFrames.push(App.u);
                     vFrames.push(App.v);
                     await App.sleep(1);
-                    $("#animation-gen-status").text("Generating frame ".concat(i + 1, " of ", App.nFrames));                    
+                    $("#animation-gen-status").text("Generating frame ".concat(i + 1, " of ", App.nFrames + 1));                    
                 } else {
                     break;
                 }
             }; 
             // save completed frames or partially completed frames
-            App.uFrames = uFrames;
-            App.vFrames = vFrames;
+            App.uFrames = App.uFrames.concat(uFrames);
+            App.vFrames = App.vFrames.concat(vFrames);
             $("#animation-gen-status").text("Done! Press 'Play' to play the animation.");
 
             // Auto-play animation
@@ -873,6 +885,27 @@ jQuery(function($) {
             App.initBoardNP();
             App.createFrames();
         },
+        displayFrame: function(frameNum) {
+            /*
+            Description:
+                Display a specific animation frame.
+            
+            Arguments:
+                frameNum: the frame number.
+            
+            Return:
+                (None)
+            */
+            if (App.paused) {
+                if (App.chemTypeStr == "u-chem") {
+                    App.animationIteration = App.mod(frameNum, App.uFrames.length);
+                    App.observeNP(App.uFrames[App.animationIteration], "#pos");
+                } else {
+                    App.animationIteration = App.mod(frameNum, App.vFrames.length);
+                    App.observeNP(App.vFrames[App.animationIteration], "#pos");
+                }   
+            }      
+        },        
         nextFrame: function() {
             /*
             Description:
@@ -885,10 +918,11 @@ jQuery(function($) {
                 (None)
             */
             if (App.paused) {
-                App.animationIteration = (App.animationIteration + 1) % App.vFrames.length;
                 if (App.chemTypeStr == "u-chem") {
+                    App.animationIteration = (App.animationIteration + 1) % App.uFrames.length;
                     App.observeNP(App.uFrames[App.animationIteration], "#pos");
                 } else {
+                    App.animationIteration = (App.animationIteration + 1) % App.vFrames.length;
                     App.observeNP(App.vFrames[App.animationIteration], "#pos");
                 }   
             }      
@@ -905,10 +939,11 @@ jQuery(function($) {
                 (None)
             */
            if (App.paused) {
-                App.animationIteration = App.mod(App.animationIteration - 1, App.vFrames.length);
                 if (App.chemTypeStr == "u-chem") {
+                    App.animationIteration = App.mod(App.animationIteration - 1, App.uFrames.length);
                     App.observeNP(App.uFrames[App.animationIteration], "#pos");
                 } else {
+                    App.animationIteration = App.mod(App.animationIteration - 1, App.vFrames.length);
                     App.observeNP(App.vFrames[App.animationIteration], "#pos");
                 }
             }
