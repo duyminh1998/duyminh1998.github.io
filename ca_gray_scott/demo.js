@@ -101,13 +101,13 @@ jQuery(function($) {
             $('#delay-range').val(App.delay);
             $("#delay-intext").text("(".concat(App.delay.toString(), "ms", ")"));
             $('#board-size-range').val(App.n);
-            $("#board-size-intext").text("(".concat(App.n.toString(), 'x', App.n, ")"));
+            $("#board-size-intext").text("(".concat(App.n, 'x', App.n, ")"));
 
             // if we are in mobile browser, reduce the size of the board
             if(window.matchMedia("(max-width: 767px)").matches){
                 // The viewport is less than 768 pixels wide
                 App.n = 50;
-                $("#board-size-intext").text("(".concat(App.n.toString(), 'x', App.n, ")"));
+                $("#board-size-intext").text("(".concat(App.n, 'x', App.n, ")"));
                 // $("table").css({"width": "".concat(window.width(), "px"), "height": "".concat(window.width(), "px")});
             };
             // } else{
