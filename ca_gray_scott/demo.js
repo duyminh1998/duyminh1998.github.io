@@ -309,8 +309,22 @@ jQuery(function($) {
 
             // Drop-downs
             $("#chemical-type").on("change", function() {
+                // update display
+                App.pauseAnimation();
+                App.canceled = false;
+
                 App.updateChemType();
-                App.observeNP(App.chemType, '#pos');
+                
+                if (App.uFrames.length == 0 || App.vFrames.length == 0) {
+                    App.observeNP(App.chemType, '#pos');
+                } else {
+                    if (App.chemTypeStr == "u-chem") {
+                        App.observeNP(App.uFrames[App.animationIteration], "#pos");
+                    } else {
+                        App.observeNP(App.vFrames[App.animationIteration], "#pos");
+                    }
+                    $("#animation-gen-status").text("Displaying frame ".concat(App.animationIteration + 1, " of ", App.nFrames));
+                }
             });
             $("#neighborhood-type").on("change", function() {
                 let selectedVal = this.value;
