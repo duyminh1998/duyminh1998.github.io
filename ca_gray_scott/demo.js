@@ -108,7 +108,7 @@ jQuery(function($) {
                 // The viewport is less than 768 pixels wide
                 App.n = 50;
                 $("#board-size-intext").text("(".concat(App.n.toString(), 'x', App.n, ")"));
-                $("table").css({"width": "".concat(window.width(), "px"), "height": "".concat(window.width(), "px")});
+                // $("table").css({"width": "".concat(window.width(), "px"), "height": "".concat(window.width(), "px")});
             };
             // } else{
             //     // The viewport is at least 768 pixels wide
