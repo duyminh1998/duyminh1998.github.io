@@ -21,7 +21,7 @@ jQuery(function($) {
         animationIteration: 0, // the current iteration of the animation we are playing
         lo: 0,
         hi: 1,
-        initConds: ["center square", "center point", "hollow square", "hashtag", "diagonal", "X", "cross", "pyramid", "random"], // possible initial conditions
+        initConds: ["center square", "center point", "hollow square", "hashtag", "diagonal", "X", "cross", "pyramid", "spots", "random"], // possible initial conditions
         curInitCond: "center square", // the type of initial condition
         canceled: false, // whether to cancel the generation of the animation
         uFrames: [], // frames for U chem
@@ -521,7 +521,17 @@ jQuery(function($) {
                         v.set(y, x, 1);                        
                     }
                 }
-            }                        
+            }
+            else if (App.curInitCond == "spots") {
+                let nSpots = Math.floor(0.005 * (App.n * App.n))
+                let xLoc, yLoc;
+                for (let i = 0; i < nSpots; i++) {
+                    xLoc = App.randomIntFromInterval(1, App.n);
+                    yLoc = App.randomIntFromInterval(1, App.n);
+                    u.set(xLoc, yLoc, 0);
+                    v.set(xLoc, yLoc, 1);
+                }
+            }                                   
             else { // default, "center square" initial conditions
                 for (let x = 0; x < App.n + 2; x++) {
                     for (let y = 0; y < App.n + 2; y++) {
@@ -810,6 +820,8 @@ jQuery(function($) {
                 result = result.add(Neighbor8);
                 result = result.add(Neighbor9);
                 result = result.subtract(Neighbor3.multiply(8));
+                // result = result.add(Neighbor3);
+                // result = result.multiply(1/9);
             }
             
             return result;
