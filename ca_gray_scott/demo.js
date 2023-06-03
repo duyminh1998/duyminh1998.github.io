@@ -21,7 +21,7 @@ jQuery(function($) {
         animationIteration: 0, // the current iteration of the animation we are playing
         lo: 0,
         hi: 1,
-        initConds: ["center square", "center point", "hollow square", "hashtag", "diagonal", "X", "cross", "random"], // possible initial conditions
+        initConds: ["center square", "center point", "hollow square", "hashtag", "diagonal", "X", "cross", "pyramid", "random"], // possible initial conditions
         curInitCond: "center square", // the type of initial condition
         canceled: false, // whether to cancel the generation of the animation
         uFrames: [], // frames for U chem
@@ -285,7 +285,7 @@ jQuery(function($) {
                 $("#animation-gen-status").text("Idle - Press 'Generate' to generate the animation frames");
             });
             // Pick all random parameters and run
-            App.$doc.on('click', '#random-all-and-run-btn', function() {
+            App.$doc.on('click', '#random-all-and-run-btn', async function() {
                 // stop any ongoing animations
                 App.pauseAnimation();
                 App.canceled = false;
@@ -301,9 +301,16 @@ jQuery(function($) {
                 App.Du = parseFloat(document.getElementById('du-range').value);
                 App.Dv = parseFloat(document.getElementById('dv-range').value);
 
-                // update display 
+                // update display
+                if (!App.canceled) {
+                    App.canceled = true
+                } 
+                App.pauseAnimation();
+                await App.sleep(1);
+
                 App.initBoardNP();
                 App.observeNP(App.chemType, '#pos');
+                App.canceled = false;
                 App.startSimulation();                
             });          
             // jump to specific frame
@@ -489,15 +496,32 @@ jQuery(function($) {
             }
             else if (App.curInitCond == "cross") {
                 let n2 = Math.floor((App.n + 2) / 2);
+                let thickness = 1;
                 for (let x = 0; x < App.n + 2; x++) {
                     for (let y = 0; y < App.n + 2; y++) {
-                        if (x == n2 || y == n2) {
+                        if ((x >= n2 - thickness && x <= n2 + thickness) || (y >= n2 - thickness && y <= n2 + thickness)) {
                             u.set(x, y, uSpecialVal);
                             v.set(x, y, vSpecialVal);
                         }
                     }
                 }
-            }            
+            }
+            else if (App.curInitCond == "pyramid") {
+                let mid = Math.floor((App.n + 2) / 2);
+                let height = Math.floor((App.n + 2) / 5);
+                let x, y;
+                for (let i = 0; i < height; i++) {
+                    for (let j = 0; j < i; j++) {
+                        x = mid + i;
+                        y = mid + j;
+                        u.set(y, x, 0);
+                        v.set(y, x, 1);
+                        y = mid - j;
+                        u.set(y, x, 0);
+                        v.set(y, x, 1);                        
+                    }
+                }
+            }                        
             else { // default, "center square" initial conditions
                 for (let x = 0; x < App.n + 2; x++) {
                     for (let y = 0; y < App.n + 2; y++) {
