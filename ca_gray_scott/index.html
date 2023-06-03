@@ -81,8 +81,8 @@
 
                 <h2 id="interactive-exercise">Interactive walkthrough</h2>
                 <p>To run the simulation, first use the input boxes on the left to tweak the parameters. The first four input boxes correspond to the feed rate, kill rate, and diffusion rates of the system. Since it can sometimes be hard to find a combination of parameters that produce an interesting pattern, users can also insert preset parameters using the <b>Sample parameters</b> dropdown menu. The <b>Frames</b> and <b>Steps/frame</b> parameters can be used to tweak the smoothness of the animation. Since diffusion often happens slowly, users are encouraged to use a larger number of timesteps per frame. The <b>Delay</b> control determines the delay between each frame when playing the animation. Finally, the <b>Board size</b> slider controls the number of locations in the configuration.</p>
-                <p> The <b>Chemical type</b> dropdown can be used to display the chemical type (V is usually the more interesting one). The <b>Neighborhood type</b> dropdown can be used to specify the type of CA neighborhoods. Users can also use the <b>Initial conditions</b> dropdown to choose between several different initial conditions. Users can use the <b>Low color</b> and <b>High color</b> options to specify the colors that correspond to the concentration of the chemicals at each location.</p>
-                <p>After selecting the parameters, click on the <b>Generate</b> button to generate the animation. Since the simulation can take a long time to complete, this demo works by first generating all the frames for the animation and then playing them afterwards for a smoother experience. After the animation is done generating, press the <b>Play</b> button to play the animation, or press the <b>Prev</b> or <b>Next</b> buttons to step through the frames. The <b>Pause</b> button can be used to pause the animation, and the <b>Cancel</b> button can be used to stop the generation of an animation.</p>
+                <p> The <b>Chemical type</b> dropdown can be used to display the chemical type (V is usually the more interesting one). The <b>Neighborhood type</b> dropdown can be used to specify the type of CA neighborhoods. Users can also use the <b>Initial conditions</b> dropdown to choose between several different initial conditions. Users can use the <b>Low color</b> and <b>High color</b> options to specify the colors that correspond to the concentration of the chemicals at each location. The <b>Autoplay</b> parameter specifies whether the animation automatically plays after being generated.<p>
+                <p>After selecting the parameters, click on the <b>Generate</b> button to generate the animation. Since the simulation can take a long time to complete, this demo works by first generating all the frames for the animation and then playing them afterwards for a smoother experience. After the animation is done generating, press the <b>Play</b> button to play the animation, or press the <b>Prev</b> or <b>Next</b> buttons to step through the frames. The <b>Pause</b> button can be used to pause the animation, and the <b>Cancel</b> button can be used to stop the generation of an animation. There are several randomization options on the third row of buttons that allow for rapid experimentation.</p>
                 
                 <div class="table-container">
                     <table class="board" id="config-table"></table>
@@ -96,19 +96,23 @@
                           <a id="animation-frame">Frame 0</a>
                         </div> -->
                     </div>
-                    <div class="btn-containers" id="ca-gray-scott-btn-containers" style="padding: 2px">
+                    <div class="btn-containers" id="ca-gray-scott-btn-containers" style="padding: 3px">
                       <button type="button" class="ca-gray-scott-btns" id="start-btn" style="width: 75px;">Generate</button>
                       <button type="button" class="ca-gray-scott-btns" id="cancel-btn" style="width: 60px;">Cancel</button>
-                      <button type="button" class="ca-gray-scott-btns" id="reset-board-btn">Reset</button>
-                      <button type="button" class="ca-gray-scott-btns" id="random-colors-btn" style="width:120px">Random colors</button> 
-                      <button type="button" class="ca-gray-scott-btns" id="random-params-btn" style="width:150px">Random parameters</button> 
+                      <button type="button" class="ca-gray-scott-btns" id="reset-board-btn">Reset</button>  
                     </div>
-                    <div class="btn-containers" id="ca-gray-scott-btn-containers" style="padding: 2px">
+                    <div class="btn-containers" id="ca-gray-scott-btn-containers" style="padding: 3px">
                       <button type="button" class="ca-gray-scott-btns" id="play-btn">Play</button>
                       <button type="button" class="ca-gray-scott-btns" id="pause-btn">Pause</button>              
                       <button type="button" class="ca-gray-scott-btns" id="prev-frame-btn">Prev</button>
                       <button type="button" class="ca-gray-scott-btns" id="next-frame-btn">Next</button>
-                    </div>                    
+                    </div>
+                    <div class="btn-containers" id="ca-gray-scott-btn-containers" style="padding: 3px">
+                      <button type="button" class="ca-gray-scott-btns" id="random-colors-btn" style="width:120px">Random colors</button> 
+                      <button type="button" class="ca-gray-scott-btns" id="random-params-btn" style="width:120px">Random params</button>
+                      <button type="button" class="ca-gray-scott-btns" id="random-ICs-btn" style="width:100px">Random ICs</button>
+                      <button type="button" class="ca-gray-scott-btns" id="random-all-btn" style="width:100px">Random All</button>                         
+                    </div>                                        
                     <div class="ca-gray-scott-controls">
                       <div class="inputs-container">
                         <div class="input-container">
@@ -166,6 +170,9 @@
                             <option value="center point">center point</option>
                             <option value="hollow square">hollow square</option>
                             <option value="hashtag">hashtag</option>
+                            <option value="diagonal">diagonal</option>
+                            <option value="X">X</option>
+                            <option value="cross">cross</option>
                             <option value="random">random</option>
                           </select>
                         </div>
@@ -244,7 +251,14 @@
                             <option value="black">Black</option>
                             <option value="blank">BLANK</option>                                              
                           </select>
-                        </div>                     
+                        </div>
+                        <div class="dropdown-container" id="autoplay-dropdown-container">
+                          <label for="autoplay">Autoplay: </label>
+                          <select name="autoplay" id="autoplay">
+                            <option value="true" selected>True</option>
+                            <option value="false">False</option>
+                          </select>
+                        </div>                                             
                       </div>
                     </div>
                 </div>                

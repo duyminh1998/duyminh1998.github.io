@@ -21,7 +21,7 @@ jQuery(function($) {
         animationIteration: 0, // the current iteration of the animation we are playing
         lo: 0,
         hi: 1,
-        initConds: ["center square", "center point", "hollow square", "hashtag", "random"], // possible initial conditions
+        initConds: ["center square", "center point", "hollow square", "hashtag", "diagonal", "X", "cross", "random"], // possible initial conditions
         curInitCond: "center square", // the type of initial condition
         canceled: false, // whether to cancel the generation of the animation
         uFrames: [], // frames for U chem
@@ -259,7 +259,31 @@ jQuery(function($) {
                 App.initBoardNP();
                 App.observeNP(App.chemType, '#pos');
                 $("#animation-gen-status").text("Idle - Press 'Generate' to generate the animation frames");
-            });                                    
+            });
+            // Pick random ICs
+            App.$doc.on('click', '#random-ICs-btn', function() {
+                App.randomizeInitialConditions();
+
+                // update display
+                App.pauseAnimation();
+                App.canceled = false;         
+                App.initBoardNP();
+                App.observeNP(App.chemType, '#pos');
+                $("#animation-gen-status").text("Idle - Press 'Generate' to generate the animation frames");
+            }); 
+            // Pick all random parameters
+            App.$doc.on('click', '#random-all-btn', function() {
+                App.randomizeInitialConditions();
+                App.randomizeParameters();
+                App.randomizeCellColors();
+
+                // update display
+                App.pauseAnimation();
+                App.canceled = false;         
+                App.initBoardNP();
+                App.observeNP(App.chemType, '#pos');
+                $("#animation-gen-status").text("Idle - Press 'Generate' to generate the animation frames");
+            });                                                            
 
             // Drop-downs
             $("#chemical-type").on("change", function() {
@@ -353,6 +377,9 @@ jQuery(function($) {
             let u = nj.ones([App.n + 2, App.n + 2], "float64");
             let v = nj.zeros([App.n + 2, App.n + 2], "float64");
 
+            const uSpecialVal = 0.25;
+            const vSpecialVal = 0.5;
+
             // initial conditions
             if (App.curInitCond == "center point") {
                 let mid = Math.floor(App.n / 2);
@@ -366,33 +393,69 @@ jQuery(function($) {
             else if (App.curInitCond == "hollow square" || App.curInitCond == "hashtag") {
                 // define radius of initial conditions
                 let n2 = Math.floor(App.n / 2);
-                let r = 11;
+                let r = Math.floor(App.n / 4);
+                let lhbound = 0.4;
+                let rhbound = 0.3;
+                let lvbound = 0.6;
+                let rvbound = 0.7;
                 if (App.curInitCond == "hashtag") {
-                    r = Math.floor(App.n / 4);
+                    lhbound = 0.3999;
+                    rhbound = 0.39999;
+                    lvbound = 0.5999;
+                    rvbound = 0.59999;
                 }
-                let lhbound = 0.3999;
-                let rhbound = 0.39999;
-                let lvbound = 0.5999;
-                let rvbound = 0.59999;
                 for (let x = 0; x < App.n + 2; x++) {
                     for (let y = 0; y < App.n + 2; y++) {
-                        if ((Math.floor(lhbound * App.n) <= x && x <= Math.floor(rhbound * App.n) || Math.floor(lvbound * App.n) <= x && x <= Math.floor(rvbound * App.n)) && n2 - r <= y && y <= n2 + r) {
-                            u.set(x, y, 0.5);
-                            v.set(x, y, 0.25);
+                        if (App.curInitCond == "hashtag") {
+                            if ((Math.floor(lhbound * App.n) <= x && x <= Math.floor(rhbound * App.n) || Math.floor(lvbound * App.n) <= x && x <= Math.floor(rvbound * App.n)) && n2 - r <= y && y <= n2 + r) {
+                                u.set(x, y, 0.5);
+                                v.set(x, y, 0.25);
+                            }
+                            if ((Math.floor(lhbound * App.n) <= y && y <= Math.floor(rhbound * App.n) || Math.floor(lvbound * App.n) <= y && y <= Math.floor(rvbound * App.n)) && n2 - r <= x && x <= n2 + r) {
+                                u.set(x, y, 0.5);
+                                v.set(x, y, 0.25);
+                            }
                         }
-                        if ((Math.floor(lhbound * App.n) <= y && y <= Math.floor(rhbound * App.n) || Math.floor(lvbound * App.n) <= y && y <= Math.floor(rvbound * App.n)) && n2 - r <= x && x <= n2 + r) {
-                            u.set(x, y, 0.5);
-                            v.set(x, y, 0.25);
-                        }                                       
+                        else {
+                            if ((Math.floor(rhbound * App.n) < x) && (Math.floor(rvbound * App.n) > x) && (Math.floor(rhbound * App.n) < y) && (Math.floor(rvbound * App.n) > y)) {
+                                u.set(x, y, uSpecialVal);
+                                v.set(x, y, vSpecialVal);
+                            }                         
+                            if ((Math.floor(lhbound * App.n) < x) && (Math.floor(lvbound * App.n) > x) && (Math.floor(lhbound * App.n) < y) && (Math.floor(lvbound * App.n) > y)) {
+                                u.set(x, y, 1);
+                                v.set(x, y, 0);
+                            } 
+                        }                          
                     }
                 }
             }
+            else if (App.curInitCond == "diagonal" || App.curInitCond == "X") {
+                for (let x = 0; x < App.n + 2; x++) {
+                    for (let y = 0; y < App.n + 2; y++) {
+                        if (x == y || (App.curInitCond == "X" && (App.n - 2 - x) == y)) {
+                            u.set(x, y, uSpecialVal);
+                            v.set(x, y, vSpecialVal);
+                        }
+                    }
+                }
+            }
+            else if (App.curInitCond == "cross") {
+                let n2 = Math.floor((App.n + 2) / 2);
+                for (let x = 0; x < App.n + 2; x++) {
+                    for (let y = 0; y < App.n + 2; y++) {
+                        if (x == n2 || y == n2) {
+                            u.set(x, y, uSpecialVal);
+                            v.set(x, y, vSpecialVal);
+                        }
+                    }
+                }
+            }            
             else { // default, "center square" initial conditions
                 for (let x = 0; x < App.n + 2; x++) {
                     for (let y = 0; y < App.n + 2; y++) {
                         if (Math.floor(0.4 * App.n) < x && x < Math.floor(0.6 * App.n) && Math.floor(0.4 * App.n) < y && y < Math.floor(0.6 * App.n)) {
-                            u.set(x, y, 0.25);
-                            v.set(x, y, 0.5);
+                            u.set(x, y, uSpecialVal);
+                            v.set(x, y, vSpecialVal);
                         }                                     
                     }
                 }
@@ -459,10 +522,10 @@ jQuery(function($) {
             App.hiColor = App.colorRGBValues[randomColors[1]];
             $('#chem-color-2').val(randomColors[1]);
         },
-        randomizeParameters: function() {
+        randomizeAll: function() {
             /*
             Description:
-                Randomly sets the parameters of the simulation.
+                Randomly sets the parameters and initial conditions of the simulation.
 
             Arguments:
                 None
@@ -471,13 +534,13 @@ jQuery(function($) {
                 (None)
             */
             const decimalPlaces = 4;
-            App.F = App.randomNumber(0, 1); // good range: 0.03, 0.065
+            App.F = App.randomNumber(0, 0.5); // good range: 0.03, 0.065
             $('#F-range').val(App.F.toFixed(decimalPlaces));
-            App.k = App.randomNumber(0, 1); // good range: 0.055, 0.065
+            App.k = App.randomNumber(0, 0.5); // good range: 0.055, 0.065
             $('#k-range').val(App.k.toFixed(decimalPlaces));
-            App.Du = App.randomNumber(0, 1); // good range: 0.016, 0.16
+            App.Du = App.randomNumber(0, 0.2); // good range: 0.016, 0.16
             $('#du-range').val(App.Du.toFixed(decimalPlaces));
-            App.Dv = App.randomNumber(0, 1); // good range: 0.008, 0.08
+            App.Dv = App.randomNumber(0, 0.2); // good range: 0.008, 0.08
             $('#dv-range').val(App.Dv.toFixed(decimalPlaces));
 
             const neighborhoodChoice = App.randomNumber(0, 1);
@@ -495,7 +558,54 @@ jQuery(function($) {
             App.curInitCond = App.initConds[initCondChoice];
             $('#init-cond').val(App.curInitCond);
 
-        },                   
+        },
+        randomizeParameters: function() {
+            /*
+            Description:
+                Randomly sets the parameters of the simulation.
+
+            Arguments:
+                None
+
+            Return:
+                (None)
+            */
+            const decimalPlaces = 4;
+            App.F = App.randomNumber(0, 0.5); // good range: 0.03, 0.065
+            $('#F-range').val(App.F.toFixed(decimalPlaces));
+            App.k = App.randomNumber(0, 0.5); // good range: 0.055, 0.065
+            $('#k-range').val(App.k.toFixed(decimalPlaces));
+            App.Du = App.randomNumber(0, 0.2); // good range: 0.016, 0.16
+            $('#du-range').val(App.Du.toFixed(decimalPlaces));
+            App.Dv = App.randomNumber(0, 0.2); // good range: 0.008, 0.08
+            $('#dv-range').val(App.Dv.toFixed(decimalPlaces));
+
+            const neighborhoodChoice = App.randomNumber(0, 1);
+            if (neighborhoodChoice > 0.5) {
+                if (App.neighborhoodType == 'neumann') {
+                    App.neighborhoodType = 'moore'
+                    $('#neighborhood-type').val('moore');
+                } else {
+                    App.neighborhoodType = 'neumann'
+                    $('#neighborhood-type').val('neumann');
+                }
+            }
+        },
+        randomizeInitialConditions: function() {
+            /*
+            Description:
+                Randomly sets the initial conditions of the simulation.
+
+            Arguments:
+                None
+
+            Return:
+                (None)
+            */
+            const initCondChoice = App.randomIntFromInterval(0, App.initConds.length - 1);
+            App.curInitCond = App.initConds[initCondChoice];
+            $('#init-cond').val(App.curInitCond);
+        },                                   
         updateChemType: function() {
             /*
             Description:
@@ -705,6 +815,13 @@ jQuery(function($) {
             App.uFrames = uFrames;
             App.vFrames = vFrames;
             $("#animation-gen-status").text("Done! Press 'Play' to play the animation.");
+
+            // Auto-play animation
+            if ($('#autoplay').val() == 'true') {
+                App.paused = false;
+                $("#animation-gen-status").text("Playing animation...");
+                App.playAnimation();
+            }            
         },
         startSimulation: function() {
             /*
