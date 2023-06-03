@@ -10,7 +10,7 @@ jQuery(function($) {
         Du: 0.088, // diffusion constant of u. Default is 2e-5
         Dv: 0.044, // diffusion constant of v. Default is 1e-5
         delay: 0, // the delay between each frame for the animation (ms)
-        neighborhoodType: 'moore', // the type of neighborhoods, ['moore', 'neumann']
+        neighborhoodType: 'neumann', // the type of neighborhoods, ['moore', 'neumann']
         boundaryCond: 'periodic', // the boundary conditions, ['cut-off', 'periodic']
         paused: true, // whether or not the simulation is paused
         maxGenNoChange: 1, // the maximum number of generations to check for no change
@@ -82,7 +82,8 @@ jQuery(function($) {
             "skyblue": [135, 206, 235],
             "blue": [0, 0, 255],
             "white": [255, 255, 255],
-            "black": [0, 0, 0]                        
+            "black": [0, 0, 0],
+            "blank": [29, 33, 44]                        
         }, // all color codes
         loColor: [0, 0, 0], // the color to use for the low concentration color
         hiColor: [5, 255, 161], // the color to use for the high concentration color        
@@ -161,7 +162,7 @@ jQuery(function($) {
                 App.canceled = false;         
                 App.initBoardNP();
                 App.observeNP(App.chemType, '#pos');
-                $("#animation-gen-status").text("Idle");
+                $("#animation-gen-status").text("Idle - Press 'Generate' to generate the animation frames");
             });            
             // Start the simulation
             App.$doc.on('click', '#start-btn', function() {
@@ -247,18 +248,33 @@ jQuery(function($) {
                         App.observeNP(App.vFrames[App.animationIteration], "#pos");
                     }
                 }
-            });                        
+            });
+            // Pick random parameters
+            App.$doc.on('click', '#random-params-btn', function() {
+                App.randomizeParameters();
+
+                // update display
+                App.pauseAnimation();
+                App.canceled = false;         
+                App.initBoardNP();
+                App.observeNP(App.chemType, '#pos');
+                $("#animation-gen-status").text("Idle - Press 'Generate' to generate the animation frames");
+            });                                    
 
             // Drop-downs
             $("#chemical-type").on("change", function() {
                 App.updateChemType();
                 App.observeNP(App.chemType, '#pos');
             });
+            $("#neighborhood-type").on("change", function() {
+                let selectedVal = this.value;
+                App.neighborhoodType = selectedVal;
+            });               
             $("#init-cond").on("change", function() {
                 App.updateInitCond();
                 App.initBoardNP();
                 App.observeNP(App.chemType, '#pos');
-                $("#animation-gen-status").text("Idle");
+                $("#animation-gen-status").text("Idle - Press 'Generate' to generate the animation frames");
             });
             $("#sample-params").on("change", function() {
                 let selectedParams = $("#sample-params option:selected").val().split("|");
@@ -442,7 +458,44 @@ jQuery(function($) {
             $('#chem-color-1').val(randomColors[0]);
             App.hiColor = App.colorRGBValues[randomColors[1]];
             $('#chem-color-2').val(randomColors[1]);
-        },          
+        },
+        randomizeParameters: function() {
+            /*
+            Description:
+                Randomly sets the parameters of the simulation.
+
+            Arguments:
+                None
+
+            Return:
+                (None)
+            */
+            const decimalPlaces = 4;
+            App.F = App.randomNumber(0, 1); // good range: 0.03, 0.065
+            $('#F-range').val(App.F.toFixed(decimalPlaces));
+            App.k = App.randomNumber(0, 1); // good range: 0.055, 0.065
+            $('#k-range').val(App.k.toFixed(decimalPlaces));
+            App.Du = App.randomNumber(0, 1); // good range: 0.016, 0.16
+            $('#du-range').val(App.Du.toFixed(decimalPlaces));
+            App.Dv = App.randomNumber(0, 1); // good range: 0.008, 0.08
+            $('#dv-range').val(App.Dv.toFixed(decimalPlaces));
+
+            const neighborhoodChoice = App.randomNumber(0, 1);
+            if (neighborhoodChoice > 0.5) {
+                if (App.neighborhoodType == 'neumann') {
+                    App.neighborhoodType = 'moore'
+                    $('#neighborhood-type').val('moore');
+                } else {
+                    App.neighborhoodType = 'neumann'
+                    $('#neighborhood-type').val('neumann');
+                }
+            }
+
+            const initCondChoice = App.randomIntFromInterval(0, App.initConds.length - 1);
+            App.curInitCond = App.initConds[initCondChoice];
+            $('#init-cond').val(App.curInitCond);
+
+        },                   
         updateChemType: function() {
             /*
             Description:
@@ -515,6 +568,14 @@ jQuery(function($) {
             }
             return shuffled.slice(min);
         },
+        randomNumber: function(min, max) {
+            // https://stackoverflow.com/questions/4959975/generate-random-number-between-two-numbers-in-javascript
+            return Math.random() * (max - min) + min;
+        },
+        randomIntFromInterval: function(min, max) { // min and max included 
+            // https://stackoverflow.com/questions/4959975/generate-random-number-between-two-numbers-in-javascript
+            return Math.floor(Math.random() * (max - min + 1) + min)
+        },         
         periodicBC: function(u) {
             /*
             Description:
@@ -551,11 +612,24 @@ jQuery(function($) {
             let Neighbor3 = u.slice([1, -1], [1, -1]);
             let Neighbor4 = u.slice([1, -1], 2);
             let Neighbor5 = u.slice(2, [1, -1]);
-            
+
             let result = Neighbor1.add(Neighbor2);
-            result = result.subtract(Neighbor3.multiply(4));          
             result = result.add(Neighbor4);
             result = result.add(Neighbor5);
+            if (App.neighborhoodType == "neumann") {
+                result = result.subtract(Neighbor3.multiply(4));
+            } else if (App.neighborhoodType == "moore") {
+                let Neighbor6 = u.slice([null, -2], [null, -2]);
+                let Neighbor7 = u.slice([null, -2], 2);
+                let Neighbor8 = u.slice(2, [null, -2]);
+                let Neighbor9 = u.slice(2, 2);
+                result = result.add(Neighbor6);
+                result = result.add(Neighbor7);
+                result = result.add(Neighbor8);
+                result = result.add(Neighbor9);
+                result = result.subtract(Neighbor3.multiply(8));
+            }
+            
             return result;
         },
         updateConfigNP: function() {
