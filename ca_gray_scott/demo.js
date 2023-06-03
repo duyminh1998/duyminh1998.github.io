@@ -65,6 +65,27 @@ jQuery(function($) {
             [0.055, 0.065, 0.16, 0.08],
             [0.055, 0.065, 0.16, 0.008]
         ], // parameters to display for the sample gifs
+        colorRGBValues: {
+            "peach": [255, 218, 185],
+            "magenta": [255, 113, 206],
+            "homepurple": [252, 131, 252],
+            "brightpurple": [252, 131, 252],
+            "red": [255, 0, 0],
+            "brown": [165, 42, 42],
+            "maroon": [128, 0, 0],
+            "orange": [255, 144, 31],
+            "yellow": [255, 211, 25],
+            "lime": [173, 255, 47],
+            "green": [0, 128, 0],
+            "aquamarine": [5, 255, 161],
+            "homeblue": [167, 188, 253],
+            "skyblue": [135, 206, 235],
+            "blue": [0, 0, 255],
+            "white": [255, 255, 255],
+            "black": [0, 0, 0]                        
+        }, // all color codes
+        loColor: [167, 188, 253], // the color to use for the low concentration color
+        hiColor: [199, 0, 181], // the color to use for the high concentration color        
 
         init: function() {
             // JQuery stuff. Renders the main game
@@ -201,7 +222,20 @@ jQuery(function($) {
                 $('#sample-pattern-Du-intext').text(App.gifParams[App.curGif][2]);
                 $('#sample-pattern-Dv-intext').text(App.gifParams[App.curGif][3]); 
                 $('#sample-pattern-id-intext').text(App.curGif + 1);               
-            });            
+            });
+            // Pick random colors for the cells
+            App.$doc.on('click', '#random-colors-btn', function() {
+                App.randomizeCellColors();
+                if (App.uFrames.length == 0 || App.vFrames.length == 0) {
+                    App.observeNP(App.chemType, '#pos');
+                } else {
+                    if (App.chemTypeStr == "u-chem") {
+                        App.observeNP(App.uFrames[App.animationIteration], "#pos");
+                    } else {
+                        App.observeNP(App.vFrames[App.animationIteration], "#pos");
+                    }
+                }
+            });                        
 
             // Drop-downs
             $("#chemical-type").on("change", function() {
@@ -224,7 +258,31 @@ jQuery(function($) {
                 $('#k-range').val(App.k);
                 $('#du-range').val(App.Du);
                 $('#dv-range').val(App.Dv);                
-            });                                    
+            });   
+            $("#chem-color-1").on("change", function() {
+                App.loColor = App.colorRGBValues[$("#chem-color-1").val()];
+                if (App.uFrames.length == 0 || App.vFrames.length == 0) {
+                    App.observeNP(App.chemType, '#pos');
+                } else {
+                    if (App.chemTypeStr == "u-chem") {
+                        App.observeNP(App.uFrames[App.animationIteration], "#pos");
+                    } else {
+                        App.observeNP(App.vFrames[App.animationIteration], "#pos");
+                    }
+                }
+            });
+            $("#chem-color-2").on("change", function() {
+                App.hiColor = App.colorRGBValues[$("#chem-color-2").val()];
+                if (App.uFrames.length == 0 || App.vFrames.length == 0) {
+                    App.observeNP(App.chemType, '#pos');
+                } else {
+                    if (App.chemTypeStr == "u-chem") {
+                        App.observeNP(App.uFrames[App.animationIteration], "#pos");
+                    } else {
+                        App.observeNP(App.vFrames[App.animationIteration], "#pos");
+                    }
+                }
+            });                                                      
         },
         // Methods
         setBoardInHTML: function() {
@@ -349,11 +407,30 @@ jQuery(function($) {
                     }
                     let i = x + App.n * y;
                     // scale cell value
-                    let cellValScaled = 255 - parseInt(255 * (cellVal - chemMin) / chemDiff);
-                    $(src.concat(i)).css("background-color", 'rgb('.concat(cellValScaled, ',', cellValScaled, ',', cellValScaled, ')'));
+                    let cellValScaled = (parseInt(255 * (cellVal - chemMin) / chemDiff)) / 255;
+                    let m = [App.hiColor[0] - App.loColor[0], App.hiColor[1] - App.loColor[1], App.hiColor[2] - App.loColor[2]];
+                    let blendedColor = [Math.floor(m[0] * cellValScaled + App.loColor[0]), Math.floor(m[1] * cellValScaled + App.loColor[1]), Math.floor(m[2] * cellValScaled + App.loColor[2])]
+                    $(src.concat(i)).css("background-color", 'rgb('.concat(blendedColor[0], ',', blendedColor[1], ',', blendedColor[2], ')'));
                 }
             }
-        },    
+        },  
+        randomizeCellColors: function() {
+            /*
+            Description:
+                Randomly sets the colors of the populations.
+
+            Arguments:
+                None
+
+            Return:
+                (None)
+            */
+            let randomColors = App.getRandomSubarray(Object.keys(App.colorRGBValues), 2);
+            App.loColor = App.colorRGBValues[randomColors[0]];
+            $('#chem-color-1').val(randomColors[0]);
+            App.hiColor = App.colorRGBValues[randomColors[1]];
+            $('#chem-color-2').val(randomColors[1]);
+        },          
         updateChemType: function() {
             /*
             Description:
