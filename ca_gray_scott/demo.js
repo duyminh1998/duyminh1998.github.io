@@ -283,7 +283,29 @@ jQuery(function($) {
                 App.initBoardNP();
                 App.observeNP(App.chemType, '#pos');
                 $("#animation-gen-status").text("Idle - Press 'Generate' to generate the animation frames");
-            });                                                            
+            });
+            // Pick all random parameters and run
+            App.$doc.on('click', '#random-all-and-run-btn', function() {
+                // stop any ongoing animations
+                App.pauseAnimation();
+                App.canceled = false;
+
+                // randomize params
+                App.randomizeInitialConditions();
+                App.randomizeParameters();
+                App.randomizeCellColors();
+
+                // Make sure we have the right parameters
+                App.F = parseFloat(document.getElementById('F-range').value);
+                App.k = parseFloat(document.getElementById('k-range').value);
+                App.Du = parseFloat(document.getElementById('du-range').value);
+                App.Dv = parseFloat(document.getElementById('dv-range').value);
+
+                // update display 
+                App.initBoardNP();
+                App.observeNP(App.chemType, '#pos');
+                App.startSimulation();                
+            });                                                                        
 
             // Drop-downs
             $("#chemical-type").on("change", function() {
