@@ -132,30 +132,7 @@ jQuery(function($) {
                 App.mouseDown = false;
             });
             // check when the mouse is hovering over the board
-            $('td').hover(function() {
-                if (App.mouseDown) {
-                    let cellIdx = parseInt($(this).attr('id').substring(3));
-                    let cellX = App.mod(cellIdx, App.n);
-                    let cellY = Math.floor(cellIdx / App.n);
-                    if (App.chemTypeStr == 'u-chem') {
-                        App.u.set(cellX + 1, cellY + 1, App.curMinVal);
-                        App.uFrames[App.animationIteration].set(cellX + 1, cellY + 1, App.curMinVal);                        
-                        $(this).css("background-color", 'rgb('.concat(App.loColor[0], ',', App.loColor[1], ',', App.loColor[2], ')'));
-                        // App.observeNP(App.uFrames[App.animationIteration], "#pos");
-                    }
-                    else {
-                        App.v.set(cellX + 1, cellY + 1, App.curMaxVal);
-                        App.vFrames[App.animationIteration].set(cellX + 1, cellY + 1, App.curMaxVal);
-                        $(this).css("background-color", 'rgb('.concat(App.hiColor[0], ',', App.hiColor[1], ',', App.hiColor[2], ')'));
-                        // App.observeNP(App.vFrames[App.animationIteration], "#pos");
-                    }
-                    // if (App.curValToPaint == 1) {
-                    //     $(this).css("background-color", 'rgb('.concat(App.hiColor[0], ',', App.hiColor[1], ',', App.hiColor[2], ')'));
-                    // } else {
-                    //     $(this).css("background-color", 'rgb('.concat(App.loColor[0], ',', App.loColor[1], ',', App.loColor[2], ')'));
-                    // }                    
-                }
-            });
+            App.setMouseDownColorCallback();
 
             // text input
             App.$doc.on('input', '#F-range', function() {
@@ -188,6 +165,7 @@ jQuery(function($) {
                 App.initBoardNP();
                 App.setBoardInHTML();
                 App.observeNP(App.chemType, '#pos');
+                App.setMouseDownColorCallback();
             });            
 
             // Buttons   
@@ -427,6 +405,42 @@ jQuery(function($) {
             });
         },
         // Methods
+        setMouseDownColorCallback: function() {
+            /*
+            Description:
+                Set up a function to change the cells' color depending on the mouse down event.
+
+            Arguments:
+                None
+
+            Return:
+                (None)
+            */            
+            $('td').hover(function() {
+                if (App.mouseDown) {
+                    let cellIdx = parseInt($(this).attr('id').substring(3));
+                    let cellX = App.mod(cellIdx, App.n);
+                    let cellY = Math.floor(cellIdx / App.n);
+                    if (App.chemTypeStr == 'u-chem') {
+                        App.u.set(cellX + 1, cellY + 1, App.curMinVal);
+                        App.uFrames[App.animationIteration].set(cellX + 1, cellY + 1, App.curMinVal);                        
+                        $(this).css("background-color", 'rgb('.concat(App.loColor[0], ',', App.loColor[1], ',', App.loColor[2], ')'));
+                        // App.observeNP(App.uFrames[App.animationIteration], "#pos");
+                    }
+                    else {
+                        App.v.set(cellX + 1, cellY + 1, App.curMaxVal);
+                        App.vFrames[App.animationIteration].set(cellX + 1, cellY + 1, App.curMaxVal);
+                        $(this).css("background-color", 'rgb('.concat(App.hiColor[0], ',', App.hiColor[1], ',', App.hiColor[2], ')'));
+                        // App.observeNP(App.vFrames[App.animationIteration], "#pos");
+                    }
+                    // if (App.curValToPaint == 1) {
+                    //     $(this).css("background-color", 'rgb('.concat(App.hiColor[0], ',', App.hiColor[1], ',', App.hiColor[2], ')'));
+                    // } else {
+                    //     $(this).css("background-color", 'rgb('.concat(App.loColor[0], ',', App.loColor[1], ',', App.loColor[2], ')'));
+                    // }                    
+                }
+            });
+        },
         setBoardInHTML: function() {
             /*
             Description:
