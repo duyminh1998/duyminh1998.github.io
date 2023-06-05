@@ -69,7 +69,7 @@ jQuery(function($) {
             "peach": [255, 218, 185],
             "magenta": [255, 113, 206],
             "homepurple": [252, 131, 252],
-            "brightpurple": [252, 131, 252],
+            "brightpurple": [199, 0, 181],
             "red": [255, 0, 0],
             "brown": [165, 42, 42],
             "maroon": [128, 0, 0],
@@ -86,7 +86,7 @@ jQuery(function($) {
             "blank": [29, 33, 44]                        
         }, // all color codes
         loColor: [29, 33, 44], // the color to use for the low concentration color
-        hiColor: [255, 113, 206], // the color to use for the high concentration color
+        hiColor: [252, 131, 252], // the color to use for the high concentration color
         mouseDown: false, // whether the mouse is clicked down
         curMaxVal: 1, // the current max value to paint when mousing down over the board      
         curMinVal: 0, // the current max value to paint when mousing down over the board      
