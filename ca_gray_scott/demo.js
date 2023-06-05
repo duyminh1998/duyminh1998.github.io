@@ -86,7 +86,10 @@ jQuery(function($) {
             "blank": [29, 33, 44]                        
         }, // all color codes
         loColor: [29, 33, 44], // the color to use for the low concentration color
-        hiColor: [255, 113, 206], // the color to use for the high concentration color        
+        hiColor: [255, 113, 206], // the color to use for the high concentration color
+        mouseDown: false, // whether the mouse is clicked down
+        curMaxVal: 1, // the current max value to paint when mousing down over the board      
+        curMinVal: 0, // the current max value to paint when mousing down over the board      
 
         init: function() {
             // JQuery stuff. Renders the main game
@@ -122,6 +125,38 @@ jQuery(function($) {
             App.observeNP(App.chemType, '#pos');
 
             // Event bindings
+            // check when the mouse is held down
+            App.$doc.mousedown(function() {
+                App.mouseDown = true;
+            }).mouseup(function() {
+                App.mouseDown = false;
+            });
+            // check when the mouse is hovering over the board
+            $('td').hover(function() {
+                if (App.mouseDown) {
+                    let cellIdx = parseInt($(this).attr('id').substring(3));
+                    let cellX = App.mod(cellIdx, App.n);
+                    let cellY = Math.floor(cellIdx / App.n);
+                    if (App.chemTypeStr == 'u-chem') {
+                        App.u.set(cellX + 1, cellY + 1, App.curMinVal);
+                        App.uFrames[App.animationIteration].set(cellX + 1, cellY + 1, App.curMinVal);                        
+                        $(this).css("background-color", 'rgb('.concat(App.loColor[0], ',', App.loColor[1], ',', App.loColor[2], ')'));
+                        // App.observeNP(App.uFrames[App.animationIteration], "#pos");
+                    }
+                    else {
+                        App.v.set(cellX + 1, cellY + 1, App.curMaxVal);
+                        App.vFrames[App.animationIteration].set(cellX + 1, cellY + 1, App.curMaxVal);
+                        $(this).css("background-color", 'rgb('.concat(App.hiColor[0], ',', App.hiColor[1], ',', App.hiColor[2], ')'));
+                        // App.observeNP(App.vFrames[App.animationIteration], "#pos");
+                    }
+                    // if (App.curValToPaint == 1) {
+                    //     $(this).css("background-color", 'rgb('.concat(App.hiColor[0], ',', App.hiColor[1], ',', App.hiColor[2], ')'));
+                    // } else {
+                    //     $(this).css("background-color", 'rgb('.concat(App.loColor[0], ',', App.loColor[1], ',', App.loColor[2], ')'));
+                    // }                    
+                }
+            });
+
             // text input
             App.$doc.on('input', '#F-range', function() {
                 App.F = parseFloat(document.getElementById('F-range').value);
@@ -242,7 +277,7 @@ jQuery(function($) {
                 if (App.uFrames.length == 0 || App.vFrames.length == 0) {
                     App.observeNP(App.chemType, '#pos');
                 } else {
-                    if (App.chemTypeStr == "u-chem") {
+                    if (App.chemTypeStr == "u-chem") {App.chemType
                         App.observeNP(App.uFrames[App.animationIteration], "#pos");
                     } else {
                         App.observeNP(App.vFrames[App.animationIteration], "#pos");
@@ -555,7 +590,9 @@ jQuery(function($) {
             // meta info
             App.step = 0;
             App.countGenNoChange = 0;
-            App.animationIteration = 0;       
+            App.animationIteration = 0;     
+            App.curMaxVal = App.chemType.max();
+            App.curMinVal = App.chemType.min();    
         },
         observeNP: function(obj, src = '#pos') {
             /*
@@ -918,7 +955,9 @@ jQuery(function($) {
             Return:
                 (None)
             */
-            App.initBoardNP();
+            if (App.uFrames.length != 1 || App.vFrames.length != 1) {
+                App.initBoardNP();
+            }
             App.createFrames();
         },
         displayFrame: function(frameNum) {
