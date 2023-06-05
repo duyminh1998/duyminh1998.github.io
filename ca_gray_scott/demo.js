@@ -85,8 +85,8 @@ jQuery(function($) {
             "black": [0, 0, 0],
             "blank": [29, 33, 44]                        
         }, // all color codes
-        loColor: [0, 0, 0], // the color to use for the low concentration color
-        hiColor: [5, 255, 161], // the color to use for the high concentration color        
+        loColor: [29, 33, 44], // the color to use for the low concentration color
+        hiColor: [255, 113, 206], // the color to use for the high concentration color        
 
         init: function() {
             // JQuery stuff. Renders the main game
@@ -653,13 +653,13 @@ jQuery(function($) {
                 (None)
             */
             const decimalPlaces = 4;
-            App.F = App.randomNumber(0, 0.5); // good range: 0.03, 0.065
+            App.F = App.randomNumber(0, 0.2); // good range: 0.03, 0.065
             $('#F-range').val(App.F.toFixed(decimalPlaces));
-            App.k = App.randomNumber(0, 0.5); // good range: 0.055, 0.065
+            App.k = App.randomNumber(0, 0.2); // good range: 0.055, 0.065
             $('#k-range').val(App.k.toFixed(decimalPlaces));
             App.Du = App.randomNumber(0, 0.2); // good range: 0.016, 0.16
             $('#du-range').val(App.Du.toFixed(decimalPlaces));
-            App.Dv = App.randomNumber(0, 0.2); // good range: 0.008, 0.08
+            App.Dv = App.randomNumber(0, 0.1); // good range: 0.008, 0.08
             $('#dv-range').val(App.Dv.toFixed(decimalPlaces));
 
             const neighborhoodChoice = App.randomNumber(0, 1);
