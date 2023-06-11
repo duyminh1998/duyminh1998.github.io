@@ -21,7 +21,7 @@ jQuery(function($) {
         animationIteration: 0, // the current iteration of the animation we are playing
         lo: 0,
         hi: 1,
-        initConds: ["center square", "center point", "hollow square", "hashtag", "diagonal", "X", "cross", "pyramid", "spots", "random"], // possible initial conditions
+        initConds: ["center square", "center point", "hollow square", "hashtag", "diagonal", "X", "cross", "eight", "pyramid", "spots", "random"], // possible initial conditions
         curInitCond: "center square", // the type of initial condition
         canceled: false, // whether to cancel the generation of the animation
         uFrames: [], // frames for U chem
@@ -555,6 +555,18 @@ jQuery(function($) {
                     }
                 }
             }
+            else if (App.curInitCond == "eight") {
+                let n2 = Math.floor((App.n - 1) / 2);
+                let thickness = 0;
+                for (let x = 0; x < App.n + 2; x++) {
+                    for (let y = 0; y < App.n + 2; y++) {
+                        if ((x >= n2 - thickness && x <= n2 + thickness) || (y >= n2 - thickness && y <= n2 + thickness) || (x == y) || ((App.n - 2 - x) == y)) {
+                            u.set(x, y, uSpecialVal);
+                            v.set(x, y, vSpecialVal);
+                        }
+                    }
+                }
+            }            
             else if (App.curInitCond == "pyramid") {
                 let mid = Math.floor((App.n + 2) / 2);
                 let height = Math.floor((App.n + 2) / 5);
