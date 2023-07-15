@@ -7,4 +7,11 @@
     margin: 10px;
     background: #262b39;
     word-wrap: break-word;
+    height: 300px;
+    overflow: hidden;
+}
+.post_meta {
+    display: flex;
+    flex-direction: column;
+    row-gap: 0.1em;
 }  

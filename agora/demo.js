@@ -6,6 +6,7 @@ jQuery(function($) {
         // Global variables
         api_user_agent: 'Agora Personal (minhhua12345@gmail.com)', // the ID of the client to identify to the Wikimedia API
         min_content_length: 280, // the minimum length of content to be passable
+        max_post_length: 280, // the maximum length of characters for a post before being truncated
         maxPostsPerFeed: 30, // the maximum number of posts per feed before fetching more posts
 
         init: function() {
@@ -20,6 +21,16 @@ jQuery(function($) {
                 App.generatePost();
                 // let imgData = await App.getRandomImage();
                 // console.log(imgData);
+            });
+
+            App.$doc.on('click', '.post', function() {
+                // console.log('clicked');
+                if ($(this).css("height") == "300px") {
+                    $(this).css({"height": "auto"});
+                }
+                else {
+                    $(this).css({"height": "300px"});
+                }
             });
         },
         // Methods
@@ -39,8 +50,15 @@ jQuery(function($) {
                 html = await App.getPageHTML(title);
                 [randomParagraph, randomAuthor] = App.getRandomPargraph(html);
             }
-            $('#feed').append(`<div class="post"><p><b>${title.replaceAll('_', ' ').replaceAll('/', ': ')}</b></p><p>${randomParagraph}</p><p>By ${randomAuthor}</p><a href="https://en.wikisource.org/wiki/${title}" target="_blank" rel="noopener noreferrer">link</a><p></p></div>`);
-        },
+            let titleClean = title.replaceAll('_', ' ').replaceAll('/', ': ');
+            // if (randomParagraph.length > App.max_post_length) {
+            //     $('#feed').append(`<div class="post"><p><b>${titleClean}</b></p><p>${randomParagraph}</p><p>By ${randomAuthor}</p><a href="https://en.wikisource.org/wiki/${title}" target="_blank" rel="noopener noreferrer">link</a><p></p></div>`);
+            // }
+            // else {
+            //     $('#feed').append(`<div class="post"><p><b>${titleClean}</b></p><p>${randomParagraph}</p><p>By ${randomAuthor}</p><a href="https://en.wikisource.org/wiki/${title}" target="_blank" rel="noopener noreferrer">link</a><p></p></div>`);
+            // }
+            $('#feed').append(`<div class="post"><p><b>${titleClean}</b><br>By ${randomAuthor}<br><a href="https://en.wikisource.org/wiki/${title}" target="_blank" rel="noopener noreferrer">link</a></p><p>${randomParagraph}</p></div>`);
+            },
         getRandomPageTitle: async function() {
         		let response = await fetch('https://en.wikisource.org/api/rest_v1/page/random/title', {
                 headers: {
