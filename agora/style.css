@@ -10,6 +10,18 @@
     height: 300px;
     overflow: hidden;
 }
+.image_post {
+    display: flex;
+    flex-direction: column;
+    row-gap: 0.1em;
+    box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2);
+    padding: 25px;
+    margin: 10px;
+    background: #262b39;
+    word-wrap: break-word;
+    height: auto;
+    overflow: hidden;
+}
 .post_meta {
     display: flex;
     flex-direction: column;

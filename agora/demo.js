@@ -8,21 +8,29 @@ jQuery(function($) {
         min_text_content_length: 280, // the minimum length of content to be passable
         max_post_text_length: 280, // the maximum length of characters for a post before being truncated
         max_posts_per_feed: 30, // the maximum number of posts per feed before fetching more posts
+        accepted_image_types: ['PNG', 'SVG', 'JPG', 'JPEG'],
+        images_per_post: 3, // the ratio of images/media to text-only posts
 
         init: function() {
             // JQuery stuff. Renders the main game
             App.$doc = $(document);
 
             // On init, call these functions to set up area
-            // App.refreshFeed();
+            App.refreshFeed();
             
             // Buttons
             App.$doc.on('click', '#refresh-feed-btn', async function() {
                 // App.generateTextPost();
                 // let imgData = await App.getRandomImageTitle('oh_my_girl', 3);
-                let imgData = await App.getRandomImage();
+                App.getRandomImage();
                 // console.log(imgData);
             });
+            App.$doc.on('click', '#load-more-btn', async function() {
+                // App.generateTextPost();
+                // let imgData = await App.getRandomImageTitle('oh_my_girl', 3);
+                App.refreshFeed();
+                // console.log(imgData);
+            });            
 
             App.$doc.on('click', '.post', function() {
                 if ($(this).css("height") == "300px") {
@@ -32,6 +40,14 @@ jQuery(function($) {
                     $(this).css({"height": "300px"});
                 }
             });
+            App.$doc.on('click', '.image_post', function() {
+                if ($(this).css("height") == "300px") {
+                    $(this).css({"height": "auto"});
+                }
+                else {
+                    $(this).css({"height": "300px"});
+                }
+            });            
         },
         // Methods
         refreshFeed: async function() {
@@ -39,6 +55,9 @@ jQuery(function($) {
             let cur_post;
             for (let i = 0; i < App.max_posts_per_feed; i++) {
                 App.generateTextPost();
+                for (let j = 0; j < App.images_per_post; j++) {
+                    App.getRandomImage();
+                }
                 // feed.push(cur_post);
                 // $('#feed').append(cur_post);
             };
@@ -47,14 +66,14 @@ jQuery(function($) {
             // };            
         },
         generateTextPost: async function() {
-            let title = await App.getRandomPageTitle();
+            let title = await App.getRandomWikisourcePageTitle();
             // console.log(title);
-            let html = await App.getPageHTML(title);
+            let html = await App.getWikisourcePageHTML(title);
             // $('#sandbox').html(html);
             let [randomParagraph, randomAuthor] = App.getRandomPargraph(html);
             while (!randomParagraph) {
-                title = await App.getRandomPageTitle();
-                html = await App.getPageHTML(title);
+                title = await App.getRandomWikisourcePageTitle();
+                html = await App.getWikisourcePageHTML(title);
                 [randomParagraph, randomAuthor] = App.getRandomPargraph(html);
             }
             let titleClean = title.replaceAll('_', ' ').replaceAll('/', ': ');
@@ -62,7 +81,7 @@ jQuery(function($) {
             $('#feed').append(post_text);
             // return post_text
         },
-        getRandomPageTitle: async function() {
+        getRandomWikisourcePageTitle: async function() {
         	let response = await fetch('https://en.wikisource.org/api/rest_v1/page/random/title', {
                 headers: {
                   'Api-User-Agent': App.api_user_agent,  
@@ -73,7 +92,7 @@ jQuery(function($) {
             title = title.items[0]['title'];
             return title;
         },
-        getPageHTML: async function(title) {
+        getWikisourcePageHTML: async function(title) {
         	let response = await fetch(`https://en.wikisource.org/api/rest_v1/page/html/${encodeURIComponent(title)}`, {
                 headers: {
                   'Api-User-Agent': App.api_user_agent,  
@@ -125,18 +144,58 @@ jQuery(function($) {
         //     console.log(images)
         //     return images;
         // },
+        getRandomWikipediaPageTitle: async function() {
+        	let response = await fetch('https://en.wikipedia.org/api/rest_v1/page/random/title', {
+                headers: {
+                  'Api-User-Agent': App.api_user_agent,  
+                  'accept': 'application/problem+json'
+                }
+            });
+            let title = await response.json();
+            title = title.items[0]['title'];
+            return title;
+        },
         getRandomImage: async function() {
-            let url = 'https://commons.wikimedia.org/wiki/Special:Random/File/'
+            let q = await App.getRandomWikipediaPageTitle();
+            let limit = 10
+            let url = `https://api.wikimedia.org/core/v1/commons/search/page?q=${q}&limit=${limit}`
             let response = await fetch(url, {
                 headers: {
                     'Api-User-Agent': App.api_user_agent
                 }
             });
-            let imgJSON = await response.json();
-            console.log(imgJSON)
-            return imgJSON; 
+            let response_json = await response.json();
+            let pages = response_json['pages'];
+            // console.log(pages)
+
+            let txt_split;
+            let image_title;
+            for (let i = 0; i < pages.length; i++) {
+                txt_split = pages[i]['key'].split(".");
+                if (txt_split.length > 1 && (App.accepted_image_types.includes(txt_split[1]))) {
+                    image_title = pages[i]['key'];
+                    break
+                }
+            }
+            
+            if (image_title) {
+                // console.log(image_title)
+                let imageJSON = await App.getImageJSON(image_title);
+                if (imageJSON) {
+                    let imageURL = imageJSON['preferred']['url'];
+                    // console.log(imageJSON['preferred']['url']);
+                    let image_title_clean = image_title.split(':')[1].split('.')[0].replaceAll('_', ' ').replaceAll('/', ': ');
+                    let author = 'anon';
+                    console.log(imageJSON);
+                    if (imageJSON['latest']['user']['name']) {
+                        author = imageJSON['latest']['user']['name'];
+                    }
+                    let post_text =  `<div class="image_post"><p><b>${image_title_clean}</b><br>By ${author}</p><img src="${imageURL}"></div>`;
+                    $('#feed').append(post_text);
+                }
+            }
         },
-        getImageURL: async function(file) {
+        getImageJSON: async function(file) {
             let base_url = 'https://api.wikimedia.org/core/v1/commons/file/'
             // let file = 'File:IZONE Logo 480 340.png'
             let url = base_url + file
