@@ -1,4 +1,4 @@
-.post {
+.agora-feed-text-post {
     display: flex;
     flex-direction: column;
     row-gap: 0.1em;
@@ -7,10 +7,12 @@
     margin: 10px;
     background: #262b39;
     word-wrap: break-word;
-    height: 300px;
+    height: 200px;
     overflow: hidden;
+    box-shadow: 4px 4px 4px #FC83FC;
 }
-.image_post {
+
+.agora-feed-image-post {
     display: flex;
     flex-direction: column;
     row-gap: 0.1em;
@@ -21,9 +23,15 @@
     word-wrap: break-word;
     height: auto;
     overflow: hidden;
+    box-shadow: 4px 4px 4px #FC83FC;
 }
-.post_meta {
+
+#feed {
     display: flex;
     flex-direction: column;
-    row-gap: 0.1em;
-}  
+    row-gap: 0.5em
+}
+
+.post-title {
+    font-size: 1.5rem;
+}
