@@ -1,0 +1,172 @@
+.table-container {
+    width: 90%;
+    height: 90%;
+    margin: 1%;
+}
+
+table > tr {
+    vertical-align: middle;
+}
+
+td {
+    display: table-cell;
+    vertical-align: inherit;
+}
+
+@media screen and (max-width: 600px) {
+	body .table {
+		display: flex;  
+		flex-wrap: nowrap;
+		justify-content: center;
+	}
+
+	.table .tr {
+		display: flex;
+		flex-direction: column;
+	}
+
+	.table .td {
+		white-space: nowrap;
+	}	
+}
+
+td.zero {
+    background-color: #05ffa1;
+}
+
+td.one {
+    background-color: #ff71ce;
+}
+
+td.peach {
+    background-color: peachpuff;
+}
+
+td.magenta {
+    background-color: #ff71ce;
+}
+
+td.homepurple {
+    background-color: #FC83FC;
+}
+
+td.brightpurple {
+    background-color: #c700b5;
+}
+
+td.red {
+    background-color: red;
+}
+
+td.brown {
+    background-color: brown;
+}
+
+td.maroon {
+    background-color: maroon;
+}
+
+td.orange {
+    background-color: #ff901f;
+}
+
+td.yellow {
+    background-color: #ffd319;
+}
+
+td.lime {
+    background-color: greenyellow;
+}
+
+td.green {
+    background-color: green;
+}
+
+td.aquamarine {
+    background-color: #05ffa1;
+}
+
+td.homeblue {
+    background-color: #A7BCFD;
+}
+
+td.skyblue {
+    background-color: skyblue;
+}
+
+td.blue {
+    background-color: blue;
+}
+
+td.white {
+    background-color: white;
+}
+
+td.black {
+    background-color: black;
+}
+
+td.blank {
+    background-color: None;
+}
+
+/* CA controls */
+.dropdown-container {
+    display: flex;
+    justify-content: right;
+    column-gap: 0.3em
+}
+
+.dropdowns-container {
+    display: flex;
+    justify-content: left;
+    flex-direction: column;
+    row-gap: 0.25em
+}
+
+.input-container {
+    display: flex;
+    justify-content: left;
+    column-gap: 0.3em
+}
+
+.inputs-container {
+    display: flex;
+    flex-direction: column;
+    row-gap: 0.25em;
+}
+
+.slider-container {
+    display: flex;
+    justify-content: left
+}
+
+.sliders-container {
+    display: flex;
+    flex-direction: column;
+    row-gap: 0.25em
+}
+
+.ca-controls {
+    display: flex;
+    column-gap: 1em
+}
+
+.ca-btns {
+    width: 50px;
+    background-color: #333;
+    border: 1px solid white;
+    color: white;  
+}
+
+#ca-btn-containers {
+    display: flex;
+    justify-content: left;
+    column-gap: 0.5em
+}
+
+#ca-walkthrough-control-box {
+    display: flex;
+    flex-direction: column;
+    row-gap: 0.5em
+}

@@ -1,19 +1,10 @@
-.table-container {
-    width: 90%;
-    height: 90%;
-    margin: 1%;
-}
-
 table.board, td.cell {
     border: 1px solid black;
 }
 
 table {
-    border-collapse: collapse;
-}
-
-table {
     display: table;
+    border-collapse: collapse;
     box-sizing: border-box;
     text-indent: initial;
     border-spacing: 2px;
@@ -24,138 +15,15 @@ table {
     height:500px;
 }
 
-table > tr {
-    vertical-align: middle;
-}
-
 tr {
     display: table-row;
     border-color: inherit;
 }
 
-td.one {
-    background-color: #ff71ce;
-}
-
-td {
-    display: table-cell;
-    vertical-align: inherit;
-}
-@media screen and (max-width: 600px) {
-	body .table {
-		display: flex;  
-		flex-wrap: nowrap;
-		justify-content: center;
-	}
-
-	.table .tr {
-		display: flex;
-		flex-direction: column;
-	}
-
-	.table .td {
-		white-space: nowrap;
-	}	
-}
-
-td.peach {
-    background-color: peachpuff;
-}
-td.magenta {
-    background-color: #ff71ce;
-}
-td.homepurple {
-    background-color: #FC83FC;
-}
-td.brightpurple {
-    background-color: #c700b5;
-}
-td.red {
-    background-color: red;
-}
-td.brown {
-    background-color: brown;
-}
-td.maroon {
-    background-color: maroon;
-}
-td.orange {
-    background-color: #ff901f;
-}
-td.yellow {
-    background-color: #ffd319;
-}
-td.lime {
-    background-color: greenyellow;
-}
-td.green {
-    background-color: green;
-}
-td.aquamarine {
-    background-color: #05ffa1;
-}
-td.homeblue {
-    background-color: #A7BCFD;
-}
-td.skyblue {
-    background-color: skyblue;
-}
-td.blue {
-    background-color: blue;
-}
-td.white {
-    background-color: white;
-}
-td.black {
-    background-color: black;
-}
-td.blank {
-    background-color: None;
-}
-
-/* CA Schelling controls */
-.dropdown-container {
-    display: flex;
-    justify-content: right;
-}
-.dropdowns-container {
-    display: flex;
-    justify-content: left;
-    flex-direction: column;
-    row-gap: 0.25em
-}
+/* CA controls */
 #pop-color-controls, #initial-ratio-controls {
     display: flex;
     justify-content: left;
     flex-direction: column;
     row-gap: 0.25em
 }
-.slider-container {
-    display: flex;
-    justify-content: left
-}
-.sliders-container {
-    display: flex;
-    flex-direction: column;
-    row-gap: 0.25em
-}
-.ca-schelling-controls {
-    display: flex;
-    column-gap: 1em
-}
-.ca-schelling-btns {
-    width: 50px;
-    background-color: #333;
-    border: 1px solid white;
-    color: white;  
-}
-#ca-schelling-btn-containers {
-    display: flex;
-    justify-content: left;
-    column-gap: 0.5em
-}
-#ca-schelling-walkthrough-control-box {
-    display: flex;
-    flex-direction: column;
-    row-gap: 0.5em
-}  
