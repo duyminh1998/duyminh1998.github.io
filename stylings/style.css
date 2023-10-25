@@ -258,7 +258,8 @@ ul {
 }
 
 .code_snippet_inline {
-	background: rgba(252,131,252,.2)
+	background: rgba(252,131,252,.2);
+	padding: 2px 5px 2px 5px;
 }
 
 /* https://www.tablesgenerator.com/html_tables */
