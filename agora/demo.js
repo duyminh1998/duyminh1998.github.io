@@ -14,6 +14,7 @@ jQuery(function($) {
         source_for_text_posts: 'wikipedia', // wikipedia or wikisource, but wikisource endpoint is currently unstable
         current_image_posts_count: 0,
         request_timeout: 1,
+        throttleTimer: false,
 
         init: function() {
             // JQuery stuff. Renders the main game
@@ -44,7 +45,9 @@ jQuery(function($) {
                 else {
                     $(this).css({"height": `${App.post_height}px`});
                 }
-            });            
+            });
+            
+            window.addEventListener("scroll", App.handleInfiniteScroll);
         },
 
         // Methods
@@ -54,7 +57,7 @@ jQuery(function($) {
                 App.generateTextPost();
             };          
             for (let j = 0; j < App.max_image_posts; j++) {
-                App.getRandomImage();
+                // App.getRandomImage();
             }
         },
 
@@ -135,7 +138,7 @@ jQuery(function($) {
             let paragraph_and_author;
 
             var el = $('<div></div>');
-    		el.html(html);
+            el.html(html);
 
             if (source == "wikipedia") {
                 paragraph_and_author = App.getRandomParagraphFromWikipedia(el)
@@ -237,6 +240,26 @@ jQuery(function($) {
 
         sleep: function(ms) {
             return new Promise(resolve => setTimeout(resolve, ms));
+        },
+
+        handleInfiniteScroll: function() {
+            App.throttle(() => {
+                let pageScrollProgress = window.innerHeight + window.scrollY
+                if ((pageScrollProgress / document.body.offsetHeight) >= 0.9)  { 
+                    App.refreshFeed()
+                }
+            }, 1000)
+        },
+
+        throttle: function(callback, time) {
+            if (App.throttleTimer) return;
+
+            App.throttleTimer = true;
+
+            setTimeout(() => {
+                callback();
+                App.throttleTimer = false;
+            }, time)
         },
     };
 
