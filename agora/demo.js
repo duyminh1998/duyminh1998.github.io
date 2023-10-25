@@ -57,7 +57,7 @@ jQuery(function($) {
                 App.generateTextPost();
             };          
             for (let j = 0; j < App.max_image_posts; j++) {
-                // App.getRandomImage();
+                App.getRandomImage();
             }
         },
 
@@ -188,7 +188,7 @@ jQuery(function($) {
 
         getRandomImage: async function() {
             let q = await App.getRandomTitle();
-            let limit = 10
+            let limit = 5
             let url = `https://api.wikimedia.org/core/v1/commons/search/page?q=${q}&limit=${limit}`
             let response = await fetch(url, {
                 headers: {
@@ -200,16 +200,17 @@ jQuery(function($) {
 
             if (pages && pages.length > 0) {
                 let txt_split;
-                let image_title;
+                let potential_images_titles = [];
                 for (let i = 0; i < pages.length; i++) {
                     txt_split = pages[i]['key'].split(".");
                     if (txt_split.length > 1 && (App.accepted_image_types.includes(txt_split[1]))) {
-                        image_title = pages[i]['key'];
-                        break
+                        potential_images_titles.push(pages[i]['key'])
                     }
                 }
                 
-                if (image_title) {
+                if (potential_images_titles.length > 0) {
+                    let random_image_title_idx = Math.floor(Math.random() * potential_images_titles.length);
+                    let image_title = potential_images_titles[random_image_title_idx]
                     let imageJSON = await App.getImageJSON(image_title);
                     if (imageJSON && imageJSON['preferred']) {
                         let imageURL = imageJSON['preferred']['url'];
