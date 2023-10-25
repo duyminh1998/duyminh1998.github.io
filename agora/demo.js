@@ -13,7 +13,7 @@ jQuery(function($) {
         accepted_image_types: ['PNG', 'SVG', 'JPG', 'JPEG', 'png', 'svg', 'jpg', 'jpeg'],
         source_for_text_posts: 'wikipedia', // wikipedia or wikisource, but wikisource endpoint is currently unstable
         current_image_posts_count: 0,
-        request_timeout: 10,
+        request_timeout: 1,
 
         init: function() {
             // JQuery stuff. Renders the main game
@@ -55,7 +55,7 @@ jQuery(function($) {
             };          
             for (let j = 0; j < App.max_image_posts; j++) {
                 App.getRandomImage();
-                if (j == Math.floor(0.5 * App.max_image_posts)) await App.sleep(App.request_timeout * 1000)
+                await App.sleep(App.request_timeout * 1000)
             }
         },
 
