@@ -7,6 +7,7 @@ jQuery(function($) {
         api_user_agent: 'Agora Personal (https://github.com/duyminh1998)', // the ID of the client to identify to the Wikimedia API
         min_text_content_length: 280, // the minimum length of content to be passable
         max_post_text_length: 280, // the maximum length of characters for a post before being truncated
+        post_height: 200, // the default height of a post
         max_text_posts: 30, // the maximum number of posts per feed before fetching more posts
         max_image_posts: 20, // the ratio of images/media to text-only posts
         accepted_image_types: ['PNG', 'SVG', 'JPG', 'JPEG', 'png', 'svg', 'jpg', 'jpeg'],
@@ -28,20 +29,20 @@ jQuery(function($) {
 
             // Expand post card when clicked
             App.$doc.on('click', '.agora-feed-text-post', function() {
-                if ($(this).css("height") == "300px") {
+                if ($(this).css("height") == `${App.post_height}px`) {
                     $(this).css({"height": "auto"});
                 }
                 else {
-                    $(this).css({"height": "300px"});
+                    $(this).css({"height": `${App.post_height}px`});
                 }
             });
 
             App.$doc.on('click', '.agora-feed-image-post', function() {
-                if ($(this).css("height") == "300px") {
+                if ($(this).css("height") == `${App.post_height}px`) {
                     $(this).css({"height": "auto"});
                 }
                 else {
-                    $(this).css({"height": "300px"});
+                    $(this).css({"height": `${App.post_height}px`});
                 }
             });            
         },
@@ -67,7 +68,7 @@ jQuery(function($) {
                 let [randomParagraph, randomAuthor] = App.getRandomParagraph(html, source);
                 let titleClean = title.replaceAll('_', ' ').replaceAll('/', ': ');
                 if (randomParagraph && randomAuthor) {
-                    if (source == "wikipedia") post_text = `<div class="agora-feed-text-post"><p><b>${titleClean}</b><br>By ${randomAuthor}<br><a href="https://en.wikipedia.org/wiki/${title}" target="_blank" rel="noopener noreferrer">link</a></p><p>${randomParagraph}</p></div>`;
+                    if (source == "wikipedia") post_text = `<div class="agora-feed-text-post"><p><b class="post-title">${titleClean}</b><br>By ${randomAuthor} | <a href="https://en.wikipedia.org/wiki/${title}" target="_blank" rel="noopener noreferrer">link</a></p><p>${randomParagraph}</p></div>`;
                 }
             }
 
@@ -195,7 +196,7 @@ jQuery(function($) {
             let response_json = await response.json();
             let pages = response_json['pages'];
 
-            if (pages.length > 0) {
+            if (pages && pages.length > 0) {
                 let txt_split;
                 let image_title;
                 for (let i = 0; i < pages.length; i++) {
@@ -215,7 +216,7 @@ jQuery(function($) {
                         if (imageJSON['latest']['user']['name']) {
                             author = imageJSON['latest']['user']['name'];
                         }
-                        let post_text =  `<div class="agora-feed-image-post"><p><b>${image_title_clean}</b><br>By ${author}</p><img src="${imageURL}"></div>`;
+                        let post_text =  `<div class="agora-feed-image-post"><p><b class="post-title">${image_title_clean}</b><br>By ${author}</p><img src="${imageURL}"></div>`;
                         $('#feed').append(post_text);
                         App.current_image_posts_count++;
                     }
