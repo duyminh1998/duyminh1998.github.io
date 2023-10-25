@@ -5,19 +5,17 @@ html {
 	color: #fff;
 	background: #1D212C
 }
-code {
-	font-family: "Menlo", "DejaVu Sans Mono", "Consolas", monospace;
-	font-size: 12px;
-	line-height: 1.5
-}
+
 body {
     margin: 0;
     font-family: Georgia, 'Times New Roman', Times, serif;
 	font-family: Hack, DejaVu Sans Mono, Monaco, Consolas, Ubuntu Mono, monospace;
 }
+
 a {
 	background-color: transparent
 }
+
 h1 {
     line-height: 1.2;
 	font-size: 1.4em;
@@ -31,11 +29,13 @@ h1 {
 	-moz-background-clip: text;
 	-moz-text-fill-color: transparent;
 }
+
 hr {
 	background: linear-gradient(135deg, #A7BCFD, #FC83FC);
   	height: 2px;
 	border: #333;
 }
+
 #date {
 	background-image: linear-gradient(135deg, #A7BCFD, #FC83FC);
 	background-size: 100%;
@@ -46,6 +46,7 @@ hr {
 	-moz-background-clip: text;
 	-moz-text-fill-color: transparent;	
 }
+
 h1,
 h2,
 h3,
@@ -55,38 +56,41 @@ h6,
 .header--banner {
 	font-family: "Helvetica Neue", "Helvetica", "Calibri", sans-serif
 }
+
 h2 {
 	font-size: 1.4em
 }
+
 h3 {
 	font-size: 1em
 }
-p,
-pre,
-ol,
-ul {
-	margin: 0 0 1.5em
-}
+
 article {
     display: block;
 }
+
 .page-width {
     margin: 0 auto;
     max-width: 45em;
 }
+
 .page-article {
     padding-left: 0.75em;
     padding-right: 0.75em;
 }
+
 .page-article > * {
     margin: 30px 0;
 }
+
 .menu {
 	margin: 20px 0;
 }
+
 nav {
 	display: block;
 }
+
 .menu-inner {
 	display: flex;
 	flex-wrap: wrap;
@@ -94,6 +98,7 @@ nav {
 	margin: 0;
 	padding: 0;
 }
+
 ul {
     display: block;
     list-style-type: disc;
@@ -103,51 +108,60 @@ ul {
     margin-inline-end: 0px;
     padding-inline-start: 40px;
 }
+
 ul li {
 	position: relative;
 }
+
 li {
     margin-right: 20px;
     margin-bottom: 10px;
     flex: 0 0 auto;
 }
+
 input {
-    font-family: 'Consolas';
+    font-family: 'Consolas', "Menlo", "DejaVu Sans Mono", monospace;
     border: 1px solid white;
 	color: white;
     background-color: #333;
 	font-size: 1rem;
 }
+
 .input-submit-btn {
     margin-left: 5px;
 }
+
 .bits-container {
     display: flex;
     flex-direction: row;
     margin-bottom: 10px;
     margin-top: 5px;
 }
+
 .num-container {
     display: flex;
     flex-direction: row;
     margin-bottom: 0;
     margin-top: 10px;
 }
+
 .num {
-    font-family: 'Consolas';
+    font-family: 'Consolas', "Menlo", "DejaVu Sans Mono", monospace;
 	border: 1px solid transparent;
     width: 20px;
     text-align: center;	
 	font-size: 12px;
 	margin-bottom: 0;
 }
+
 .bits {
-    font-family: 'Consolas';
+    font-family: 'Consolas', "Menlo", "DejaVu Sans Mono", monospace;
     border: 1px solid white;
     background-color: #333;
     width: 20px;
     text-align: center;
 }
+
 .lr-arrows {
     margin-left: 5px;
     width: 50px;
@@ -155,40 +169,49 @@ input {
 	border: 1px solid white;
 	color: white;
 }
+
 .btn-containers {
 	display: flex;
 	justify-content: center;
 }
+
 .img-container, .vid-container {
 	display: flex;
 	justify-content: center;
 }
+
 .man-nn-img {
 	position: relative;
 	width: 75%;
 	height: auto;
 }
+
 figcaption {
 	font-style: italic;
 	padding: 2px;
 	text-align: center;
 }
+
 a:link
 {
    color: #fff;
 }
+
 a:visited
 {
    color: #fff;
 }
+
 a:hover
 {
    color: #fff;
 }
+
 a:active
 {
    color: #fff;
 }
+
 @media screen and (max-width: 560px) {
 	html {
 		font-size: 1rem
@@ -200,15 +223,18 @@ a:active
 		font-size: 0.5rem;
 	}
 }
+
 #toc_container li, #toc_container ul, #toc_container ul li{
     list-style: outside none none !important;
 	margin-bottom: 0;
 }
+
 code {
 	font-family: "Menlo", "DejaVu Sans Mono", "Consolas", monospace;
 	font-size: 12px;
 	line-height: 1.5
 }
+
 h1 code,
 h2 code,
 h3 code,
@@ -218,10 +244,12 @@ h6 code,
 .header--banner code {
 	font-size: 1em
 }
+
 p code,
 li code {
 	background: #ffc
 }
+
 p,
 pre,
 ol,

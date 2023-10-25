@@ -7,6 +7,7 @@
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <meta name="description" value="A writeup on a cellular automata model of Gray-Scott Reaction-Diffusion pattern formation with an interactive demo.">
         <link rel="stylesheet" href="../stylings/style.css">
+        <link rel="stylesheet" href="../stylings/ca_table.css">        
         <link rel="stylesheet" href="style.css">
         <script type="text/javascript" src="../lib/LaTeXMathML.js"></script>
     </head>
@@ -89,7 +90,7 @@
                 <div class="table-container">
                     <table class="board" id="config-table"></table>
                 </div>
-                <div id="ca-gray-scott-walkthrough-control-box">
+                <div id="ca-walkthrough-control-box">
                     <div style="display: flex; flex-direction: column">
                         <div>
                           <a id="animation-gen-status">Idle - Press 'Generate' to generate the animation frames</a>
@@ -98,32 +99,32 @@
                           <a id="animation-frame">Frame 0</a>
                         </div> -->
                     </div>
-                    <div class="btn-containers" id="ca-gray-scott-btn-containers" style="padding: 3px">
-                      <button type="button" class="ca-gray-scott-btns" id="start-btn" style="width: 75px;">Generate</button>
-                      <button type="button" class="ca-gray-scott-btns" id="cancel-btn" style="width: 60px;">Cancel</button>
-                      <button type="button" class="ca-gray-scott-btns" id="reset-board-btn">Reset</button>  
+                    <div class="btn-containers" id="ca-btn-containers" style="padding: 3px">
+                      <button type="button" class="ca-btns" id="start-btn" style="width: 75px;">Generate</button>
+                      <button type="button" class="ca-btns" id="cancel-btn" style="width: 60px;">Cancel</button>
+                      <button type="button" class="ca-btns" id="reset-board-btn">Reset</button>  
                     </div>
-                    <div class="btn-containers" id="ca-gray-scott-btn-containers" style="padding: 3px">
-                      <button type="button" class="ca-gray-scott-btns" id="play-btn">Play</button>
-                      <button type="button" class="ca-gray-scott-btns" id="pause-btn">Pause</button>              
-                      <button type="button" class="ca-gray-scott-btns" id="prev-frame-btn">Prev</button>
-                      <button type="button" class="ca-gray-scott-btns" id="next-frame-btn">Next</button>
+                    <div class="btn-containers" id="ca-btn-containers" style="padding: 3px">
+                      <button type="button" class="ca-btns" id="play-btn">Play</button>
+                      <button type="button" class="ca-btns" id="pause-btn">Pause</button>              
+                      <button type="button" class="ca-btns" id="prev-frame-btn">Prev</button>
+                      <button type="button" class="ca-btns" id="next-frame-btn">Next</button>
                       <!-- <div class="inputs-container">
                         <div class="input-container">
                           <a>Frame: </a>
                           <input type="text" value="" class="slider" id="frame-range">
                         </div>
                       </div>
-                      <button type="button" class="ca-gray-scott-btns" id="jump-btn">Jump</button> -->
+                      <button type="button" class="ca-btns" id="jump-btn">Jump</button> -->
                     </div>
-                    <div class="btn-containers" id="ca-gray-scott-btn-containers" style="padding: 3px">
-                      <button type="button" class="ca-gray-scott-btns" id="random-colors-btn" style="width:120px">Random colors</button> 
-                      <button type="button" class="ca-gray-scott-btns" id="random-params-btn" style="width:120px">Random params</button>
-                      <button type="button" class="ca-gray-scott-btns" id="random-ICs-btn" style="width:100px">Random ICs</button>
-                      <button type="button" class="ca-gray-scott-btns" id="random-all-btn" style="width:100px">Random All</button>
-                      <button type="button" class="ca-gray-scott-btns" id="random-all-and-run-btn" style="width:100px">Just do it</button>                         
+                    <div class="btn-containers" id="ca-btn-containers" style="padding: 3px">
+                      <button type="button" class="ca-btns" id="random-colors-btn" style="width:120px">Random colors</button> 
+                      <button type="button" class="ca-btns" id="random-params-btn" style="width:120px">Random params</button>
+                      <button type="button" class="ca-btns" id="random-ICs-btn" style="width:100px">Random ICs</button>
+                      <button type="button" class="ca-btns" id="random-all-btn" style="width:100px">Random All</button>
+                      <button type="button" class="ca-btns" id="random-all-and-run-btn" style="width:100px">Just do it</button>                         
                     </div>                                        
-                    <div class="ca-gray-scott-controls">
+                    <div class="ca-controls">
                       <div class="inputs-container">
                         <div class="input-container">
                           <a>$F$: </a>

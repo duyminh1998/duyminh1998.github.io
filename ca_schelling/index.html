@@ -7,6 +7,7 @@
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <meta name="description" value="A writeup on a cellular automata model of Schelling's model of segregation with an interactive demo.">
         <link rel="stylesheet" href="../stylings/style.css">
+        <link rel="stylesheet" href="../stylings/ca_table.css">
         <link rel="stylesheet" href="style.css">
     </head>
     <body>
@@ -72,7 +73,7 @@
                 <div class="table-container">
                     <table class="board" id="config-table"></table>
                 </div>
-                <div id="ca-schelling-walkthrough-control-box">
+                <div id="ca-walkthrough-control-box">
                     <div style="display: flex; flex-direction: column">
                         <div>
                             <a>Generation: <a id="generation-intext">0</a></a>
@@ -81,14 +82,14 @@
                             <a>Percentage satisfied: <a id="percent-satisfied-intext">0</a>%</a>
                         </div>
                     </div>
-                    <div class="btn-containers" id="ca-schelling-btn-containers">
-                        <button type="button" class="ca-schelling-btns" id="reset-board-btn">Reset</button>
-                        <button type="button" class="ca-schelling-btns" id="start-btn">Start</button>
-                        <button type="button" class="ca-schelling-btns" id="stop-btn">Stop</button>
-                        <button type="button" class="ca-schelling-btns" id="step-btn">Step</button>    
-                        <button type="button" class="ca-schelling-btns" id="random-colors-btn" style="width:120px">Random colors</button>        
+                    <div class="btn-containers" id="ca-btn-containers">
+                        <button type="button" class="ca-btns" id="reset-board-btn">Reset</button>
+                        <button type="button" class="ca-btns" id="start-btn">Start</button>
+                        <button type="button" class="ca-btns" id="stop-btn">Stop</button>
+                        <button type="button" class="ca-btns" id="step-btn">Step</button>    
+                        <button type="button" class="ca-btns" id="random-colors-btn" style="width:120px">Random colors</button>        
                     </div>
-                    <div class="ca-schelling-controls">
+                    <div class="ca-controls">
                       <div class="sliders-container">
                           <div class="slider-container">
                           <a>Similarity (<a id="similarity-intext">70</a>%)</a>
