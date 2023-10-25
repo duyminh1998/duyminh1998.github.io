@@ -55,7 +55,6 @@ jQuery(function($) {
             };          
             for (let j = 0; j < App.max_image_posts; j++) {
                 App.getRandomImage();
-                await App.sleep(App.request_timeout * 1000)
             }
         },
 
@@ -186,7 +185,7 @@ jQuery(function($) {
 
         getRandomImage: async function() {
             let q = await App.getRandomTitle();
-            let limit = 100
+            let limit = 10
             let url = `https://api.wikimedia.org/core/v1/commons/search/page?q=${q}&limit=${limit}`
             let response = await fetch(url, {
                 headers: {
