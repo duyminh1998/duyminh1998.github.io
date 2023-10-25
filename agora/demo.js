@@ -14,6 +14,7 @@ jQuery(function($) {
         source_for_text_posts: 'wikipedia', // wikipedia or wikisource, but wikisource endpoint is currently unstable
         current_image_posts_count: 0,
         request_timeout: 1,
+        throttleTimer: false,
 
         init: function() {
             // JQuery stuff. Renders the main game
@@ -44,7 +45,9 @@ jQuery(function($) {
                 else {
                     $(this).css({"height": `${App.post_height}px`});
                 }
-            });            
+            });
+            
+            window.addEventListener("scroll", App.handleInfiniteScroll);
         },
 
         // Methods
@@ -135,7 +138,7 @@ jQuery(function($) {
             let paragraph_and_author;
 
             var el = $('<div></div>');
-    		el.html(html);
+            el.html(html);
 
             if (source == "wikipedia") {
                 paragraph_and_author = App.getRandomParagraphFromWikipedia(el)
@@ -185,7 +188,7 @@ jQuery(function($) {
 
         getRandomImage: async function() {
             let q = await App.getRandomTitle();
-            let limit = 10
+            let limit = 5
             let url = `https://api.wikimedia.org/core/v1/commons/search/page?q=${q}&limit=${limit}`
             let response = await fetch(url, {
                 headers: {
@@ -197,16 +200,17 @@ jQuery(function($) {
 
             if (pages && pages.length > 0) {
                 let txt_split;
-                let image_title;
+                let potential_images_titles = [];
                 for (let i = 0; i < pages.length; i++) {
                     txt_split = pages[i]['key'].split(".");
                     if (txt_split.length > 1 && (App.accepted_image_types.includes(txt_split[1]))) {
-                        image_title = pages[i]['key'];
-                        break
+                        potential_images_titles.push(pages[i]['key'])
                     }
                 }
                 
-                if (image_title) {
+                if (potential_images_titles.length > 0) {
+                    let random_image_title_idx = Math.floor(Math.random() * potential_images_titles.length);
+                    let image_title = potential_images_titles[random_image_title_idx]
                     let imageJSON = await App.getImageJSON(image_title);
                     if (imageJSON && imageJSON['preferred']) {
                         let imageURL = imageJSON['preferred']['url'];
@@ -237,6 +241,26 @@ jQuery(function($) {
 
         sleep: function(ms) {
             return new Promise(resolve => setTimeout(resolve, ms));
+        },
+
+        handleInfiniteScroll: function() {
+            App.throttle(() => {
+                let pageScrollProgress = window.innerHeight + window.scrollY
+                if ((pageScrollProgress / document.body.offsetHeight) >= 0.9)  { 
+                    App.refreshFeed()
+                }
+            }, 1000)
+        },
+
+        throttle: function(callback, time) {
+            if (App.throttleTimer) return;
+
+            App.throttleTimer = true;
+
+            setTimeout(() => {
+                callback();
+                App.throttleTimer = false;
+            }, time)
         },
     };
 
