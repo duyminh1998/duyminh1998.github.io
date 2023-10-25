@@ -1,4 +1,4 @@
-.post {
+.agora-feed-text-post {
     display: flex;
     flex-direction: column;
     row-gap: 0.1em;
@@ -10,7 +10,8 @@
     height: 300px;
     overflow: hidden;
 }
-.image_post {
+
+.agora-feed-image-post {
     display: flex;
     flex-direction: column;
     row-gap: 0.1em;
@@ -22,6 +23,7 @@
     height: auto;
     overflow: hidden;
 }
+
 .post_meta {
     display: flex;
     flex-direction: column;
