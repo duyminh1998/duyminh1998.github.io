@@ -81,6 +81,34 @@ jQuery(function($) {
             if (post_text) {
                 $('#feed').append(post_text);
             }
+
+            await App.sleep(App.request_timeout / 2)
+
+            // also grab a wikisource article for the title
+            if (post_text) {
+                let splitTitle = title.split("_");
+                let randomQueryForWikisource = splitTitle[Math.floor(Math.random() * splitTitle.length)];
+                let wikisource_title = await App.getRandomWikisourceTitle(randomQueryForWikisource);
+                if (wikisource_title) {
+                    source = "wikisource"
+                    post_text = null
+    
+                    let wikisource_html = await App.getPageHTML(wikisource_title, source)
+    
+                    if (wikisource_html) {
+                        let [randomParagraph, randomAuthor] = App.getRandomParagraph(wikisource_html, source);
+                        let titleClean = wikisource_title.replaceAll('_', ' ').replaceAll('/', ': ');
+                        if (randomParagraph && randomAuthor) {
+                            post_text = `<div class="agora-feed-text-post"><p><b class="post-title">${titleClean}</b><br>By ${randomAuthor} | <a href="https://en.wikisource.org/wiki/${wikisource_title}" target="_blank" rel="noopener noreferrer">link</a></p><p>${randomParagraph}</p></div>`;
+                        }
+                    }
+        
+                    if (post_text) {
+                        $('#feed').append(post_text);
+                    }
+                }
+            }
+
         },
 
         getRandomTitle: async function(source=App.source_for_text_posts) {
@@ -105,12 +133,29 @@ jQuery(function($) {
                 });
                 if (response) {
                     let response_json = await response.json();
-                    if (response_json.items.length > 0) {
+                    if (response_json.items && response_json.items.length > 0) {
                         title = response_json.items[0]['title'];
                     }
                 }
             }
             return title
+        },
+
+        getRandomWikisourceTitle: async function(query) {
+            let title;
+            let url = `https://api.wikimedia.org/core/v1/wikisource/en/search/page?q=${encodeURIComponent(query)}&limit=1`
+            let response = await fetch(url, {
+                headers: {
+                    'Api-User-Agent': App.api_user_agent
+                }
+            });
+            if (response) {
+                let response_json = await response.json();
+                if (response_json['pages'] && response_json['pages'].length > 0) {
+                    title = response_json['pages'][0]['key'];
+                }
+            }
+            return title;
         },
 
         getPageHTML: async function(title, source=App.source_for_text_posts) {
@@ -147,7 +192,7 @@ jQuery(function($) {
             if (source == "wikipedia") {
                 paragraph_and_author = App.getRandomParagraphFromWikipedia(el)
             } else if (source == "wikisource") {
-                // TODO
+                paragraph_and_author = App.getRandomParagraphFromWikisource(el)
             }
 
             return paragraph_and_author;
@@ -179,15 +224,37 @@ jQuery(function($) {
         },
 
         getRandomParagraphFromWikisource: function(mounted_html) {
-            // TODO
-            // let authors = $('a[title]', el);
-            // let author = "anon";
-            // for (let i = 0; i < authors.length; i++) {
-            //     if (authors[i].title.substring(0, 6) == "Author") {
-            //         author = authors[i].textContent;
-            //         break;
-            //     };
-            // }
+            let paragraphText;
+            let authors = $('a[title]', mounted_html);
+            let author = "anon";
+
+            for (let i = 0; i < authors.length; i++) {
+                if (authors[i].title.substring(0, 6) == "Author") {
+                    author = authors[i].textContent.split(":");
+                    author = author[0]
+                    break;
+                };
+            }
+
+            let paragraphs = $('p', mounted_html);
+            if (paragraphs.length > 0) {
+                let randomIdx = Math.floor(Math.random() * paragraphs.length);
+                paragraphText = paragraphs[randomIdx].textContent;
+    
+                let retries = 0;
+                let maxRetries = Math.ceil(0.75 * paragraphs.length);
+                while (paragraphText.length < App.min_text_content_length) {
+                    randomIdx = Math.floor(Math.random() * paragraphs.length);
+                    paragraphText = paragraphs[randomIdx].textContent;
+                    retries = retries + 1;
+                    if (retries > maxRetries) {
+                        paragraphText = null;
+                        break;
+                    }
+                }
+            }
+
+            return [paragraphText, author];
         },
 
         generateMediaPosts: async function(media_type="image") {
