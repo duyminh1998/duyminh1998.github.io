@@ -8,9 +8,11 @@ jQuery(function($) {
         min_text_content_length: 280, // the minimum length of content to be passable
         max_post_text_length: 280, // the maximum length of characters for a post before being truncated
         post_height: 200, // the default height of a post
-        max_text_posts: 30, // the maximum number of posts per feed before fetching more posts
-        max_image_posts: 20, // the ratio of images/media to text-only posts
+        max_text_posts: 30, // the maximum number of text posts per feed before fetching more posts
+        max_image_posts: 20, // the maximum number of image posts per feed before fetching more posts
+        max_video_posts: 20, // the maximum number of video posts per feed before fetching more posts
         accepted_image_types: ['PNG', 'SVG', 'JPG', 'JPEG', 'png', 'svg', 'jpg', 'jpeg'],
+        accepted_video_types: ['webm', 'WEBM', 'ogv', 'OGV', 'ogg', 'OGG', 'mpeg', 'MPEG', 'mpg', 'MPG'],
         source_for_text_posts: 'wikipedia', // wikipedia or wikisource, but wikisource endpoint is currently unstable
         current_image_posts_count: 0,
         request_timeout: 1,
@@ -58,6 +60,9 @@ jQuery(function($) {
             };          
             for (let j = 0; j < App.max_image_posts; j++) {
                 App.getRandomImage();
+            }
+            for (let k = 0; k < App.max_video_posts; k++) {
+                App.getRandomVideo();
             }
         },
 
@@ -211,7 +216,7 @@ jQuery(function($) {
                 if (potential_images_titles.length > 0) {
                     let random_image_title_idx = Math.floor(Math.random() * potential_images_titles.length);
                     let image_title = potential_images_titles[random_image_title_idx]
-                    let imageJSON = await App.getImageJSON(image_title);
+                    let imageJSON = await App.getWikimediaFileJSON(image_title);
                     if (imageJSON && imageJSON['preferred']) {
                         let imageURL = imageJSON['preferred']['url'];
                         let image_title_clean = image_title.split(':')[1].split('.')[0].replaceAll('_', ' ').replaceAll('/', ': ');
@@ -227,7 +232,59 @@ jQuery(function($) {
             }
         },
 
-        getImageJSON: async function(file) {
+        getRandomVideo: async function() {
+            let q = await App.getRandomTitle();
+
+            let randomVideoFormat
+            if (Math.random > 0.7) {
+                randomVideoFormat = App.accepted_video_types[Math.floor(Math.random() * App.accepted_video_types.length)]
+            } else {
+                randomVideoFormat = 'webm'
+            }
+
+            q = q.split("_")
+            q = q[Math.floor(Math.random() * q.length)]
+            q = q.concat("_", randomVideoFormat)
+            console.log(q)
+            let limit = 5
+            let url = `https://api.wikimedia.org/core/v1/commons/search/page?q=${q}&limit=${limit}`
+            let response = await fetch(url, {
+                headers: {
+                    'Api-User-Agent': App.api_user_agent
+                }
+            });
+            let response_json = await response.json();
+            let pages = response_json['pages'];
+
+            if (pages && pages.length > 0) {
+                let txt_split;
+                let potential_video_titles = [];
+                for (let i = 0; i < pages.length; i++) {
+                    txt_split = pages[i]['key'].split(".");
+                    if (txt_split.length > 1 && (App.accepted_video_types.includes(txt_split[1]))) {
+                        potential_video_titles.push(pages[i]['key'])
+                    }
+                }
+                
+                if (potential_video_titles.length > 0) {
+                    let random_video_title_idx = Math.floor(Math.random() * potential_video_titles.length);
+                    let video_title = potential_video_titles[random_video_title_idx]
+                    let videoJSON = await App.getWikimediaFileJSON(video_title);
+                    if (videoJSON && videoJSON['original']) {
+                        let videoURL = videoJSON['original']['url'];
+                        let video_title_clean = video_title.split(':')[1].split('.')[0].replaceAll('_', ' ').replaceAll('/', ': ');
+                        let author = 'anon';
+                        if (videoJSON['latest']['user']['name']) {
+                            author = videoJSON['latest']['user']['name'];
+                        }
+                        let post_text = `<div class="agora-feed-image-post"><p><b class="post-title">${video_title_clean}</b><br>By ${author}</p><div class="vid-container"><iframe allowfullscreen="true" src="${videoURL}"></iframe></div></div>`;
+                        $('#feed').append(post_text);
+                    }
+                }
+            }
+        },
+
+        getWikimediaFileJSON: async function(file) {
             let base_url = 'https://api.wikimedia.org/core/v1/commons/file/'
             let url = base_url + file
             let response = await fetch(url, {
