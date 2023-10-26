@@ -12,7 +12,7 @@ jQuery(function($) {
         max_image_posts: 10, // the maximum number of image posts per feed before fetching more posts
         max_video_posts: 10, // the maximum number of video posts per feed before fetching more posts
         accepted_image_types: ['PNG', 'SVG', 'JPG', 'JPEG', 'png', 'svg', 'jpg', 'jpeg'],
-        accepted_video_types: ['webm', 'WEBM', 'ogv', 'OGV', 'ogg', 'OGG', 'mpeg', 'MPEG', 'mpg', 'MPG'],
+        accepted_video_types: ['webm', 'WEBM', 'ogv', 'OGV', 'oga', 'OGA', 'ogg', 'OGG'],
         source_for_text_posts: 'wikipedia', // wikipedia or wikisource, but wikisource endpoint is currently unstable
         request_timeout: 500,
         throttleTimer: false,
@@ -21,7 +21,7 @@ jQuery(function($) {
             // JQuery stuff. Renders the main game
             App.$doc = $(document);
 
-            App.mediaQueryLimit = Math.ceil(Math.min(App.max_image_posts, App.max_video_posts) * 0.5);
+            App.mediaQueryLimit = Math.ceil(Math.min(App.max_image_posts, App.max_video_posts) * 0.3);
             App.maxMediaRequestRetries = Math.min(App.max_image_posts, App.max_video_posts)
 
             // On init, call these functions to set up area
@@ -57,9 +57,11 @@ jQuery(function($) {
         // Methods
         refreshFeed: async function() {
             App.generateMediaPosts("image");
+            await App.sleep(App.request_timeout)
             App.generateMediaPosts("video");
             for (let i = 0; i < App.max_text_posts; i++) {
                 App.generateTextPost();
+                await App.sleep(App.request_timeout / 2)
             };          
         },
 
@@ -229,7 +231,8 @@ jQuery(function($) {
                                     author = fileJSON['latest']['user']['name'];
                                 }
                                 let post_text = `<div class="agora-feed-image-post"><p><b class="post-title">${file_title_clean}</b><br>By ${author} | ${file_url}</p><img src="${fileURL}"></div>`;
-                                if (media_type == 'video') post_text = `<div class="agora-feed-video-post"><p><b class="post-title">${file_title_clean}</b><br>By ${author} | ${file_url}</p><div class="vid-container"><iframe allowfullscreen="true" src="${fileURL}"></iframe></div></div>`;
+                                // if (media_type == 'video') post_text = `<div class="agora-feed-video-post"><p><b class="post-title">${file_title_clean}</b><br>By ${author} | ${file_url}</p><div class="vid-container"><iframe allowfullscreen="true" src="${fileURL}"></iframe></div></div>`;
+                                if (media_type == 'video') post_text = `<div class="agora-feed-video-post"><p><b class="post-title">${file_title_clean}</b><br>By ${author} | ${file_url}</p><div class="vid-container"><video src="${fileURL}" controls></video></div></div>`;
                                 $('#feed').append(post_text);
                                 generatedPostsCount++;
                             }
