@@ -8,9 +8,9 @@ jQuery(function($) {
         min_text_content_length: 280, // the minimum length of content to be passable
         max_post_text_length: 280, // the maximum length of characters for a post before being truncated
         post_height: 200, // the default height of a post
-        max_text_posts: 30, // the maximum number of text posts per feed before fetching more posts
-        max_image_posts: 20, // the maximum number of image posts per feed before fetching more posts
-        max_video_posts: 20, // the maximum number of video posts per feed before fetching more posts
+        max_text_posts: 20, // the maximum number of text posts per feed before fetching more posts
+        max_image_posts: 10, // the maximum number of image posts per feed before fetching more posts
+        max_video_posts: 10, // the maximum number of video posts per feed before fetching more posts
         accepted_image_types: ['PNG', 'SVG', 'JPG', 'JPEG', 'png', 'svg', 'jpg', 'jpeg'],
         accepted_video_types: ['webm', 'WEBM', 'ogv', 'OGV', 'ogg', 'OGG', 'mpeg', 'MPEG', 'mpg', 'MPG'],
         source_for_text_posts: 'wikipedia', // wikipedia or wikisource, but wikisource endpoint is currently unstable
@@ -194,7 +194,7 @@ jQuery(function($) {
         getRandomImage: async function() {
             let q = await App.getRandomTitle();
             let limit = 5
-            let url = `https://api.wikimedia.org/core/v1/commons/search/page?q=${q}&limit=${limit}`
+            let url = `https://api.wikimedia.org/core/v1/commons/search/page?q=${encodeURIComponent(q)}&limit=${limit}`
             let response = await fetch(url, {
                 headers: {
                     'Api-User-Agent': App.api_user_agent
@@ -236,8 +236,8 @@ jQuery(function($) {
             let q = await App.getRandomTitle();
 
             let randomVideoFormat
-            if (Math.random > 0.7) {
-                randomVideoFormat = App.accepted_video_types[Math.floor(Math.random() * App.accepted_video_types.length)]
+            if (Math.random() > 0.6) {
+                randomVideoFormat = App.accepted_video_types.slice(2)[Math.floor(Math.random() * App.accepted_video_types.slice(2).length)]
             } else {
                 randomVideoFormat = 'webm'
             }
@@ -245,9 +245,8 @@ jQuery(function($) {
             q = q.split("_")
             q = q[Math.floor(Math.random() * q.length)]
             q = q.concat("_", randomVideoFormat)
-            console.log(q)
             let limit = 5
-            let url = `https://api.wikimedia.org/core/v1/commons/search/page?q=${q}&limit=${limit}`
+            let url = `https://api.wikimedia.org/core/v1/commons/search/page?q=${encodeURIComponent(q)}&limit=${limit}`
             let response = await fetch(url, {
                 headers: {
                     'Api-User-Agent': App.api_user_agent
