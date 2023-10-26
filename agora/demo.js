@@ -14,13 +14,15 @@ jQuery(function($) {
         accepted_image_types: ['PNG', 'SVG', 'JPG', 'JPEG', 'png', 'svg', 'jpg', 'jpeg'],
         accepted_video_types: ['webm', 'WEBM', 'ogv', 'OGV', 'ogg', 'OGG', 'mpeg', 'MPEG', 'mpg', 'MPG'],
         source_for_text_posts: 'wikipedia', // wikipedia or wikisource, but wikisource endpoint is currently unstable
-        current_image_posts_count: 0,
-        request_timeout: 1,
+        request_timeout: 500,
         throttleTimer: false,
 
         init: function() {
             // JQuery stuff. Renders the main game
             App.$doc = $(document);
+
+            App.mediaQueryLimit = Math.ceil(Math.min(App.max_image_posts, App.max_video_posts) * 0.5);
+            App.maxMediaRequestRetries = Math.min(App.max_image_posts, App.max_video_posts)
 
             // On init, call these functions to set up area
             App.refreshFeed();
@@ -54,16 +56,11 @@ jQuery(function($) {
 
         // Methods
         refreshFeed: async function() {
-            App.current_image_posts_count = 0;
+            App.generateMediaPosts("image");
+            App.generateMediaPosts("video");
             for (let i = 0; i < App.max_text_posts; i++) {
                 App.generateTextPost();
             };          
-            for (let j = 0; j < App.max_image_posts; j++) {
-                App.getRandomImage();
-            }
-            for (let k = 0; k < App.max_video_posts; k++) {
-                App.getRandomVideo();
-            }
         },
 
         generateTextPost: async function(source=App.source_for_text_posts) {
@@ -191,50 +188,74 @@ jQuery(function($) {
             // }
         },
 
-        getRandomImage: async function() {
-            let q = await App.getRandomTitle();
-            let limit = 5
-            let url = `https://api.wikimedia.org/core/v1/commons/search/page?q=${encodeURIComponent(q)}&limit=${limit}`
+        generateMediaPosts: async function(media_type="image") {
+            let generatedPostsCount = 0;
+            let mediaRequestsCount = 0;
+            let targetPostsCount = App.max_image_posts;
+            let acceptedFileTypes = App.accepted_image_types;
+            let fileJSONKey = 'preferred';
+
+            if (media_type == 'video') {
+                targetPostsCount = App.max_video_posts
+                acceptedFileTypes = App.accepted_video_types
+                fileJSONKey = 'original'
+            }
+
+            while (generatedPostsCount < targetPostsCount) {
+                let query = await App.getRandomTitle();
+    
+                if (media_type == "video") query = App.getRandomVideoQuery(query);
+    
+                let pages = await App.getMediaPages(query, App.mediaQueryLimit);
+                
+                if (pages && pages.length > 0) {
+                    let txt_split;
+                    let file_titles = [];
+                    pages.forEach((page) => {
+                        txt_split = page['key'].split(".");
+                        if (txt_split.length > 1 && (acceptedFileTypes.includes(txt_split[1]))) file_titles.push(page['key'])
+                    })
+
+                    if (file_titles.length > 0) {
+                        for (let i = 0; i < file_titles.length; i++) {
+                            let file_title = file_titles[i]
+                            let fileJSON = await App.getWikimediaFileJSON(file_title);
+                            if (fileJSON && fileJSON[fileJSONKey]) {
+                                let fileURL = fileJSON[fileJSONKey]['url'];
+                                let file_title_clean = file_title.split(':')[1].split('.')[0].replaceAll('_', ' ').replaceAll('/', ': ');
+                                let file_url = `<a href="https://commons.wikimedia.org/wiki/${file_title}" target="_blank" rel="noopener noreferrer">link</a>`
+                                let author = 'anon';
+                                if (fileJSON['latest']['user']['name']) {
+                                    author = fileJSON['latest']['user']['name'];
+                                }
+                                let post_text = `<div class="agora-feed-image-post"><p><b class="post-title">${file_title_clean}</b><br>By ${author} | ${file_url}</p><img src="${fileURL}"></div>`;
+                                if (media_type == 'video') post_text = `<div class="agora-feed-video-post"><p><b class="post-title">${file_title_clean}</b><br>By ${author} | ${file_url}</p><div class="vid-container"><iframe allowfullscreen="true" src="${fileURL}"></iframe></div></div>`;
+                                $('#feed').append(post_text);
+                                generatedPostsCount++;
+                            }
+                        }
+                    }
+                }
+                
+                mediaRequestsCount++;
+                if (mediaRequestsCount > App.maxMediaRequestRetries) break;
+                await App.sleep(App.request_timeout);
+            }
+
+        },
+
+        getMediaPages: async function(query, limit=App.mediaQueryLimit) {
+            let url = `https://api.wikimedia.org/core/v1/commons/search/page?q=${encodeURIComponent(query)}&limit=${encodeURIComponent(limit)}`
             let response = await fetch(url, {
                 headers: {
                     'Api-User-Agent': App.api_user_agent
                 }
             });
             let response_json = await response.json();
-            let pages = response_json['pages'];
-
-            if (pages && pages.length > 0) {
-                let txt_split;
-                let potential_images_titles = [];
-                for (let i = 0; i < pages.length; i++) {
-                    txt_split = pages[i]['key'].split(".");
-                    if (txt_split.length > 1 && (App.accepted_image_types.includes(txt_split[1]))) {
-                        potential_images_titles.push(pages[i]['key'])
-                    }
-                }
-                
-                if (potential_images_titles.length > 0) {
-                    let random_image_title_idx = Math.floor(Math.random() * potential_images_titles.length);
-                    let image_title = potential_images_titles[random_image_title_idx]
-                    let imageJSON = await App.getWikimediaFileJSON(image_title);
-                    if (imageJSON && imageJSON['preferred']) {
-                        let imageURL = imageJSON['preferred']['url'];
-                        let image_title_clean = image_title.split(':')[1].split('.')[0].replaceAll('_', ' ').replaceAll('/', ': ');
-                        let author = 'anon';
-                        if (imageJSON['latest']['user']['name']) {
-                            author = imageJSON['latest']['user']['name'];
-                        }
-                        let post_text =  `<div class="agora-feed-image-post"><p><b class="post-title">${image_title_clean}</b><br>By ${author}</p><img src="${imageURL}"></div>`;
-                        $('#feed').append(post_text);
-                        App.current_image_posts_count++;
-                    }
-                }
-            }
+            return response_json['pages'];
         },
 
-        getRandomVideo: async function() {
-            let q = await App.getRandomTitle();
-
+        getRandomVideoQuery: function(query) {
             let randomVideoFormat
             if (Math.random() > 0.6) {
                 randomVideoFormat = App.accepted_video_types.slice(2)[Math.floor(Math.random() * App.accepted_video_types.slice(2).length)]
@@ -242,45 +263,8 @@ jQuery(function($) {
                 randomVideoFormat = 'webm'
             }
 
-            q = q.split("_")
-            q = q[Math.floor(Math.random() * q.length)]
-            q = q.concat("_", randomVideoFormat)
-            let limit = 5
-            let url = `https://api.wikimedia.org/core/v1/commons/search/page?q=${encodeURIComponent(q)}&limit=${limit}`
-            let response = await fetch(url, {
-                headers: {
-                    'Api-User-Agent': App.api_user_agent
-                }
-            });
-            let response_json = await response.json();
-            let pages = response_json['pages'];
-
-            if (pages && pages.length > 0) {
-                let txt_split;
-                let potential_video_titles = [];
-                for (let i = 0; i < pages.length; i++) {
-                    txt_split = pages[i]['key'].split(".");
-                    if (txt_split.length > 1 && (App.accepted_video_types.includes(txt_split[1]))) {
-                        potential_video_titles.push(pages[i]['key'])
-                    }
-                }
-                
-                if (potential_video_titles.length > 0) {
-                    let random_video_title_idx = Math.floor(Math.random() * potential_video_titles.length);
-                    let video_title = potential_video_titles[random_video_title_idx]
-                    let videoJSON = await App.getWikimediaFileJSON(video_title);
-                    if (videoJSON && videoJSON['original']) {
-                        let videoURL = videoJSON['original']['url'];
-                        let video_title_clean = video_title.split(':')[1].split('.')[0].replaceAll('_', ' ').replaceAll('/', ': ');
-                        let author = 'anon';
-                        if (videoJSON['latest']['user']['name']) {
-                            author = videoJSON['latest']['user']['name'];
-                        }
-                        let post_text = `<div class="agora-feed-image-post"><p><b class="post-title">${video_title_clean}</b><br>By ${author}</p><div class="vid-container"><iframe allowfullscreen="true" src="${videoURL}"></iframe></div></div>`;
-                        $('#feed').append(post_text);
-                    }
-                }
-            }
+            query = query.split("_")
+            return query[Math.floor(Math.random() * query.length)].concat("_", randomVideoFormat)
         },
 
         getWikimediaFileJSON: async function(file) {
@@ -293,7 +277,7 @@ jQuery(function($) {
             });
             let imgJSON = await response.json();
             return imgJSON;         
-        },   
+        },
 
         sleep: function(ms) {
             return new Promise(resolve => setTimeout(resolve, ms));

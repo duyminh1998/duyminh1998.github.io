@@ -12,7 +12,7 @@
     box-shadow: 4px 4px 4px #FC83FC;
 }
 
-.agora-feed-image-post {
+.agora-feed-image-post, .agora-feed-video-post {
     display: flex;
     flex-direction: column;
     row-gap: 0.1em;
