@@ -64,7 +64,6 @@ const MAX_CASES_PER_ROUND = [6, 5, 4, 3, 2, 1, 1, 1, 1, 1]
 
 const CASE_IMAGE = "assets/case.png"
 const MAIN_GAME_BG_IMAGE = "assets/mainGameBG.png"
-const WHITE_BG_IMAGE = "assets/whiteBG.png"
 const OPENED_CASE_BG_IMAGE = "assets/model.png"
 const OPENED_CASE_MODEL_SAD_BG_IMAGE = "assets/modelSad.png"
 const BANKER_OFFER_BG_IMAGE = "assets/bankerOfferBG.png"
@@ -606,7 +605,6 @@ window.onload = function() {
     // LOAD SPRITES
     game.preload(CASE_IMAGE);
     game.preload(MAIN_GAME_BG_IMAGE);
-    game.preload(WHITE_BG_IMAGE);
     game.preload(OPENED_CASE_BG_IMAGE);
     game.preload(OPENED_CASE_MODEL_SAD_BG_IMAGE);
     game.preload(BANKER_OFFER_BG_IMAGE);
