@@ -71,6 +71,8 @@ const BANKER_OFFER_BG_IMAGE = "assets/bankerOfferBG.png"
 const DEAL_BUTTON_IMAGE = "assets/dealButton.png"
 const NO_DEAL_BUTTON_IMAGE = "assets/nonDealButton.png"
 const AMOUNT_CARD_IMAGE = "assets/amountCard.png"
+const END_GAME_WIN_IMAGE = "assets/endGameWin.png"
+const END_GAME_LOSE_IMAGE = "assets/endGameLose.png"
 
 const TEXT_FONT = "Eurostile"
 
@@ -243,7 +245,7 @@ const DealOrNoDeal = Class.create(Object, {
     makeOpenCaseResultScene: function() {
         const scene = new Scene();
         
-        const bg = makeBackground(this.currentOpenedCaseValue >= 1000 ? game.assets[OPENED_CASE_MODEL_SAD_BG_IMAGE] : game.assets[OPENED_CASE_BG_IMAGE], GAME_SCREEN_WIDTH, GAME_SCREEN_HEIGHT)
+        const bg = makeBackground(this.currentOpenedCaseValue >= 10000 ? game.assets[OPENED_CASE_MODEL_SAD_BG_IMAGE] : game.assets[OPENED_CASE_BG_IMAGE], GAME_SCREEN_WIDTH, GAME_SCREEN_HEIGHT)
         bg.addEventListener(Event.TOUCH_START, function(e) {
             game.popScene();
         });
@@ -278,39 +280,37 @@ const DealOrNoDeal = Class.create(Object, {
 
     makeEndGameScene: function(deal) {
         const scene = new Scene();
+
+        let won = false;
+        let bg;
+        if (deal & this.initialChosenCase.value < this.bankerOffer) won = true
+        else if (!deal & this.initialChosenCase.value > this.bankerOffer) won = true
         
-        const bg = makeBackground(game.assets[WHITE_BG_IMAGE], GAME_SCREEN_WIDTH, GAME_SCREEN_HEIGHT)
+        if (won) {
+            bg = makeBackground(game.assets[END_GAME_WIN_IMAGE], GAME_SCREEN_WIDTH, GAME_SCREEN_HEIGHT)
+        } else {
+            bg = makeBackground(game.assets[END_GAME_LOSE_IMAGE], GAME_SCREEN_WIDTH, GAME_SCREEN_HEIGHT)
+        }
         bg.dealGame = this;
         bg.addEventListener(Event.TOUCH_START, function(e) {
             this.dealGame.initGame();
         });
-        let resultMessage = `BANK OFFERED $${numberWithCommas(parseInt(this.bankerOffer))}. YOUR CASE HAD $${numberWithCommas(this.initialChosenCase.value)}.`;
-        if (!deal) {
-            if (this.initialChosenCase.value < this.bankerOffer) resultMessage = resultMessage.concat("         YOU LOST!")
-            else resultMessage = resultMessage.concat("         YOU WON!")
-        } else {
-            if (this.initialChosenCase.value > this.bankerOffer) resultMessage = resultMessage.concat("         YOU LOST!")
-            else resultMessage = resultMessage.concat("         YOU WON!")
-        }
-        const endGameMessage = new EndGameMessage(0, 0, resultMessage);
 
+        const currentBankOfferLabel = new BankOfferLabel(130, 260);
+        currentBankOfferLabel.change(this.bankerOffer)
+        const currentOpenedCaseValue = new CurrentChosenCaseLabel(430, 260)
+        currentOpenedCaseValue.font = currentBankOfferLabel.font
+        currentOpenedCaseValue.color = "purple"
+        currentOpenedCaseValue.change(this.initialChosenCase.value)
+        
         scene.addChild(bg);
-        scene.addChild(endGameMessage);
+        scene.addChild(currentBankOfferLabel);
+        scene.addChild(currentOpenedCaseValue);
 
         return scene;
     },
 
     endGame: function(deal) {
-        // this.initialChosenCase.reveal();
-        // const resultMessage = `BANK OFFERED $${numberWithCommas(parseInt(this.bankerOffer))}. YOUR CASE HAD $${numberWithCommas(this.initialChosenCase.value)}.`;
-        // const fontSize = '14px'
-        // if (!deal) {
-        //     if (this.initialChosenCase.value < this.bankerOffer) this.numberCasesToChooseLabel.displayMessage("YOU LOST! ".concat(resultMessage), fontSize)
-        //     else this.numberCasesToChooseLabel.displayMessage("YOU WON! ".concat(resultMessage), fontSize)
-        // } else {
-        //     if (this.initialChosenCase.value > this.bankerOffer) this.numberCasesToChooseLabel.displayMessage("YOU LOST! ".concat(resultMessage), fontSize)
-        //     else this.numberCasesToChooseLabel.displayMessage("YOU WON! ".concat(resultMessage), fontSize)
-        // }
         this.endGameScene = this.makeEndGameScene(deal)
         game.pushScene(this.endGameScene)
     },
@@ -341,8 +341,8 @@ const DealOrNoDeal = Class.create(Object, {
         
         if (!this.roundEnded) {
             if (this.round == 9) { // round 10 is the last round
-                game.pushScene(this.makeOpenCaseResultScene());
                 this.endGame(false);
+                game.pushScene(this.makeOpenCaseResultScene());
                 return 
             }
             if (this.casesOpenedThisRound == MAX_CASES_PER_ROUND[this.round]) {
@@ -392,7 +392,7 @@ const AmountBoard = Class.create(Object, {
     initializeCards: function(amounts, scene) {
         this.amountBoardCards = [];
         for (let amountBoardCardIdx = 0; amountBoardCardIdx < amounts.length; amountBoardCardIdx++) {
-            let amountBoardCard = new AmountBoardCard(this.x, this.y + (AMOUNT_BOARD_CARD_HEIGHT * amountBoardCardIdx * 1.1), amounts[amountBoardCardIdx])
+            let amountBoardCard = new AmountBoardCard(this.x, this.y + (AMOUNT_BOARD_CARD_HEIGHT * amountBoardCardIdx * 1.2), amounts[amountBoardCardIdx])
             scene.addChild(amountBoardCard);
             scene.addChild(amountBoardCard.label);
             this.amountBoardCards.push(amountBoardCard);
@@ -422,7 +422,7 @@ const AmountBoardCard = Class.create(Sprite, {
 const AmountBoardCardLabel = Class.create(Label, {
     initialize: function(x, y, amount) {
         let amountText = numberWithCommas(amount)
-        const pad = 16 - amountText.length
+        const pad = 15 - amountText.length
         for (let i = 0; i < pad; i++) {
             amountText = " ".concat(amountText)
         }
@@ -432,6 +432,7 @@ const AmountBoardCardLabel = Class.create(Label, {
         this.y = y + AMOUNT_BOARD_CARD_LABEL_OFFSET_Y;
         this.amount = amount;
         this.textAlign = 'right';
+        this.font = '14px "Arial"'
         this.width = AMOUNT_BOARD_CARD_WIDTH - 7
     }
 })
@@ -612,6 +613,8 @@ window.onload = function() {
     game.preload(DEAL_BUTTON_IMAGE);
     game.preload(NO_DEAL_BUTTON_IMAGE);
     game.preload(AMOUNT_CARD_IMAGE);
+    game.preload(END_GAME_WIN_IMAGE);
+    game.preload(END_GAME_LOSE_IMAGE);
 
     game.onload = function() {
         // populate cases on screen
