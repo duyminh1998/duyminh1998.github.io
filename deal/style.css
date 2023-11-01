@@ -3,3 +3,9 @@
     height: 560px;
     border: none;
 }
+
+@media screen and (max-width: 560px) {
+	.enchant-game-iframe {
+        height: 290px;
+    }
+}
