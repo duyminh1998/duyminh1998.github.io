@@ -5,7 +5,7 @@ const GAME_SCREEN_HEIGHT = 560
 
 const AMOUNT_BOARD_CARD_WIDTH = 100
 const AMOUNT_BOARD_CARD_HEIGHT = 30
-const AMOUNT_BOARD_CARD_LABEL_OFFSET_X = 20
+const AMOUNT_BOARD_CARD_LABEL_OFFSET_X = 0
 const AMOUNT_BOARD_CARD_LABEL_OFFSET_Y = 10
 const AMOUNT_BOARD_WIDTH = 100
 const AMOUNT_BOARD_HEIGHT = 13 * (AMOUNT_BOARD_CARD_HEIGHT + 5)
@@ -32,8 +32,9 @@ const TOP_MESSAGE_Y = 30
 const TOP_MESSAGE_FONT_SIZE = '24px'
 const TOP_MESSAGE_WIDTH = 600
 
-const BANK_OFFER_MESSAGE_X = 30
-const BANK_OFFER_MESSAGE_Y = 150
+const BANK_OFFER_MESSAGE_X = 260
+const BANK_OFFER_MESSAGE_Y = 440
+const BANK_OFFER_MESSAGE_COLOR = "yellow"
 
 const CURRENT_CASE_VALUE_X = 300
 const CURRENT_CASE_VALUE_Y = 300
@@ -43,12 +44,12 @@ const CHOSEN_INITIAL_CASE_Y = 500
 
 const AMOUNT_CARD_PER_BOARD = 13
 
-const DEAL_BUTTON_X = 150
-const DEAL_BUTTON_Y = 400
+const DEAL_BUTTON_X = 120
+const DEAL_BUTTON_Y = 450
 const DEAL_BUTTON_WIDTH = 128
 const DEAL_BUTTON_HEIGHT = 128
-const NO_DEAL_BUTTON_X = 390
-const NO_DEAL_BUTTON_Y = 400
+const NO_DEAL_BUTTON_X = 420
+const NO_DEAL_BUTTON_Y = 450
 const NO_DEAL_BUTTON_WIDTH = 128
 const NO_DEAL_BUTTON_HEIGHT = 128
 
@@ -65,6 +66,7 @@ const CASE_IMAGE = "assets/case.png"
 const MAIN_GAME_BG_IMAGE = "assets/mainGameBG.png"
 const WHITE_BG_IMAGE = "assets/whiteBG.png"
 const OPENED_CASE_BG_IMAGE = "assets/model.png"
+const OPENED_CASE_MODEL_SAD_BG_IMAGE = "assets/modelSad.png"
 const BANKER_OFFER_BG_IMAGE = "assets/bankerOfferBG.png"
 const DEAL_BUTTON_IMAGE = "assets/dealButton.png"
 const NO_DEAL_BUTTON_IMAGE = "assets/nonDealButton.png"
@@ -241,7 +243,7 @@ const DealOrNoDeal = Class.create(Object, {
     makeOpenCaseResultScene: function() {
         const scene = new Scene();
         
-        const bg = makeBackground(game.assets[OPENED_CASE_BG_IMAGE], GAME_SCREEN_WIDTH, GAME_SCREEN_HEIGHT)
+        const bg = makeBackground(this.currentOpenedCaseValue >= 1000 ? game.assets[OPENED_CASE_MODEL_SAD_BG_IMAGE] : game.assets[OPENED_CASE_BG_IMAGE], GAME_SCREEN_WIDTH, GAME_SCREEN_HEIGHT)
         bg.addEventListener(Event.TOUCH_START, function(e) {
             game.popScene();
         });
@@ -284,11 +286,11 @@ const DealOrNoDeal = Class.create(Object, {
         });
         let resultMessage = `BANK OFFERED $${numberWithCommas(parseInt(this.bankerOffer))}. YOUR CASE HAD $${numberWithCommas(this.initialChosenCase.value)}.`;
         if (!deal) {
-            if (this.initialChosenCase.value < this.bankerOffer) resultMessage = "YOU LOST! ".concat(resultMessage)
-            else resultMessage = "YOU WON! ".concat(resultMessage)
+            if (this.initialChosenCase.value < this.bankerOffer) resultMessage = resultMessage.concat("         YOU LOST!")
+            else resultMessage = resultMessage.concat("         YOU WON!")
         } else {
-            if (this.initialChosenCase.value > this.bankerOffer) resultMessage = "YOU LOST! ".concat(resultMessage)
-            else resultMessage = "YOU WON! ".concat(resultMessage)
+            if (this.initialChosenCase.value > this.bankerOffer) resultMessage = resultMessage.concat("         YOU LOST!")
+            else resultMessage = resultMessage.concat("         YOU WON!")
         }
         const endGameMessage = new EndGameMessage(0, 0, resultMessage);
 
@@ -345,6 +347,7 @@ const DealOrNoDeal = Class.create(Object, {
             }
             if (this.casesOpenedThisRound == MAX_CASES_PER_ROUND[this.round]) {
                 this.bankerOffer = getBankerOffer(this.offerPercent, this.cases)
+                this.numberCasesToChooseLabel.displayMessage("           DEAL OR NO DEAL?", null)
                 this.offerPercent = this.offerPercent + this.offerIncrement;
                 this.roundEnded = true;
                 game.pushScene(this.makeBankOfferDealNoDealScene());
@@ -418,10 +421,18 @@ const AmountBoardCard = Class.create(Sprite, {
 
 const AmountBoardCardLabel = Class.create(Label, {
     initialize: function(x, y, amount) {
-        Label.call(this, "$".concat(numberWithCommas(amount)))
-        this.x = x + AMOUNT_BOARD_CARD_LABEL_OFFSET_X;
+        let amountText = numberWithCommas(amount)
+        const pad = 16 - amountText.length
+        for (let i = 0; i < pad; i++) {
+            amountText = " ".concat(amountText)
+        }
+        amountText = "$".concat(amountText)
+        Label.call(this, amountText)
+        this.x = x + AMOUNT_BOARD_CARD_LABEL_OFFSET_X + (amount < 1000 ? -10 : 0);
         this.y = y + AMOUNT_BOARD_CARD_LABEL_OFFSET_Y;
         this.amount = amount;
+        this.textAlign = 'right';
+        this.width = AMOUNT_BOARD_CARD_WIDTH - 7
     }
 })
 
@@ -558,9 +569,15 @@ const BankOfferLabel = Class.create(Label, {
         this.x = x;
         this.y = y;
         this.font = "36px 'Arial'";
+        this.color = BANK_OFFER_MESSAGE_COLOR;
     },
     change: function(text) {
-        this.text = "$".concat(numberWithCommas(parseInt(text)))
+        let centeredText = "$".concat(numberWithCommas(parseInt(text)))
+        const padding = 8 - centeredText.length
+        for (let i = 0; i < padding; i++) {
+            centeredText = " ".concat(centeredText);
+        }
+        this.text = centeredText;
     },
     clear: function() {
         this.text = ""
@@ -590,6 +607,7 @@ window.onload = function() {
     game.preload(MAIN_GAME_BG_IMAGE);
     game.preload(WHITE_BG_IMAGE);
     game.preload(OPENED_CASE_BG_IMAGE);
+    game.preload(OPENED_CASE_MODEL_SAD_BG_IMAGE);
     game.preload(BANKER_OFFER_BG_IMAGE);
     game.preload(DEAL_BUTTON_IMAGE);
     game.preload(NO_DEAL_BUTTON_IMAGE);
