@@ -346,7 +346,7 @@ const DealOrNoDeal = Class.create(Object, {
             }
             if (this.casesOpenedThisRound == MAX_CASES_PER_ROUND[this.round]) {
                 this.bankerOffer = getBankerOffer(this.offerPercent, this.cases)
-                this.numberCasesToChooseLabel.displayMessage("           DEAL OR NO DEAL?", null)
+                this.numberCasesToChooseLabel.displayMessage("           ACCEPT OR REJECT?", null)
                 this.offerPercent = this.offerPercent + this.offerIncrement;
                 this.roundEnded = true;
                 game.pushScene(this.makeBankOfferDealNoDealScene());
